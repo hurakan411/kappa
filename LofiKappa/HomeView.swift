@@ -109,13 +109,6 @@ struct HomeView: View {
         return max(nextEvolutionGoal - currentKappaAmount, 0)
     }
     
-    private var stageText: String {
-        if currentStageIndex == maxStageIndex {
-            return String(localized: "stage_final", defaultValue: "Stage \(maxStageIndex): 成体期")
-        }
-        return AppTexts.stageText(currentStageIndex)
-    }
-    
     // MARK: - Body
     
     var body: some View {
@@ -170,8 +163,8 @@ struct HomeView: View {
         VStack(spacing: 0) {
             // ヘッダー（手書き風セクション）
             VStack(spacing: 4) {
-                Text(stageText)
-                    .font(.system(.subheadline, design: .rounded).bold())
+                Text(AppTexts.tabHome)
+                    .font(.system(.headline, design: .rounded).bold())
                     .foregroundColor(Theme.Colors.text(for: colorScheme))
                     .padding(.top, 16)
                 
@@ -194,7 +187,7 @@ struct HomeView: View {
                 }
                 
                 KappaImageView(kappaId: currentKappaId, stage: currentStageIndex)
-                    .frame(width: 320, height: 320)
+                    .frame(width: 360, height: 360)
                     .clipShape(RoundedRectangle(cornerRadius: 24))
                     .onTapGesture {
                         triggerSparkles(count: 8)
@@ -372,6 +365,14 @@ struct HomeView: View {
     }
     
     private func unlockCurrentKappa() {
+        // すでに解放済みのカッパ種かどうか重複チェック
+        let alreadyUnlocked = unlockedKappas.contains { collection in
+            let baseId = collection.id.components(separatedBy: "_").first ?? ""
+            return baseId == currentKappaId
+        }
+        
+        guard !alreadyUnlocked else { return }
+        
         let kappaToSave = KappaCollection(
             id: currentKappaId + "_" + UUID().uuidString.prefix(8),
             title: currentKappa.name,

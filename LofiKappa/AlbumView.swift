@@ -6,6 +6,20 @@ struct AlbumView: View {
     @Environment(\.colorScheme) private var colorScheme
     @Query(sort: \KappaCollection.dateUnlocked, order: .forward) private var kappas: [KappaCollection]
     
+    // 重複したカッパ種を排除したユニークなリスト
+    private var uniqueKappas: [KappaCollection] {
+        var seenBaseIds = Set<String>()
+        var result = [KappaCollection]()
+        for kappa in kappas {
+            let baseId = kappa.id.components(separatedBy: "_").first ?? "gamer"
+            if !seenBaseIds.contains(baseId) {
+                seenBaseIds.insert(baseId)
+                result.append(kappa)
+            }
+        }
+        return result
+    }
+    
     let columns = [
         GridItem(.flexible(), spacing: 16),
         GridItem(.flexible(), spacing: 16)
@@ -25,7 +39,7 @@ struct AlbumView: View {
                                 .font(.system(.subheadline, design: .rounded).bold())
                                 .foregroundColor(Theme.Colors.text(for: colorScheme))
                             Spacer()
-                            Text("\(kappas.count) 種")
+                            Text("\(uniqueKappas.count) 種")
                                 .font(.system(.subheadline, design: .rounded).bold())
                                 .foregroundColor(.white)
                                 .padding(.horizontal, 14)
@@ -38,7 +52,7 @@ struct AlbumView: View {
                         .padding(.top, 20)
                         
                         // コレクションシェルフ風グリッド
-                        if kappas.isEmpty {
+                        if uniqueKappas.isEmpty {
                             VStack(spacing: 20) {
                                 Spacer(minLength: 60)
                                 Image(systemName: "photo.on.rectangle.angled")
@@ -59,7 +73,7 @@ struct AlbumView: View {
                             .padding(.top, 40)
                         } else {
                             LazyVGrid(columns: columns, spacing: 20) {
-                                ForEach(kappas, id: \.id) { collection in
+                                ForEach(uniqueKappas, id: \.id) { collection in
                                     NavigationLink(destination: KappaDetailView(kappa: collection)) {
                                         KappaCard(kappa: collection, colorScheme: colorScheme)
                                     }
@@ -181,6 +195,15 @@ struct KappaDetailView: View {
     @Environment(\.colorScheme) private var colorScheme
     @Environment(\.dismiss) private var dismiss
     
+    @State private var selectedStage: Int
+    
+    init(kappa: KappaCollection) {
+        self.kappa = kappa
+        let base = kappa.id.components(separatedBy: "_").first ?? "gamer"
+        let max = base == "gamer" ? 7 : 5
+        _selectedStage = State(initialValue: max)
+    }
+    
     var baseId: String {
         kappa.id.components(separatedBy: "_").first ?? "gamer"
     }
@@ -200,55 +223,46 @@ struct KappaDetailView: View {
             TimeLightingBackground()
             
             ScrollView {
-                VStack(spacing: 0) {
-                    // メインの観察スケッチボード
-                    VStack(spacing: 0) {
-                        ZStack(alignment: .topTrailing) {
-                            // スケッチ写真風コンテナ
-                            ZStack {
-                                LinearGradient(
-                                    colors: [Theme.Colors.lightBlue.opacity(0.25), Theme.Colors.primaryBlue.opacity(0.08)],
-                                    startPoint: .topLeading,
-                                    endPoint: .bottomTrailing
-                                )
-                                .frame(height: 240)
-                                
-                                KappaImageView(kappaId: baseId, stage: maxStage)
-                                    .frame(width: 190, height: 190)
-                                    .padding(.vertical, 24)
+                VStack(spacing: 24) {
+                    // スワイプ可能な画像カルーセル（背景ボックスや完了スタンプなし）
+                    ZStack {
+                        TabView(selection: $selectedStage) {
+                            ForEach(1...maxStage, id: \.self) { stage in
+                                KappaImageView(kappaId: baseId, stage: stage)
+                                    .frame(width: 360, height: 360)
+                                    .clipShape(RoundedRectangle(cornerRadius: 24))
+                                    .tag(stage)
                             }
-                            
-                            // 完了インクスタンプ
-                            HatchedStamp(dateStr: formattedDate)
-                                .padding(16)
-                                .offset(x: 10, y: -10)
                         }
-                        
-                        HandDrawnDivider(color: Theme.Colors.text(for: colorScheme).opacity(0.15))
-                        
-                        // 詳細テキスト（観察ノート）
-                        VStack(spacing: 20) {
-                            Text(kappa.title)
-                                .font(.system(.title3, design: .rounded).bold())
-                                .foregroundColor(Theme.Colors.text(for: colorScheme))
-                                .multilineTextAlignment(.center)
-                            
-                            Text(kappa.kappaDescription)
-                                .font(.system(.body, design: .rounded))
-                                .foregroundColor(Theme.Colors.text(for: colorScheme).opacity(0.85))
-                                .multilineTextAlignment(.center)
-                                .lineSpacing(6)
-                                .padding(.horizontal, 10)
-                                .fixedSize(horizontal: false, vertical: true)
-                        }
-                        .padding(24)
-                        .background(Theme.Colors.card(for: colorScheme))
+                        .tabViewStyle(.page(indexDisplayMode: .always))
+                        .frame(height: 380)
                     }
-                    .clipShape(RoundedRectangle(cornerRadius: 24))
-                    .handDrawnBorder(color: Theme.Colors.text(for: colorScheme).opacity(0.25), cornerRadius: 24)
-                    .shadow(color: .black.opacity(colorScheme == .dark ? 0.35 : 0.08), radius: 14, x: 0, y: 5)
-                    .padding(.horizontal, 20)
-                    .padding(.top, 24)
+                    .padding(.top, 20)
+                    
+                    // 手書き風区切り線
+                    HandDrawnDivider(color: Theme.Colors.text(for: colorScheme).opacity(0.15))
+                        .padding(.horizontal, 40)
+                    
+                    // 詳細テキスト（観察ノート、背景ボックスなし）
+                    VStack(spacing: 16) {
+                        // ステージ名（スワイプしたステージに応じて動的に変更）
+                        Text(stageName(for: selectedStage))
+                            .font(.system(.subheadline, design: .rounded).bold())
+                            .foregroundColor(Theme.Colors.primaryBlue)
+                        
+                        Text(kappa.title)
+                            .font(.system(.title3, design: .rounded).bold())
+                            .foregroundColor(Theme.Colors.text(for: colorScheme))
+                            .multilineTextAlignment(.center)
+                        
+                        Text(kappa.kappaDescription)
+                            .font(.system(.body, design: .rounded))
+                            .foregroundColor(Theme.Colors.text(for: colorScheme).opacity(0.85))
+                            .multilineTextAlignment(.center)
+                            .lineSpacing(6)
+                            .padding(.horizontal, 24)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
                     .padding(.bottom, 40)
                 }
             }
@@ -256,26 +270,28 @@ struct KappaDetailView: View {
         .navigationTitle(kappa.title)
         .navigationBarTitleDisplayMode(.inline)
     }
-}
-
-// MARK: - Decoration Helpers
-
-struct HatchedStamp: View {
-    let dateStr: String
-    var body: some View {
-        VStack(spacing: 3) {
-            Text("孵化完了")
-                .font(.system(size: 9, weight: .bold, design: .rounded))
-            Text(dateStr)
-                .font(.system(size: 8, design: .rounded))
+    
+    // ステージに応じた表示名を取得するヘルパー
+    private func stageName(for stage: Int) -> String {
+        if baseId == "gamer" {
+            switch stage {
+            case 1: return "Stage 1: 卵期"
+            case 2: return "Stage 2: ひび割れ期"
+            case 3: return "Stage 3: ベビー期"
+            case 4: return "Stage 4: ゲーマーベビー期"
+            case 5: return "Stage 5: ゲーマーチャイルド期"
+            case 6: return "Stage 6: ゲーマーアダルト期"
+            default: return "Stage 7: ゲーマープロ期（最終形態）"
+            }
+        } else {
+            switch stage {
+            case 1: return "Stage 1: 卵期"
+            case 2: return "Stage 2: ひび割れ期"
+            case 3: return "Stage 3: 幼生期"
+            case 4: return "Stage 4: 成長期"
+            default: return "Stage 5: 成体期（最終形態）"
+            }
         }
-        .foregroundColor(Color(hex: "F87171").opacity(0.8)) // かすれた朱色インク
-        .padding(8)
-        .background(
-            Circle()
-                .stroke(Color(hex: "F87171").opacity(0.8), style: StrokeStyle(lineWidth: 1.5, dash: [4, 2]))
-        )
-        .rotationEffect(.degrees(15))
     }
 }
 

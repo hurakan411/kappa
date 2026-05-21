@@ -19,6 +19,9 @@ struct KappaImageView: View {
                     // 読み込みエラー時のプレースホルダー表示
                     let _ = print("🔴 [KappaImageView] Failed to load image. kappaId=\(kappaId), stage=\(stage), url=\(imageUrl), error=\(error)")
                     errorPlaceholderView()
+                        .onAppear {
+                            SupabaseStorageManager.shared.fetchFileList(for: kappaId)
+                        }
                 case .empty:
                     // ロード中のふわっとしたローディングインジケーター
                     loadingIndicatorView()
@@ -28,11 +31,15 @@ struct KappaImageView: View {
             }
             .onAppear {
                 print("🟢 [KappaImageView] Loading image. kappaId=\(kappaId), stage=\(stage), url=\(imageUrl)")
+                SupabaseStorageManager.shared.fetchFileList(for: kappaId)
             }
         } else {
             // URLが生成できなかった場合のプレースホルダー
             let _ = print("🔴 [KappaImageView] URL is nil. kappaId=\(kappaId), stage=\(stage)")
             errorPlaceholderView()
+                .onAppear {
+                    SupabaseStorageManager.shared.fetchFileList(for: kappaId)
+                }
         }
     }
     
