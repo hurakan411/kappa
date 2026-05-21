@@ -37,7 +37,7 @@ class SupabaseStorageManager: ObservableObject {
         }
         
         let body: [String: Any] = [
-            "prefix": folderName,
+            "prefix": folderName + "/",
             "limit": 100,
             "offset": 0,
             "sortBy": [
@@ -96,6 +96,12 @@ class SupabaseStorageManager: ObservableObject {
                 }
                 
                 print("🟢 [SupabaseStorageManager] Dynamic Map parsed for \(kappaId): \(stageMap)")
+                
+                // 空のマップはキャッシュしない（次回起動時にリトライできるようにする）
+                guard !stageMap.isEmpty else {
+                    print("⚠️ [SupabaseStorageManager] Empty map for \(kappaId), not caching (will retry later)")
+                    return
+                }
                 
                 DispatchQueue.main.async {
                     self?.fileMap[kappaId] = stageMap

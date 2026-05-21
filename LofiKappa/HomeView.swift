@@ -20,9 +20,6 @@ struct HomeView: View {
     @State private var isAnimating = false
     @State private var isReady = false
     @State private var isMenuOpen = false
-    @State private var localTodayLog: DailyWaterLog? = nil
-    @State private var cachedImageName: String = ""
-    @State private var cachedSettings: UserSettings? = nil
     
     // タッチ＆エフェクト用ステート
     @State private var touchScaleX: CGFloat = 1.0
@@ -31,10 +28,21 @@ struct HomeView: View {
     
     // MARK: - Stable accessors (no side effects)
     
+    private var safeSettings: UserSettings? {
+        userSettings.first
+    }
+    
+    private var localTodayLog: DailyWaterLog? {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd"
+        let todayStr = formatter.string(from: Date())
+        return waterLogs.first(where: { $0.dateString == todayStr })
+    }
+    
     private var safeLog: DailyWaterLog? { localTodayLog }
     
     private var safeDailyGoal: Int {
-        cachedSettings?.dailyGoal ?? 1500
+        safeSettings?.dailyGoal ?? 1500
     }
     
     private var currentKappaId: String {
@@ -141,11 +149,11 @@ struct HomeView: View {
                     ArcWaterMenu(
                         isOpen: $isMenuOpen,
                         items: [
-                            (amount: cachedSettings?.cupSize1 ?? 150, icon: "cup.and.saucer.fill"),
-                            (amount: cachedSettings?.cupSize2 ?? 200, icon: "mug.fill"),
-                            (amount: cachedSettings?.cupSize3 ?? 300, icon: "drop.fill"),
-                            (amount: cachedSettings?.cupSize4 ?? 400, icon: "waterbottle.fill"),
-                            (amount: cachedSettings?.cupSize5 ?? 500, icon: "takeoutbag.and.cup.and.straw.fill")
+                            (amount: safeSettings?.cupSize1 ?? 150, icon: "cup.and.saucer.fill"),
+                            (amount: safeSettings?.cupSize2 ?? 200, icon: "mug.fill"),
+                            (amount: safeSettings?.cupSize3 ?? 300, icon: "drop.fill"),
+                            (amount: safeSettings?.cupSize4 ?? 400, icon: "waterbottle.fill"),
+                            (amount: safeSettings?.cupSize5 ?? 500, icon: "takeoutbag.and.cup.and.straw.fill")
                         ],
                         colorScheme: colorScheme,
                         onSelect: { amount in addWater(amount: amount) }
@@ -187,6 +195,7 @@ struct HomeView: View {
                 }
                 
                 KappaImageView(kappaId: currentKappaId, stage: currentStageIndex)
+                    .id("\(currentKappaId)_\(currentStageIndex)")
                     .frame(width: 360, height: 360)
                     .clipShape(RoundedRectangle(cornerRadius: 24))
                     .onTapGesture {
@@ -230,14 +239,11 @@ struct HomeView: View {
     // MARK: - Data operations
     
     private func initializeData() {
-        // 1. Settings を安全に取得・作成（body評価の外で行う）
-        if let existingSettings = userSettings.first {
-            cachedSettings = existingSettings
-        } else {
+        // 1. Settings を安全に取得・作成
+        if userSettings.isEmpty {
             let newSettings = UserSettings()
             modelContext.insert(newSettings)
             try? modelContext.save()
-            cachedSettings = newSettings
         }
         
         // 2. 今日のログを取得・作成
@@ -253,49 +259,37 @@ struct HomeView: View {
                 modelContext.delete(log)
             }
             try? modelContext.save()
-            localTodayLog = survivor
-        } else if let existingLog = todaysLogs.first {
-            localTodayLog = existingLog
-        } else {
-            let randomKappa = getNextRandomKappa()
-            let newLog = DailyWaterLog(dateString: todayStr, targetKappaId: randomKappa)
+        } else if todaysLogs.isEmpty {
+            // 前日のログを探す
+            let sortedLogs = waterLogs.sorted(by: { $0.dateString < $1.dateString })
+            var targetKappa = getNextRandomKappa()
+            var startingProgress = 0
+            
+            if let lastLog = sortedLogs.last {
+                if !lastLog.isCompleted {
+                    // 未完了なら前日のカッパ種と成長進捗を引き継ぐ！
+                    targetKappa = lastLog.targetKappaId
+                    startingProgress = lastLog.kappaCurrentAmount
+                    print("🌱 [HomeView] Continuing raising yesterday's kappa: \(targetKappa) with progress \(startingProgress)ml")
+                } else {
+                    print("🎉 [HomeView] Yesterday's kappa was completed! Starting a new one.")
+                }
+            }
+            
+            let newLog = DailyWaterLog(dateString: todayStr, targetKappaId: targetKappa)
+            newLog.kappaCurrentAmount = startingProgress
             modelContext.insert(newLog)
             try? modelContext.save()
-            localTodayLog = newLog
         }
         
-        // 3. 画像名を確定
-        rebuildImageName()
-        
-        // 4. 準備完了 → メイン画面を表示
+        // 3. 準備完了 → メイン画面を表示
         isReady = true
-    }
-    
-    private func rebuildImageName() {
-        guard let log = localTodayLog else { return }
-        let goal = cachedSettings?.dailyGoal ?? 1500
-        let kappa = allKappas.first(where: { $0.id == log.targetKappaId }) ?? allKappas[0]
-        let reqs = kappa.scaledRequirements(dailyGoal: goal)
-        let amount = log.kappaCurrentAmount
-        var stage = reqs.count + 1
-        for i in 0..<reqs.count {
-            if amount < reqs[i] {
-                stage = i + 1
-                break
-            }
-        }
-        cachedImageName = "kappa_\(log.targetKappaId)_stage\(min(stage, 5))"
     }
     
     private func addWater(amount: Int) {
         guard let log = localTodayLog else { return }
         
-        #if DEBUG
         let evolutionToAdd = amount
-        #else
-        let availableForEvolution = max(0, todayGoal - log.currentAmount)
-        let evolutionToAdd = min(amount, availableForEvolution)
-        #endif
         
         log.currentAmount += amount
         log.lastDrinkTime = Date()
@@ -314,7 +308,6 @@ struct HomeView: View {
         }
         
         try? modelContext.save()
-        rebuildImageName()
         
         // 水分補給時のスパークルエフェクトをトリガー
         triggerSparkles(count: 16)
@@ -355,7 +348,6 @@ struct HomeView: View {
         log.kappaCurrentAmount = 0
         log.isCompleted = false
         try? modelContext.save()
-        rebuildImageName()
     }
     
     private func getNextRandomKappa() -> String {
