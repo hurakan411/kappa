@@ -1,0 +1,49 @@
+# --- Custom Ignored Files ---
+.env
+LofiKappa/.env
+
+# --- XcodeGen ---
+*.xcodeproj
+
+# --- OS ---
+.DS_Store
+.directory
+*~
+*.swp
+*.lock
+
+# --- Xcode ---
+build/
+DerivedData/
+*.pbxuser
+*.mode1v3
+*.mode2v3
+*.perspectivev3
+xcuserdata/
+*.xccheckout
+*.xcworkspace
+!default.xcworkspace
+xcshareddata/
+!*.xcuserstate
+*.xcuserstate
+*.xsmtregistry
+*.xctest
+*.xctestproducts
+*.swiftmodule
+*.swiftdoc
+*.swiftinterface
+*.swiftsourceinfo
+.xcworkspace/
+
+# --- Swift Package Manager ---
+.build/
+.swiftpm/
+
+# --- Fastlane ---
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots/**/*.png
+fastlane/test_output
+
+# --- Carthage ---
+Carthage/Build/
