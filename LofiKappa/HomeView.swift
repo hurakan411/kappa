@@ -1,5 +1,6 @@
 import SwiftUI
 import SwiftData
+import WidgetKit
 
 struct SparkleEffectItem: Identifiable {
     let id = UUID()
@@ -13,6 +14,7 @@ struct SparkleEffectItem: Identifiable {
 struct HomeView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.colorScheme) private var colorScheme
+    @Environment(\.scenePhase) private var scenePhase
     @Query private var userSettings: [UserSettings]
     @Query private var waterLogs: [DailyWaterLog]
     @Query private var unlockedKappas: [KappaCollection]
@@ -165,6 +167,24 @@ struct HomeView: View {
                     .onAppear { initializeData() }
             }
         }
+        .onChange(of: safeDailyGoal) { newGoal in
+            guard isReady, let log = localTodayLog, !log.isCompleted else { return }
+            let currentRefGoal = log.referenceDailyGoal ?? newGoal
+            if currentRefGoal != newGoal && currentRefGoal > 0 {
+                let oldAmount = log.kappaCurrentAmount
+                let scaled = Int((Double(oldAmount) * Double(newGoal) / Double(currentRefGoal)).rounded())
+                log.kappaCurrentAmount = scaled
+                log.referenceDailyGoal = newGoal
+                print("🌱 [HomeView] Live scaled today's kappa progress from \(oldAmount)ml to \(scaled)ml due to dailyGoal change (\(currentRefGoal)ml -> \(newGoal)ml)")
+                try? modelContext.save()
+            }
+        }
+        .onChange(of: scenePhase) { newPhase in
+            if newPhase == .active {
+                print("🟢 [HomeView] App entered active foreground. Syncing widget data via UserDefaults.")
+                syncFromWidget()
+            }
+        }
     }
     
     private var mainContent: some View {
@@ -269,20 +289,59 @@ struct HomeView: View {
                 if !lastLog.isCompleted {
                     // 未完了なら前日のカッパ種と成長進捗を引き継ぐ！
                     targetKappa = lastLog.targetKappaId
-                    startingProgress = lastLog.kappaCurrentAmount
+                    
+                    // 前日の目標水分量と現在の目標水分量に差がある場合、進捗をスケーリングする
+                    let yesterdayGoal = lastLog.referenceDailyGoal ?? safeDailyGoal
+                    if yesterdayGoal != safeDailyGoal && yesterdayGoal > 0 {
+                        startingProgress = Int((Double(lastLog.kappaCurrentAmount) * Double(safeDailyGoal) / Double(yesterdayGoal)).rounded())
+                        print("🌱 [HomeView] Scaled yesterday's progress from \(lastLog.kappaCurrentAmount)ml to \(startingProgress)ml due to dailyGoal change (\(yesterdayGoal)ml -> \(safeDailyGoal)ml)")
+                    } else {
+                        startingProgress = lastLog.kappaCurrentAmount
+                    }
                     print("🌱 [HomeView] Continuing raising yesterday's kappa: \(targetKappa) with progress \(startingProgress)ml")
                 } else {
                     print("🎉 [HomeView] Yesterday's kappa was completed! Starting a new one.")
                 }
             }
             
-            let newLog = DailyWaterLog(dateString: todayStr, targetKappaId: targetKappa)
+            let newLog = DailyWaterLog(dateString: todayStr, targetKappaId: targetKappa, referenceDailyGoal: safeDailyGoal)
             newLog.kappaCurrentAmount = startingProgress
             modelContext.insert(newLog)
             try? modelContext.save()
+        } else {
+            // 今日のログが既に存在する場合：
+            // 今日の目標水分量が変更された場合に備え、進捗をリアルタイムにスケーリング
+            if let todayLog = todaysLogs.first {
+                let currentRefGoal = todayLog.referenceDailyGoal ?? safeDailyGoal
+                if currentRefGoal != safeDailyGoal && currentRefGoal > 0 && !todayLog.isCompleted {
+                    let oldAmount = todayLog.kappaCurrentAmount
+                    let scaled = Int((Double(oldAmount) * Double(safeDailyGoal) / Double(currentRefGoal)).rounded())
+                    todayLog.kappaCurrentAmount = scaled
+                    todayLog.referenceDailyGoal = safeDailyGoal
+                    print("🌱 [HomeView] Scaled today's kappa progress from \(oldAmount)ml to \(scaled)ml due to dailyGoal change (\(currentRefGoal)ml -> \(safeDailyGoal)ml)")
+                    try? modelContext.save()
+                } else if todayLog.referenceDailyGoal == nil {
+                    todayLog.referenceDailyGoal = safeDailyGoal
+                    try? modelContext.save()
+                }
+            }
         }
         
-        // 3. 準備完了 → メイン画面を表示
+        // 3. 現在の状態を UserDefaults に同期（ウィジェットが読めるように）
+        if let log = localTodayLog {
+            let formatter2 = DateFormatter()
+            formatter2.dateFormat = "yyyy-MM-dd"
+            WidgetDataSync.save(
+                dateString: formatter2.string(from: Date()),
+                currentAmount: log.currentAmount,
+                kappaCurrentAmount: log.kappaCurrentAmount,
+                isCompleted: log.isCompleted,
+                targetKappaId: log.targetKappaId,
+                dailyGoal: safeDailyGoal
+            )
+        }
+        
+        // 4. 準備完了 → メイン画面を表示
         isReady = true
     }
     
@@ -308,6 +367,19 @@ struct HomeView: View {
         }
         
         try? modelContext.save()
+        
+        // UserDefaults に同期（ウィジェットが読めるように）
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd"
+        WidgetDataSync.save(
+            dateString: formatter.string(from: Date()),
+            currentAmount: log.currentAmount,
+            kappaCurrentAmount: log.kappaCurrentAmount,
+            isCompleted: log.isCompleted,
+            targetKappaId: log.targetKappaId,
+            dailyGoal: safeDailyGoal
+        )
+        WidgetCenter.shared.reloadAllTimelines()
         
         // 水分補給時のスパークルエフェクトをトリガー
         triggerSparkles(count: 16)
@@ -348,6 +420,7 @@ struct HomeView: View {
         log.kappaCurrentAmount = 0
         log.isCompleted = false
         try? modelContext.save()
+        WidgetCenter.shared.reloadAllTimelines()
     }
     
     private func getNextRandomKappa() -> String {
@@ -372,6 +445,53 @@ struct HomeView: View {
             dateUnlocked: Date()
         )
         modelContext.insert(kappaToSave)
+    }
+    
+    /// UserDefaults からウィジェットが書き込んだデータを読み取り、SwiftData に反映する
+    private func syncFromWidget() {
+        guard let syncData = WidgetDataSync.load() else {
+            print("ℹ️ [HomeView] No widget sync data available")
+            return
+        }
+        
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd"
+        let todayStr = formatter.string(from: Date())
+        
+        // 同期データが今日のものでなければスキップ
+        guard syncData.dateString == todayStr else {
+            print("ℹ️ [HomeView] Widget sync data is for \(syncData.dateString), not today (\(todayStr)). Skipping.")
+            return
+        }
+        
+        if let log = localTodayLog {
+            // ウィジェット側の方が進んでいる場合のみマージ
+            if syncData.currentAmount > log.currentAmount || syncData.kappaCurrentAmount > log.kappaCurrentAmount {
+                print("🟢 [HomeView] Merging widget data: amount \(log.currentAmount)->\(syncData.currentAmount), kappa \(log.kappaCurrentAmount)->\(syncData.kappaCurrentAmount)")
+                log.currentAmount = max(log.currentAmount, syncData.currentAmount)
+                log.kappaCurrentAmount = max(log.kappaCurrentAmount, syncData.kappaCurrentAmount)
+                if syncData.isCompleted && !log.isCompleted {
+                    log.isCompleted = true
+                    unlockCurrentKappa()
+                }
+                try? modelContext.save()
+            } else {
+                print("ℹ️ [HomeView] App data is up-to-date or ahead of widget data. No merge needed.")
+            }
+        } else {
+            // アプリ側に今日のログがない場合、ウィジェット側のデータで新規作成
+            print("🟢 [HomeView] Creating today's log from widget sync data")
+            let newLog = DailyWaterLog(
+                dateString: todayStr,
+                currentAmount: syncData.currentAmount,
+                kappaCurrentAmount: syncData.kappaCurrentAmount,
+                isCompleted: syncData.isCompleted,
+                targetKappaId: syncData.targetKappaId,
+                referenceDailyGoal: syncData.dailyGoal
+            )
+            modelContext.insert(newLog)
+            try? modelContext.save()
+        }
     }
 }
 

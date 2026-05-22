@@ -1,5 +1,6 @@
 import SwiftUI
 import SwiftData
+import WidgetKit
 
 struct SettingsView: View {
     @Environment(\.modelContext) private var modelContext
@@ -174,12 +175,14 @@ struct SettingsView: View {
                 }, set: { newValue in
                     settings.customDailyGoal = newValue
                     try? modelContext.save()
+                    WidgetCenter.shared.reloadAllTimelines()
                 }), selectedGender: Binding(get: {
                     settings.gender
                 }, set: { newValue in
                     settings.gender = newValue
                     selectedGender = newValue
                     try? modelContext.save()
+                    WidgetCenter.shared.reloadAllTimelines()
                 }))
             }
             .confirmationDialog(
@@ -251,6 +254,7 @@ struct SettingsView: View {
             try modelContext.delete(model: DailyWaterLog.self)
             try modelContext.delete(model: KappaCollection.self)
             try modelContext.save()
+            WidgetCenter.shared.reloadAllTimelines()
         } catch {
             print("Failed to reset data: \(error)")
         }

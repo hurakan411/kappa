@@ -54,10 +54,11 @@ class DailyWaterLog {
     var lastDrinkTime: Date?
     var hourlyAmount: Int // Used to track overflow penalty per hour
     var targetKappaId: String
+    var referenceDailyGoal: Int?
     
     @Relationship(deleteRule: .cascade) var intakes: [IntakeRecord] = []
     
-    init(dateString: String, currentAmount: Int = 0, kappaCurrentAmount: Int = 0, penaltyCount: Int = 0, isCompleted: Bool = false, targetKappaId: String = "gamer") {
+    init(dateString: String, currentAmount: Int = 0, kappaCurrentAmount: Int = 0, penaltyCount: Int = 0, isCompleted: Bool = false, targetKappaId: String = "gamer", referenceDailyGoal: Int? = nil) {
         self.dateString = dateString
         self.currentAmount = currentAmount
         self.kappaCurrentAmount = kappaCurrentAmount
@@ -65,6 +66,7 @@ class DailyWaterLog {
         self.isCompleted = isCompleted
         self.hourlyAmount = 0
         self.targetKappaId = targetKappaId
+        self.referenceDailyGoal = referenceDailyGoal
     }
 }
 
