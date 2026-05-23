@@ -1,6 +1,7 @@
 import SwiftUI
 import SwiftData
 import WidgetKit
+import StoreKit
 
 struct SparkleEffectItem: Identifiable {
     let id = UUID()
@@ -15,6 +16,7 @@ struct HomeView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.colorScheme) private var colorScheme
     @Environment(\.scenePhase) private var scenePhase
+    @Environment(\.requestReview) private var requestReview
     @Query private var userSettings: [UserSettings]
     @Query private var waterLogs: [DailyWaterLog]
     @Query private var unlockedKappas: [KappaCollection]
@@ -345,6 +347,32 @@ struct HomeView: View {
         isReady = true
     }
     
+    /// 特定の進化ステージ変化を検知してレビュー依頼を要求する
+    private func checkAndRequestReview(oldStage: Int, newStage: Int) {
+        // 1体目のカッパを育てている（図鑑登録数が0である状態）
+        if unlockedKappas.isEmpty {
+            // 条件1: 一体目のカッパがStage 3になったら
+            if oldStage < 3 && newStage >= 3 {
+                let key = "hasRequestedReviewForFirstKappaStage3"
+                if !UserDefaults.standard.bool(forKey: key) {
+                    requestReview()
+                    UserDefaults.standard.set(true, forKey: key)
+                    print("⭐ [Review] Requested review: First kappa reached Stage 3 (from \(oldStage) to \(newStage))")
+                }
+            }
+            
+            // 条件2: 一体目のカッパが最終stageになったら
+            if oldStage < maxStageIndex && newStage == maxStageIndex {
+                let key = "hasRequestedReviewForFirstKappaFinalStage"
+                if !UserDefaults.standard.bool(forKey: key) {
+                    requestReview()
+                    UserDefaults.standard.set(true, forKey: key)
+                    print("⭐ [Review] Requested review: First kappa reached Final Stage (\(maxStageIndex)) (from \(oldStage) to \(newStage))")
+                }
+            }
+        }
+    }
+    
     private func addWater(amount: Int) {
         guard let log = localTodayLog else { return }
         
@@ -358,7 +386,12 @@ struct HomeView: View {
         log.intakes.append(newIntake)
         
         if evolutionToAdd > 0 && log.kappaCurrentAmount < currentGoal {
+            let oldStage = currentStageIndex
+            
             log.kappaCurrentAmount = min(currentGoal, log.kappaCurrentAmount + evolutionToAdd)
+            
+            let newStage = currentStageIndex
+            checkAndRequestReview(oldStage: oldStage, newStage: newStage)
             
             if log.kappaCurrentAmount >= currentGoal && !log.isCompleted {
                 log.isCompleted = true
@@ -445,6 +478,17 @@ struct HomeView: View {
             dateUnlocked: Date()
         )
         modelContext.insert(kappaToSave)
+        
+        // 登録後の合計件数（今回挿入した分を含めて unlockedKappas.count + 1）が3に達した時
+        let totalUnlockedCount = unlockedKappas.count + 1
+        if totalUnlockedCount == 3 {
+            let key = "hasRequestedReviewForThreeKappas"
+            if !UserDefaults.standard.bool(forKey: key) {
+                requestReview()
+                UserDefaults.standard.set(true, forKey: key)
+                print("⭐ [Review] Requested review: Total unlocked kappas reached 3")
+            }
+        }
     }
     
     /// UserDefaults からウィジェットが書き込んだデータを読み取り、SwiftData に反映する
@@ -468,8 +512,14 @@ struct HomeView: View {
             // ウィジェット側の方が進んでいる場合のみマージ
             if syncData.currentAmount > log.currentAmount || syncData.kappaCurrentAmount > log.kappaCurrentAmount {
                 print("🟢 [HomeView] Merging widget data: amount \(log.currentAmount)->\(syncData.currentAmount), kappa \(log.kappaCurrentAmount)->\(syncData.kappaCurrentAmount)")
+                let oldStage = currentStageIndex
+                
                 log.currentAmount = max(log.currentAmount, syncData.currentAmount)
                 log.kappaCurrentAmount = max(log.kappaCurrentAmount, syncData.kappaCurrentAmount)
+                
+                let newStage = currentStageIndex
+                checkAndRequestReview(oldStage: oldStage, newStage: newStage)
+                
                 if syncData.isCompleted && !log.isCompleted {
                     log.isCompleted = true
                     unlockCurrentKappa()

@@ -1,4 +1,14 @@
 import Foundation
+import SwiftUI
+
+// メリットデータの構造体
+struct HydrationBenefit {
+    let icon: String
+    let iconColor: Color
+    let title: String
+    let subtitle: String
+    let description: String
+}
 
 struct AppTexts {
     // MARK: - Tab Bar
@@ -108,4 +118,87 @@ struct AppTexts {
     static func kappaDesc(_ key: String, defaultDesc: String) -> String {
         return NSLocalizedString(key, value: defaultDesc, comment: "")
     }
+    
+    // MARK: - Onboarding
+    static let onboardingStoryLines = [
+        String(localized: "onboarding_story_1", defaultValue: "古来より日本に伝わる、"),
+        String(localized: "onboarding_story_2", defaultValue: "伝説の生き物、河童。"),
+        String(localized: "onboarding_story_3", defaultValue: "彼らの頭にあるお皿には、"),
+        String(localized: "onboarding_story_4", defaultValue: "常に満ちる水が必要でした。"),
+        String(localized: "onboarding_story_5", defaultValue: "お皿の水が乾けば、"),
+        String(localized: "onboarding_story_6", defaultValue: "その生命も"),
+        String(localized: "onboarding_story_7", defaultValue: "失われてしまうのです…。")
+    ]
+    
+    static let onboardingHumanTitle = String(localized: "onboarding_human_title", defaultValue: "人間も河童みたいなもの")
+    static let onboardingHumanMessage = String(localized: "onboarding_human_message", defaultValue: "河童のお皿が乾いてはいけないように、\n私たち人間もまた、\n日々の給水を絶やしてはいけないのです。")
+    
+    static let onboardingBenefitsTitle = String(localized: "onboarding_benefits_title", defaultValue: "お水を飲む４つのメリット")
+    static let onboardingBenefitsSubtitle = String(localized: "onboarding_benefits_subtitle", defaultValue: "カードをタップして詳細をご覧ください")
+    
+    static let onboardingBenefits = [
+        HydrationBenefit(
+            icon: "flame.fill",
+            iconColor: .orange,
+            title: String(localized: "onboarding_benefit1_title", defaultValue: "① 代謝アップ"),
+            subtitle: String(localized: "onboarding_benefit1_sub", defaultValue: "痩せやすい体へ"),
+            description: String(localized: "onboarding_benefit1_desc", defaultValue: "水分が体に満たされると血液の巡りが良くなり全身の基礎代謝がアップ。何もしなくても消費されるカロリーが増え、脂肪燃焼効率も高まります。")
+        ),
+        HydrationBenefit(
+            icon: "sparkles",
+            iconColor: Theme.Colors.primaryBlue,
+            title: String(localized: "onboarding_benefit2_title", defaultValue: "② 美肌効果"),
+            subtitle: String(localized: "onboarding_benefit2_sub", defaultValue: "内側からの潤い"),
+            description: String(localized: "onboarding_benefit2_desc", defaultValue: "高価な化粧水よりも、内側からの水分補給が美肌への近道。ターンオーバーが正常化し、乾燥の改善、ハリ・ツヤや顔の透明感が向上します。")
+        ),
+        HydrationBenefit(
+            icon: "leaf.fill",
+            iconColor: .green,
+            title: String(localized: "onboarding_benefit3_title", defaultValue: "③ デトックス"),
+            subtitle: String(localized: "onboarding_benefit3_sub", defaultValue: "便秘・むくみ解消"),
+            description: String(localized: "onboarding_benefit3_desc", defaultValue: "腸内環境を整えてお通じをスムーズに。水分不足になると体は逆に水をため込もうとしてむくむため、しっかり飲んで老廃物を流し出すのが正解です。")
+        ),
+        HydrationBenefit(
+            icon: "brain.fill",
+            iconColor: .purple,
+            title: String(localized: "onboarding_benefit4_title", defaultValue: "④ 疲労軽減"),
+            subtitle: String(localized: "onboarding_benefit4_sub", defaultValue: "集中力の維持"),
+            description: String(localized: "onboarding_benefit4_desc", defaultValue: "わずか1〜2%の水分不足でもだるさや集中力低下の原因に。脳と体のパフォーマンスをベストに保つための、最も簡単なスイッチです。")
+        )
+    ]
+    
+    static let onboardingBenefitPreconditionTitle = String(localized: "onboarding_precondition_title", defaultValue: "効果を最大にするための「大前提」")
+    static let onboardingBenefitPreconditionDesc = String(localized: "onboarding_precondition_desc", defaultValue: "人が一度に吸収できる水分は約200〜250ml（コップ1杯分）です。1日7〜8回に分けこまめに飲むのが最大のコツです。")
+    
+    static let onboardingGuideTitle = String(localized: "onboarding_guide_title", defaultValue: "アプリの使い方")
+    static let onboardingGuideSubtitle = String(localized: "onboarding_guide_subtitle", defaultValue: "数字をタップして機能をご確認ください")
+    static let onboardingGuideHint = String(localized: "onboarding_guide_hint", defaultValue: "スワイプ、またはカード外のタップで次へ進みます")
+    
+    static let onboardingGuideSteps = [
+        HydrationBenefit(
+            icon: "plus.circle.fill",
+            iconColor: Theme.Colors.primaryBlue,
+            title: String(localized: "onboarding_guide1_title", defaultValue: "水分補給を記録する"),
+            subtitle: "STEP 1",
+            description: String(localized: "onboarding_guide1_desc", defaultValue: "コップのアイコンをワンタップするだけで、飲んだ水分量を素早く記録できます。毎日の給水をスムーズに習慣化しましょう。")
+        ),
+        HydrationBenefit(
+            icon: "sparkles",
+            iconColor: .orange,
+            title: String(localized: "onboarding_guide2_title", defaultValue: "水を飲んでカッパを育てる"),
+            subtitle: "STEP 2",
+            description: String(localized: "onboarding_guide2_desc", defaultValue: "あなたが水を飲むと、カッパに水が届きます。たくさん飲んで様々なカッパを現代に甦らせましょう。")
+        ),
+        HydrationBenefit(
+            icon: "square.text.square.fill",
+            iconColor: .purple,
+            title: String(localized: "onboarding_guide3_title", defaultValue: "ウィジェットで瞬時に給水"),
+            subtitle: "STEP 3",
+            description: String(localized: "onboarding_guide3_desc", defaultValue: "ホーム画面にウィジェットを配置すれば、アプリを開かずにホーム画面からワンタップで瞬時に記録を更新できます。")
+        )
+    ]
+    
+    static let onboardingGoalSetupTitle = String(localized: "onboarding_goal_title", defaultValue: "お水の目標を設定しましょう")
+    static let onboardingGoalSetupDesc = String(localized: "onboarding_goal_desc", defaultValue: "カッパのお皿を潤すために、あなたに最適な１日の補給目標量を自動で分析・診断します。")
+    static let onboardingGoalSetupButton = String(localized: "onboarding_goal_button", defaultValue: "最適な目標量を診断する")
 }

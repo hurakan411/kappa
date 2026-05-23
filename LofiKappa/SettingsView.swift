@@ -21,6 +21,9 @@ struct SettingsView: View {
     @State private var cupSizes: [String] = ["150", "200", "300", "400", "500"]
     @State private var showingAnalysis = false
     @State private var showDeleteConfirm = false
+    @State private var showingTerms = false
+    @State private var showingPrivacy = false
+    @State private var showingWidgetGuide = false
     
     private let cupIcons = ["cup.and.saucer.fill", "mug.fill", "drop.fill", "waterbottle.fill", "takeoutbag.and.cup.and.straw.fill"]
     
@@ -148,6 +151,72 @@ struct SettingsView: View {
                             }
                         }
                         
+                        // MARK: - ウィジェット設定ガイド
+                        settingCard {
+                            VStack(alignment: .leading, spacing: 16) {
+                                sectionHeader(icon: "square.text.square.fill", title: "ウィジェット")
+                                
+                                Button(action: { showingWidgetGuide = true }) {
+                                    HStack {
+                                        Image(systemName: "questionmark.circle.fill")
+                                            .font(.body)
+                                            .foregroundColor(Theme.Colors.primaryBlue)
+                                            .frame(width: 24)
+                                        Text("ウィジェットの設定方法")
+                                            .font(.system(.body, design: .rounded).bold())
+                                            .foregroundColor(Theme.Colors.text(for: colorScheme))
+                                        Spacer()
+                                        Image(systemName: "chevron.right")
+                                            .font(.caption)
+                                            .foregroundColor(.secondary)
+                                    }
+                                }
+                            }
+                        }
+                        
+                        // MARK: - プライバシーポリシー & 利用規約
+                        settingCard {
+                            VStack(alignment: .leading, spacing: 16) {
+                                sectionHeader(icon: "doc.text.fill", title: "ポリシー・規約")
+                                
+                                // 利用規約ボタン
+                                Button(action: { showingTerms = true }) {
+                                    HStack {
+                                        Image(systemName: "hand.raised.fill")
+                                            .font(.body)
+                                            .foregroundColor(Theme.Colors.primaryBlue)
+                                            .frame(width: 24)
+                                        Text("利用規約")
+                                            .font(.system(.body, design: .rounded).bold())
+                                            .foregroundColor(Theme.Colors.text(for: colorScheme))
+                                        Spacer()
+                                        Image(systemName: "chevron.right")
+                                            .font(.caption)
+                                            .foregroundColor(.secondary)
+                                    }
+                                }
+                                
+                                HandDrawnDivider(color: Theme.Colors.text(for: colorScheme).opacity(0.1))
+                                
+                                // プライバシーポリシーボタン
+                                Button(action: { showingPrivacy = true }) {
+                                    HStack {
+                                        Image(systemName: "lock.shield.fill")
+                                            .font(.body)
+                                            .foregroundColor(Theme.Colors.primaryBlue)
+                                            .frame(width: 24)
+                                        Text("プライバシーポリシー")
+                                            .font(.system(.body, design: .rounded).bold())
+                                            .foregroundColor(Theme.Colors.text(for: colorScheme))
+                                        Spacer()
+                                        Image(systemName: "chevron.right")
+                                            .font(.caption)
+                                            .foregroundColor(.secondary)
+                                    }
+                                }
+                            }
+                        }
+                        
                         // MARK: - データ初期化
                         settingCard {
                             Button(action: { showDeleteConfirm = true }) {
@@ -184,6 +253,15 @@ struct SettingsView: View {
                     try? modelContext.save()
                     WidgetCenter.shared.reloadAllTimelines()
                 }))
+            }
+            .sheet(isPresented: $showingTerms) {
+                PolicyDocumentView(title: "利用規約", content: PolicyTexts.termsOfService)
+            }
+            .sheet(isPresented: $showingPrivacy) {
+                PolicyDocumentView(title: "プライバシーポリシー", content: PolicyTexts.privacyPolicy)
+            }
+            .sheet(isPresented: $showingWidgetGuide) {
+                WidgetGuideView()
             }
             .confirmationDialog(
                 "データを初期化しますか？\nすべての記録と図鑑がリセットされます。",
@@ -254,6 +332,17 @@ struct SettingsView: View {
             try modelContext.delete(model: DailyWaterLog.self)
             try modelContext.delete(model: KappaCollection.self)
             try modelContext.save()
+            
+            // オンボーディング完了フラグをリセット
+            UserDefaults.standard.set(false, forKey: "hasCompletedOnboarding")
+            
+            // レビュー関連のUserDefaultsもクリア
+            UserDefaults.standard.removeObject(forKey: "isReviewRequestPending")
+            UserDefaults.standard.removeObject(forKey: "pendingReviewReason")
+            UserDefaults.standard.removeObject(forKey: "hasReviewedStage3")
+            UserDefaults.standard.removeObject(forKey: "hasReviewedFinalStage")
+            UserDefaults.standard.removeObject(forKey: "hasReviewed3Kappas")
+            
             WidgetCenter.shared.reloadAllTimelines()
         } catch {
             print("Failed to reset data: \(error)")

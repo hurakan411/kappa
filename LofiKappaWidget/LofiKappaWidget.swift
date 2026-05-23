@@ -142,6 +142,11 @@ struct SimpleEntry: TimelineEntry {
     let kappaName: String
     let kappaImage: UIImage?
     let isCompleted: Bool
+    let cupSize1: Int
+    let cupSize2: Int
+    let cupSize3: Int
+    let cupSize4: Int
+    let cupSize5: Int
 }
 
 // MARK: - Timeline Provider
@@ -159,7 +164,12 @@ struct Provider: TimelineProvider {
             kappaStage: 3,
             kappaName: "ゲーマーかっぱ",
             kappaImage: nil,
-            isCompleted: false
+            isCompleted: false,
+            cupSize1: 150,
+            cupSize2: 200,
+            cupSize3: 300,
+            cupSize4: 400,
+            cupSize5: 500
         )
     }
 
@@ -324,7 +334,12 @@ struct Provider: TimelineProvider {
             kappaStage: kappaStage,
             kappaName: currentKappa.name,
             kappaImage: kappaImage,
-            isCompleted: isCompleted
+            isCompleted: isCompleted,
+            cupSize1: settings.cupSize1,
+            cupSize2: settings.cupSize2,
+            cupSize3: settings.cupSize3,
+            cupSize4: settings.cupSize4,
+            cupSize5: settings.cupSize5
         )
     }
 }
@@ -352,99 +367,128 @@ struct LofiKappaShowcaseWidgetEntryView : View {
             }
         }
         .containerBackground(for: .widget) {
-            baseBg
+            if let image = entry.kappaImage {
+                Image(uiImage: image)
+                    .resizable()
+                    .scaledToFill()
+            } else {
+                baseBg
+            }
         }
     }
     
     // MARK: - Showcase Large Layout (.systemLarge)
     
     private var largeView: some View {
-        VStack(spacing: 0) {
-            Spacer(minLength: 12)
-            
-            // 巨大なカッパイラスト (全面的表示・主役) - 名前や「進化完了」テキストは完全に排除
+        GeometryReader { geo in
             ZStack {
-                RoundedRectangle(cornerRadius: 20)
-                    .fill(cardBg)
-                    .handDrawnBorder(color: inkText.opacity(0.15), cornerRadius: 20)
+                // 背景カッパ画像は containerBackground に移行したため、ZStack 内の Image 描画は削除します。
                 
-                if let image = entry.kappaImage {
-                    Image(uiImage: image)
-                        .resizable()
-                        .scaledToFit()
-                        .padding(12)
-                } else {
-                    VStack(spacing: 6) {
-                        Image(systemName: "photo")
-                            .font(.system(size: 32))
-                            .foregroundColor(inkText.opacity(0.3))
-                        Text("No Image")
-                            .font(.system(size: 9, design: .rounded))
-                            .foregroundColor(inkText.opacity(0.5))
-                    }
-                }
-            }
-            .frame(width: 190, height: 190) // 最大限に広げたショーケース
-            .shadow(color: inkText.opacity(0.03), radius: 6, x: 0, y: 3)
-            
-            Spacer(minLength: 12)
-            
-            // 下部HUD：両方の進捗バー (本日の給水 ＆ 進化進度)
-            VStack(spacing: 6) {
-                // 1. 本日の給水
-                VStack(spacing: 2) {
-                    HStack {
-                        Label("今日", systemImage: "drop.fill")
-                            .font(.system(size: 9).bold())
-                            .foregroundColor(Theme.Colors.primaryBlue)
-                        Spacer()
-                        Text("\(entry.currentAmount) / \(entry.dailyGoal) ml")
-                            .font(.system(size: 9, design: .monospaced).bold())
-                            .foregroundColor(inkText.opacity(0.7))
-                    }
-                    customProgressBar(
-                        value: Double(entry.currentAmount) / Double(entry.dailyGoal),
-                        color: Theme.Colors.primaryBlue,
-                        height: 5
-                    )
-                }
-                .padding(.horizontal, 20)
-                
-                // 2. 進化の進度
-                VStack(spacing: 2) {
-                    HStack {
-                        Label("進化", systemImage: "sparkles")
-                            .font(.system(size: 9).bold())
-                            .foregroundColor(Theme.Colors.kappaGreenDark)
-                        Spacer()
-                        if entry.kappaStage >= (allKappas.first(where: { $0.id == entry.kappaId })?.numberOfStages ?? 3) {
-                            Text("MAX")
-                                .font(.system(size: 9, design: .monospaced).bold())
-                                .foregroundColor(inkText.opacity(0.7))
-                        } else {
-                            Text("\(entry.kappaCurrentAmount) / \(entry.kappaGoal) ml")
-                                .font(.system(size: 9, design: .monospaced).bold())
-                                .foregroundColor(inkText.opacity(0.7))
+                // 前面操作UI（左上にプログレスバー、右上にボタン）
+                VStack(spacing: 0) {
+                    HStack(alignment: .top, spacing: 10) {
+                        
+                        // 左上：コンパクトなダブルプログレスバーコンテナ（極めて透明なリキッドグラス風）
+                        VStack(alignment: .leading, spacing: 7) {
+                            // 今日
+                            VStack(alignment: .leading, spacing: 3) {
+                                HStack {
+                                    HStack(spacing: 3) {
+                                        Image(systemName: "drop.fill")
+                                            .font(.system(size: 9))
+                                            .foregroundColor(.white)
+                                        Text("今日の給水")
+                                            .font(.system(size: 8.5).bold())
+                                            .foregroundColor(.white)
+                                    }
+                                    Spacer()
+                                    // 1日の給水目標（分母）を明示
+                                    Text("\(entry.currentAmount)/\(entry.dailyGoal)ml")
+                                        .font(.system(size: 8.5, design: .rounded).bold())
+                                        .foregroundColor(.white)
+                                }
+                                .shadow(color: Color.black.opacity(0.35), radius: 1, x: 0, y: 0.8) // 暗い影で視認性向上
+                                
+                                customProgressBar(
+                                    value: Double(entry.currentAmount) / Double(entry.dailyGoal),
+                                    color: Theme.Colors.primaryBlue,
+                                    height: 5
+                                )
+                            }
+                            
+                            // 進化
+                            VStack(alignment: .leading, spacing: 3) {
+                                HStack {
+                                    HStack(spacing: 3) {
+                                        Image(systemName: "sparkles")
+                                            .font(.system(size: 9))
+                                            .foregroundColor(.white)
+                                        Text("進化の進捗")
+                                            .font(.system(size: 8.5).bold())
+                                            .foregroundColor(.white)
+                                    }
+                                    Spacer()
+                                    if entry.kappaStage >= (allKappas.first(where: { $0.id == entry.kappaId })?.numberOfStages ?? 3) {
+                                        Text("MAX")
+                                            .font(.system(size: 8.5, design: .rounded).bold())
+                                            .foregroundColor(.white)
+                                    } else {
+                                        Text("\(entry.kappaCurrentAmount)/\(entry.kappaGoal)ml")
+                                            .font(.system(size: 8, design: .rounded).bold())
+                                            .foregroundColor(.white.opacity(0.9))
+                                    }
+                                }
+                                .shadow(color: Color.black.opacity(0.35), radius: 1, x: 0, y: 0.8) // 暗い影で視認性向上
+                                
+                                customProgressBar(
+                                    value: entry.evolutionProgress,
+                                    color: Theme.Colors.kappaGreenDark,
+                                    height: 5
+                                )
+                            }
                         }
+                        .padding(.all, 8)
+                        .frame(width: geo.size.width * 0.50) // 幅をやや広げて見やすく
+                        .background(
+                            Color.white.opacity(0.12)
+                        )
+                        .background(
+                            Color(hex: "E0F2FE").opacity(0.06)
+                        )
+                        .cornerRadius(12)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 12)
+                                .stroke(
+                                    LinearGradient(
+                                        colors: [.white.opacity(0.25), .white.opacity(0.05), .black.opacity(0.08)],
+                                        startPoint: .topLeading, endPoint: .bottomTrailing
+                                    ),
+                                    lineWidth: 1.0
+                                )
+                        )
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 12)
+                                .stroke(Color.white.opacity(0.08), lineWidth: 0.5)
+                        )
+                        .shadow(color: Color.black.opacity(0.03), radius: 3, x: 0, y: 1.5)
+                        
+                        Spacer()
+                        
+                        // 右上：縦並びのクイック給水ボタン（設定された5種類すべてをアイコン付きで表示、白文字で透過）
+                        VStack(spacing: 4) {
+                            WidgetCompactDrinkButton(amount: entry.cupSize1, label: "+\(entry.cupSize1)", icon: "cup.and.saucer.fill")
+                            WidgetCompactDrinkButton(amount: entry.cupSize2, label: "+\(entry.cupSize2)", icon: "mug.fill")
+                            WidgetCompactDrinkButton(amount: entry.cupSize3, label: "+\(entry.cupSize3)", icon: "drop.fill")
+                            WidgetCompactDrinkButton(amount: entry.cupSize4, label: "+\(entry.cupSize4)", icon: "waterbottle.fill")
+                            WidgetCompactDrinkButton(amount: entry.cupSize5, label: "+\(entry.cupSize5)", icon: "takeoutbag.and.cup.and.straw.fill")
+                        }
+                        .frame(width: 78) // 62から78に広げて、アイコンサイズ11に適合
                     }
-                    customProgressBar(
-                        value: entry.evolutionProgress,
-                        color: Theme.Colors.kappaGreenDark,
-                        height: 5
-                    )
+                    .padding(.top, 14)
+                    .padding(.horizontal, 12)
+                    
+                    Spacer() // 下半分はカッパのイラストが大きく見えるように空ける
                 }
-                .padding(.horizontal, 20)
-                
-                Spacer(minLength: 6)
-                
-                // クイック給水ボタン 3個 (コップ、ボトル、メガ)
-                HStack(spacing: 8) {
-                    WidgetDrinkButton(amount: 150, icon: "cup.and.saucer.fill", label: "コップ", inkText: inkText)
-                    WidgetDrinkButton(amount: 300, icon: "drop.fill", label: "ボトル", inkText: inkText)
-                    WidgetDrinkButton(amount: 500, icon: "takeoutbag.and.cup.and.straw.fill", label: "メガ", inkText: inkText)
-                }
-                .padding(.horizontal, 16)
-                .padding(.bottom, 12)
             }
         }
     }
@@ -452,124 +496,108 @@ struct LofiKappaShowcaseWidgetEntryView : View {
     // MARK: - Showcase Extra Large Layout (.systemExtraLarge)
     
     private var extraLargeView: some View {
-        HStack(spacing: 0) {
-            // 左側カラム：カッパ超巨大ショーケース (全面的表示) - 名前や「進化完了」テキストは完全に排除
-            VStack(spacing: 0) {
-                Spacer(minLength: 16)
+        GeometryReader { geo in
+            ZStack {
+                // 背景カッパ画像は containerBackground に移行したため、ZStack 内の Image 描画は削除します。
                 
-                ZStack {
-                    RoundedRectangle(cornerRadius: 28)
-                        .fill(cardBg)
-                        .handDrawnBorder(color: inkText.opacity(0.15), cornerRadius: 28)
-                    
-                    if let image = entry.kappaImage {
-                        Image(uiImage: image)
-                            .resizable()
-                            .scaledToFit()
-                            .padding(18)
-                    } else {
-                        VStack(spacing: 8) {
-                            Image(systemName: "photo")
-                                .font(.system(size: 40))
-                                .foregroundColor(inkText.opacity(0.3))
-                            Text("No Image")
-                                .font(.system(.caption, design: .rounded))
-                                .foregroundColor(inkText.opacity(0.5))
-                        }
-                    }
-                }
-                .frame(width: 290, height: 290) // 特大サイズの左半分をほぼ一杯に占有
-                .shadow(color: inkText.opacity(0.04), radius: 8, x: 0, y: 4)
-                
-                Spacer(minLength: 16)
-            }
-            .frame(width: 330)
-            
-            // 縦の区切り線
-            Rectangle()
-                .fill(inkText.opacity(0.12))
-                .frame(width: 1.2)
-                .padding(.vertical, 24)
-            
-            // 右側カラム：進捗情報 ＆ 給水ボタン
-            VStack(spacing: 0) {
-                VStack(alignment: .leading, spacing: 18) {
-                    Text("カッパ観察日記")
-                        .font(.system(.headline, design: .rounded).bold())
-                        .foregroundColor(inkText)
-                        .padding(.top, 24)
-                    
-                    // ダブルプログレスバー (スリム版)
-                    VStack(spacing: 14) {
-                        VStack(alignment: .leading, spacing: 4) {
-                            HStack {
-                                Label("本日の水分量", systemImage: "drop.bubble.fill")
-                                    .font(.system(size: 11).bold())
-                                    .foregroundColor(inkText.opacity(0.8))
-                                Spacer()
-                                Text("\(entry.currentAmount) / \(entry.dailyGoal) ml")
-                                    .font(.system(size: 11, design: .monospaced).bold())
-                                    .foregroundColor(Theme.Colors.primaryBlue)
-                            }
-                            customProgressBar(
-                                value: Double(entry.currentAmount) / Double(entry.dailyGoal),
-                                color: Theme.Colors.primaryBlue,
-                                height: 8
-                            )
-                        }
+                // 2. 前面操作UI（Extra Large版：左上にプログレスバー、右上にボタン）
+                VStack(spacing: 0) {
+                    HStack(alignment: .top, spacing: 14) {
                         
-                        VStack(alignment: .leading, spacing: 4) {
-                            HStack {
-                                Label("進化の進捗", systemImage: "sparkles")
-                                    .font(.system(size: 11).bold())
-                                    .foregroundColor(inkText.opacity(0.8))
-                                Spacer()
-                                if entry.kappaStage >= (allKappas.first(where: { $0.id == entry.kappaId })?.numberOfStages ?? 3) {
-                                    Text("MAX")
-                                        .font(.system(size: 11, design: .monospaced).bold())
-                                        .foregroundColor(Theme.Colors.kappaGreenDark)
-                                } else {
-                                    Text("\(entry.kappaCurrentAmount) / \(entry.kappaGoal) ml")
-                                        .font(.system(size: 11, design: .monospaced).bold())
-                                        .foregroundColor(Theme.Colors.kappaGreenDark)
+                        // 左上：ダブルプログレスバーコンテナ（少し横幅を持たせて綺麗に）
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text("観察記録ステータス")
+                                .font(.system(size: 9, design: .rounded).bold())
+                                .foregroundColor(.white)
+                                .shadow(color: Color.black.opacity(0.35), radius: 1, x: 0, y: 0.8)
+                            
+                            // 今日
+                            VStack(alignment: .leading, spacing: 3) {
+                                HStack {
+                                    Label("本日の水分量", systemImage: "drop.bubble.fill")
+                                        .font(.system(size: 9).bold())
+                                        .foregroundColor(.white)
+                                    Spacer()
+                                    Text("\(entry.currentAmount) / \(entry.dailyGoal) ml")
+                                        .font(.system(size: 9, design: .monospaced).bold())
+                                        .foregroundColor(.white)
                                 }
+                                .shadow(color: Color.black.opacity(0.35), radius: 1, x: 0, y: 0.8)
+                                
+                                customProgressBar(
+                                    value: Double(entry.currentAmount) / Double(entry.dailyGoal),
+                                    color: Theme.Colors.primaryBlue,
+                                    height: 5
+                                )
                             }
-                            customProgressBar(
-                                value: entry.evolutionProgress,
-                                color: Theme.Colors.kappaGreenDark,
-                                height: 8
-                            )
+                            
+                            // 進化
+                            VStack(alignment: .leading, spacing: 3) {
+                                HStack {
+                                    Label("進化の進捗", systemImage: "sparkles")
+                                        .font(.system(size: 9).bold())
+                                        .foregroundColor(.white)
+                                    Spacer()
+                                    if entry.kappaStage >= (allKappas.first(where: { $0.id == entry.kappaId })?.numberOfStages ?? 3) {
+                                        Text("MAX")
+                                            .font(.system(size: 9, design: .monospaced).bold())
+                                            .foregroundColor(.white)
+                                    } else {
+                                        Text("\(entry.kappaCurrentAmount) / \(entry.kappaGoal) ml")
+                                            .font(.system(size: 9, design: .monospaced).bold())
+                                            .foregroundColor(.white)
+                                    }
+                                }
+                                .shadow(color: Color.black.opacity(0.35), radius: 1, x: 0, y: 0.8)
+                                
+                                customProgressBar(
+                                    value: entry.evolutionProgress,
+                                    color: Theme.Colors.kappaGreenDark,
+                                    height: 5
+                                )
+                            }
                         }
+                        .padding(.all, 12)
+                        .frame(width: geo.size.width * 0.45)
+                        .background(
+                            Color.white.opacity(0.12)
+                        )
+                        .background(
+                            Color(hex: "E0F2FE").opacity(0.06)
+                        )
+                        .cornerRadius(14)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 14)
+                                .stroke(
+                                    LinearGradient(
+                                        colors: [.white.opacity(0.25), .white.opacity(0.05), .black.opacity(0.08)],
+                                        startPoint: .topLeading, endPoint: .bottomTrailing
+                                    ),
+                                    lineWidth: 1.2
+                                )
+                        )
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 14)
+                                .stroke(Color.white.opacity(0.08), lineWidth: 0.5)
+                        )
+                        .shadow(color: Color.black.opacity(0.03), radius: 3, x: 0, y: 1.5)
+                        
+                        Spacer()
+                        
+                        // 右上：縦並びのクイック給水ボタン（設定された5種類すべてをアイコン付きで表示）
+                        VStack(spacing: 4) {
+                            WidgetCompactDrinkButton(amount: entry.cupSize1, label: "+\(entry.cupSize1)", icon: "cup.and.saucer.fill")
+                            WidgetCompactDrinkButton(amount: entry.cupSize2, label: "+\(entry.cupSize2)", icon: "mug.fill")
+                            WidgetCompactDrinkButton(amount: entry.cupSize3, label: "+\(entry.cupSize3)", icon: "drop.fill")
+                            WidgetCompactDrinkButton(amount: entry.cupSize4, label: "+\(entry.cupSize4)", icon: "waterbottle.fill")
+                            WidgetCompactDrinkButton(amount: entry.cupSize5, label: "+\(entry.cupSize5)", icon: "takeoutbag.and.cup.and.straw.fill")
+                        }
+                        .frame(width: 80)
                     }
+                    .padding(.top, 16)
+                    .padding(.horizontal, 16)
                     
-                    // 手帳風の成長メモ - 名前や「進化完了」テキストは完全に排除
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text("💧 毎日少しずつの積み重ねが、お皿を潤しカッパの急成長へと繋がります。")
-                            .font(.system(size: 10))
-                            .foregroundColor(inkText.opacity(0.65))
-                            .lineLimit(3)
-                            .fixedSize(horizontal: false, vertical: true)
-                    }
-                    .padding(12)
-                    .background(cardBg)
-                    .handDrawnBorder(color: inkText.opacity(0.1), cornerRadius: 10)
-                }
-                .padding(.horizontal, 20)
-                
-                Spacer(minLength: 16)
-                
-                // 給水ボタンのグリッド
-                VStack(spacing: 8) {
-                    HandDrawnDivider(color: inkText.opacity(0.1))
-                        .frame(height: 3)
-                    
-                    HStack(spacing: 8) {
-                        WidgetDrinkButton(amount: 150, icon: "cup.and.saucer.fill", label: "コップ", inkText: inkText)
-                        WidgetDrinkButton(amount: 300, icon: "drop.fill", label: "ボトル", inkText: inkText)
-                        WidgetDrinkButton(amount: 500, icon: "takeoutbag.and.cup.and.straw.fill", label: "メガ", inkText: inkText)
-                    }
-                    .padding(.horizontal, 20)
-                    .padding(.bottom, 20)
+                    Spacer() // 下部はカッパの巨大イラストを見せるために開放
                 }
             }
         }
@@ -580,22 +608,51 @@ struct LofiKappaShowcaseWidgetEntryView : View {
     @ViewBuilder
     private func customProgressBar(value: Double, color: Color, height: CGFloat = 8) -> some View {
         let clampedValue = min(max(value, 0.0), 1.0)
+        let segmentCount = 10
+        let spacing: CGFloat = 2.0
+        
         GeometryReader { geo in
-            ZStack(alignment: .leading) {
-                // 背景レール
-                RoundedRectangle(cornerRadius: height / 2)
-                    .fill(inkText.opacity(0.06))
-                    .frame(height: height)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: height / 2)
-                            .stroke(inkText.opacity(0.08), lineWidth: 0.6)
-                    )
-                
-                // 進捗部分
-                RoundedRectangle(cornerRadius: height / 2)
-                    .fill(color)
-                    .frame(width: geo.size.width * clampedValue, height: height)
-                    .shadow(color: color.opacity(0.2), radius: 2, x: 0, y: 1)
+            let totalSpacing = spacing * CGFloat(segmentCount - 1)
+            let segW = (geo.size.width - totalSpacing) / CGFloat(segmentCount)
+            let filledCount = Int((clampedValue * Double(segmentCount)).rounded())
+            
+            HStack(spacing: spacing) {
+                ForEach(0..<segmentCount, id: \.self) { i in
+                    let filled = i < filledCount
+                    
+                    RoundedRectangle(cornerRadius: height / 2)
+                        .fill(
+                            filled
+                            ? AnyShapeStyle(
+                                LinearGradient(
+                                    colors: [
+                                        color.opacity(0.95),
+                                        color
+                                    ],
+                                    startPoint: .topLeading,
+                                    endPoint: .bottomTrailing
+                                )
+                            )
+                            : AnyShapeStyle(
+                                inkText.opacity(0.08)
+                            )
+                        )
+                        .overlay(
+                            RoundedRectangle(cornerRadius: height / 2)
+                                .stroke(
+                                    filled
+                                    ? LinearGradient(
+                                        colors: [.white.opacity(0.55), .clear, .black.opacity(0.12)],
+                                        startPoint: .topLeading,
+                                        endPoint: .bottomTrailing
+                                    )
+                                    : LinearGradient(colors: [.clear], startPoint: .top, endPoint: .bottom),
+                                    lineWidth: 0.8
+                                )
+                        )
+                        .frame(width: segW, height: height)
+                        .shadow(color: filled ? color.opacity(0.15) : .clear, radius: 1, x: 0, y: 0.5)
+                }
             }
         }
         .frame(height: height)
@@ -604,34 +661,99 @@ struct LofiKappaShowcaseWidgetEntryView : View {
 
 // MARK: - Widget Components
 
+struct WidgetCompactDrinkButton: View {
+    let amount: Int
+    let label: String
+    let icon: String
+    
+    var body: some View {
+        Button(intent: AddWaterIntent(amount: amount)) {
+            HStack(spacing: 3.5) {
+                Image(systemName: icon)
+                    .font(.system(size: 11, weight: .bold)) // 8から11に拡大、太字にして視認性を大幅に向上
+                    .foregroundColor(.white) // 白字化
+                
+                Text(label)
+                    .font(.system(size: 9.5, design: .rounded).bold()) // 8.5から9.5に拡大
+                    .foregroundColor(.white) // 白字化
+            }
+            .shadow(color: Color.black.opacity(0.35), radius: 1, x: 0, y: 0.8) // 文字が見えやすいようにドロップシャドウを付与
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 5)
+            .background(
+                Color.white.opacity(0.16) // 透過度を大幅に向上
+            )
+            .background(
+                Color(hex: "E0F2FE").opacity(0.08)
+            )
+            .cornerRadius(10)
+            .overlay(
+                RoundedRectangle(cornerRadius: 10)
+                    .stroke(
+                        LinearGradient(
+                            colors: [.white.opacity(0.35), .white.opacity(0.05), .black.opacity(0.1)],
+                            startPoint: .topLeading, endPoint: .bottomTrailing
+                        ),
+                        lineWidth: 0.8
+                    )
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: 10)
+                    .stroke(Color.white.opacity(0.08), lineWidth: 0.5)
+            )
+            .shadow(color: Color.black.opacity(0.03), radius: 1.5, x: 0, y: 1)
+        }
+        .buttonStyle(.plain)
+    }
+}
+
 struct WidgetDrinkButton: View {
     let amount: Int
     let icon: String
     let label: String
-    let inkText: Color
     
     var body: some View {
         Button(intent: AddWaterIntent(amount: amount)) {
             HStack(spacing: 4) {
                 Image(systemName: icon)
                     .font(.system(size: 11))
-                    .foregroundColor(Theme.Colors.primaryBlue)
+                    .foregroundColor(.white)
                 
                 VStack(alignment: .leading, spacing: 0) {
                     Text(label)
                         .font(.system(size: 8).bold())
-                        .foregroundColor(inkText.opacity(0.6))
+                        .foregroundColor(.white.opacity(0.6))
                     Text("+\(amount)ml")
                         .font(.system(size: 9, design: .rounded).bold())
-                        .foregroundColor(inkText)
+                        .foregroundColor(.white)
                 }
             }
+            .shadow(color: Color.black.opacity(0.35), radius: 1, x: 0, y: 0.8)
             .frame(maxWidth: .infinity)
             .padding(.vertical, 6)
             .padding(.horizontal, 6)
-            .background(Color(hex: "FFFDFB"))
+            .background(
+                Color.white.opacity(0.16)
+            )
+            .background(
+                Color(hex: "E0F2FE").opacity(0.08)
+            )
             .cornerRadius(10)
-            .handDrawnBorder(color: inkText.opacity(0.15), cornerRadius: 10)
+            .overlay(
+                RoundedRectangle(cornerRadius: 10)
+                    .stroke(
+                        LinearGradient(
+                            colors: [.white.opacity(0.6), .white.opacity(0.05), .black.opacity(0.15)],
+                            startPoint: .topLeading, endPoint: .bottomTrailing
+                        ),
+                        lineWidth: 1.0
+                    )
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: 10)
+                    .stroke(Color.white.opacity(0.08), lineWidth: 0.6)
+            )
+            .shadow(color: Color.black.opacity(0.06), radius: 2, x: 0, y: 1.5)
         }
         .buttonStyle(.plain)
     }
@@ -650,5 +772,6 @@ struct LofiKappaShowcaseWidget: Widget {
         .configurationDisplayName("カッパ観察ウィジェット")
         .description("カッパの姿を全面に大きく表示し、すばやく給水できるウィジェットです。")
         .supportedFamilies([.systemLarge, .systemExtraLarge])
+        .contentMarginsDisabled()
     }
 }

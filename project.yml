@@ -1,6 +1,10 @@
 name: LofiKappa
 options:
   bundleIdPrefix: com.example
+packages:
+  Lottie:
+    url: https://github.com/airbnb/lottie-ios.git
+    version: 4.4.3
 targets:
   LofiKappa:
     type: application
@@ -26,6 +30,8 @@ targets:
       path: LofiKappa/LofiKappa.entitlements
     dependencies:
       - target: LofiKappaWidget
+      - package: Lottie
+        product: Lottie
   LofiKappaWidget:
     type: app-extension
     platform: iOS
