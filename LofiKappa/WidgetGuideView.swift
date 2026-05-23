@@ -55,8 +55,8 @@ struct WidgetGuideView: View {
                             stepCard(
                                 number: 3,
                                 icon: "magnifyingglass",
-                                title: "「LofiKappa」を検索",
-                                description: "ウィジェットギャラリーの上部検索バーで「LofiKappa」と入力するか、アプリ一覧から見つけてタップします。"
+                                title: "「KapStation」を検索",
+                                description: "ウィジェットギャラリーの上部検索バーで「KapStation」と入力するか、アプリ一覧から見つけてタップします。"
                             )
                             
                             stepCard(
