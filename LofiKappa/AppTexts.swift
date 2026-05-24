@@ -193,4 +193,10 @@ struct AppTexts {
     static let onboardingGoalSetupTitle = String(localized: "onboarding_goal_title", defaultValue: "お水の目標を設定しましょう")
     static let onboardingGoalSetupDesc = String(localized: "onboarding_goal_desc", defaultValue: "河童のお皿を潤すために、あなたに最適な１日の補給目標量を自動で分析・診断します。")
     static let onboardingGoalSetupButton = String(localized: "onboarding_goal_button", defaultValue: "最適な目標量を診断する")
+    
+    // MARK: - Share Text
+    static func shareText(kappaName: String, stageText: String, currentAmount: Int) -> String {
+        let format = String(localized: "share_message_format", defaultValue: "【LofiKappa】%@を育成中！現在の進化: %@（今日の給水量: %dml） #LofiKappa #水分補給")
+        return String(format: format, kappaName, stageText, currentAmount)
+    }
 }

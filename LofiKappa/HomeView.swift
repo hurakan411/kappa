@@ -470,7 +470,11 @@ struct HomeView: View {
     
     private func shareKappa() {
         let stageText = AppTexts.stageText(currentStageIndex)
-        let shareText = "【LofiKappa】\(currentKappa.name)を育成中！現在の進化: \(stageText)（今日の給水量: \(currentAmount)ml） #LofiKappa #水分補給"
+        let shareText = AppTexts.shareText(
+            kappaName: currentKappa.name,
+            stageText: stageText,
+            currentAmount: currentAmount
+        )
         
         var items: [Any] = [shareText]
         if let imageUrl = SupabaseConfig.imageUrl(for: currentKappaId, stage: currentStageIndex) {
