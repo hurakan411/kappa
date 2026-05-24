@@ -196,7 +196,7 @@ struct AppTexts {
     
     // MARK: - Share Text
     static func shareText(kappaName: String, stageText: String, currentAmount: Int) -> String {
-        let format = String(localized: "share_message_format", defaultValue: "【LofiKappa】%@を育成中！現在の進化: %@（今日の給水量: %dml） #LofiKappa #水分補給")
+        let format = String(localized: "share_message_format", defaultValue: "カッパ育成中！今日の給水量: %dml #LofiKappa")
         return String(format: format, kappaName, stageText, currentAmount)
     }
 }
