@@ -18,6 +18,11 @@ final class KappaImageLoader: ObservableObject {
     // アプリ全体で共有するインメモリキャッシュ
     private static var cache = NSCache<NSURL, UIImage>()
     
+    /// 指定されたURLのキャッシュ画像が存在すれば取得する
+    static func cachedImage(for url: URL) -> UIImage? {
+        return cache.object(forKey: url as NSURL)
+    }
+    
     /// URLを受け取って画像をロードする。URLが変わった場合は前のタスクをキャンセルして新しくロードする。
     func load(url: URL) {
         // 同じURLを再度リクエストされた場合、すでに画像があればスキップ

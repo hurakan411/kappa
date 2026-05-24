@@ -478,7 +478,11 @@ struct HomeView: View {
         
         var items: [Any] = [shareText]
         if let imageUrl = SupabaseConfig.imageUrl(for: currentKappaId, stage: currentStageIndex) {
-            items.append(imageUrl)
+            if let uiImage = KappaImageLoader.cachedImage(for: imageUrl) {
+                items.append(uiImage)
+            } else {
+                items.append(imageUrl)
+            }
         }
         
         let activityVC = UIActivityViewController(activityItems: items, applicationActivities: nil)
