@@ -103,7 +103,7 @@ struct KappaCard: View {
     }
     
     var maxStage: Int {
-        baseId == "gamer" ? 7 : 5
+        KappaData.find(by: baseId)?.numberOfStages ?? 5
     }
     
     var body: some View {
@@ -200,7 +200,7 @@ struct KappaDetailView: View {
     init(kappa: KappaCollection) {
         self.kappa = kappa
         let base = kappa.id.components(separatedBy: "_").first ?? "gamer"
-        let max = base == "gamer" ? 7 : 5
+        let max = KappaData.find(by: base)?.numberOfStages ?? 5
         _selectedStage = State(initialValue: max)
     }
     
@@ -209,7 +209,7 @@ struct KappaDetailView: View {
     }
     
     var maxStage: Int {
-        baseId == "gamer" ? 7 : 5
+        KappaData.find(by: baseId)?.numberOfStages ?? 5
     }
     
     var formattedDate: String {
@@ -282,6 +282,15 @@ struct KappaDetailView: View {
             case 5: return "Stage 5: ゲーマーチャイルド期"
             case 6: return "Stage 6: ゲーマーアダルト期"
             default: return "Stage 7: ゲーマープロ期（最終形態）"
+            }
+        } else if baseId == "odango" {
+            switch stage {
+            case 1: return "Stage 1: 卵期"
+            case 2: return "Stage 2: ひび割れ期"
+            case 3: return "Stage 3: 幼生期"
+            case 4: return "Stage 4: 成長期（おだんごベビー）"
+            case 5: return "Stage 5: 成長期（おだんごチャイルド）"
+            default: return "Stage 6: 成体期（おだんごかっぱ最終形態）"
             }
         } else {
             switch stage {

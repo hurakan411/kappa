@@ -459,7 +459,13 @@ struct HomeView: View {
     private func getNextRandomKappa() -> String {
         let unlockedIds = Set(unlockedKappas.map { $0.id.components(separatedBy: "_").first ?? "" })
         let availableKappas = allKappas.filter { !unlockedIds.contains($0.id) }
-        return availableKappas.randomElement()?.id ?? "gamer"
+        
+        if availableKappas.isEmpty {
+            // 全て解放済みの場合は、登録されているすべてのカッパからランダムに選択
+            return allKappas.randomElement()?.id ?? "gamer"
+        } else {
+            return availableKappas.randomElement()?.id ?? "gamer"
+        }
     }
     
     private func unlockCurrentKappa() {
