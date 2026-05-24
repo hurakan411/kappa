@@ -367,13 +367,7 @@ struct LofiKappaShowcaseWidgetEntryView : View {
             }
         }
         .containerBackground(for: .widget) {
-            if let image = entry.kappaImage {
-                Image(uiImage: image)
-                    .resizable()
-                    .scaledToFill()
-            } else {
-                baseBg
-            }
+            baseBg
         }
     }
     
@@ -382,7 +376,14 @@ struct LofiKappaShowcaseWidgetEntryView : View {
     private var largeView: some View {
         GeometryReader { geo in
             ZStack {
-                // 背景カッパ画像は containerBackground に移行したため、ZStack 内の Image 描画は削除します。
+                // 背景カッパ画像をコンテンツの最背面に描画
+                if let image = entry.kappaImage {
+                    Image(uiImage: image)
+                        .resizable()
+                        .scaledToFill()
+                        .frame(width: geo.size.width, height: geo.size.height)
+                        .clipped()
+                }
                 
                 // 前面操作UI（左上にプログレスバー、右上にボタン）
                 VStack(spacing: 0) {
@@ -498,7 +499,14 @@ struct LofiKappaShowcaseWidgetEntryView : View {
     private var extraLargeView: some View {
         GeometryReader { geo in
             ZStack {
-                // 背景カッパ画像は containerBackground に移行したため、ZStack 内の Image 描画は削除します。
+                // 背景カッパ画像をコンテンツの最背面に描画
+                if let image = entry.kappaImage {
+                    Image(uiImage: image)
+                        .resizable()
+                        .scaledToFill()
+                        .frame(width: geo.size.width, height: geo.size.height)
+                        .clipped()
+                }
                 
                 // 2. 前面操作UI（Extra Large版：左上にプログレスバー、右上にボタン）
                 VStack(spacing: 0) {
