@@ -204,8 +204,8 @@ struct HomeView: View {
             
             Spacer()
             
-            // カッパイラスト（ぷにぷにタッチ対応）
-            ZStack {
+            // カッパイラスト（ぷにぷにタッチ対応 ＆ シェアボタン搭載）
+            ZStack(alignment: .bottomTrailing) {
                 // スパークルエフェクトの描画レイヤー
                 ForEach(sparkles) { sparkle in
                     Image(systemName: "sparkles")
@@ -223,6 +223,26 @@ struct HomeView: View {
                     .onTapGesture {
                         triggerSparkles(count: 8)
                     }
+                
+                // グラスモルフィズム風のプレミアムシェアボタン
+                Button(action: {
+                    let generator = UIImpactFeedbackGenerator(style: .medium)
+                    generator.impactOccurred()
+                    shareKappa()
+                }) {
+                    Image(systemName: "square.and.arrow.up")
+                        .font(.system(size: 18, weight: .semibold))
+                        .foregroundColor(Theme.Colors.primaryBlue)
+                        .padding(12)
+                        .background(.ultraThinMaterial)
+                        .clipShape(Circle())
+                        .overlay(
+                            Circle()
+                                .stroke(.white.opacity(0.3), lineWidth: 1)
+                        )
+                        .shadow(color: .black.opacity(0.12), radius: 8, x: 0, y: 4)
+                }
+                .padding(16)
             }
             
             Spacer(minLength: 24)
@@ -443,6 +463,34 @@ struct HomeView: View {
         // 一定時間後に消去
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.75) {
             sparkles.removeAll()
+        }
+    }
+    
+    private func shareKappa() {
+        let stageText = AppTexts.stageText(currentStageIndex)
+        let shareText = "【LofiKappa】\(currentKappa.name)を育成中！現在の進化: \(stageText)（今日の給水量: \(currentAmount)ml） #LofiKappa #水分補給"
+        
+        var items: [Any] = [shareText]
+        if let imageUrl = SupabaseConfig.imageUrl(for: currentKappaId, stage: currentStageIndex) {
+            items.append(imageUrl)
+        }
+        
+        let activityVC = UIActivityViewController(activityItems: items, applicationActivities: nil)
+        
+        if let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+           let rootVC = scene.windows.first?.rootViewController {
+            
+            // iPadでのポップオーバー表示対策（クラッシュ防止）
+            activityVC.popoverPresentationController?.sourceView = rootVC.view
+            activityVC.popoverPresentationController?.sourceRect = CGRect(
+                x: rootVC.view.bounds.midX,
+                y: rootVC.view.bounds.midY,
+                width: 0,
+                height: 0
+            )
+            activityVC.popoverPresentationController?.permittedArrowDirections = []
+            
+            rootVC.present(activityVC, animated: true, completion: nil)
         }
     }
     
