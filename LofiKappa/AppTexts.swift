@@ -199,4 +199,9 @@ struct AppTexts {
         let format = String(localized: "share_message_format", defaultValue: "#LofiKappa カッパ育成中！今日の給水量: %dml ")
         return String(format: format, kappaName, stageText, currentAmount)
     }
+    
+    // MARK: - Reminders
+    static let reminderNotificationTitle = String(localized: "notification_title", defaultValue: "給水タイムかっぱ！")
+    static let reminderNotificationBody1 = String(localized: "notification_body_1", defaultValue: "お皿が少し乾いてきたかっぱ！コップ1杯の水を飲んで潤すかっぱ〜。")
+    static let reminderNotificationBody2 = String(localized: "notification_body_2", defaultValue: "お皿がからからになってきちゃったかっぱ…！お水を飲むのを忘れないでね。")
 }

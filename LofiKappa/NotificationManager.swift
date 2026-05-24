@@ -28,8 +28,8 @@ final class NotificationManager {
         
         // 1回目のリマインド（2時間後 = 7200秒）
         let content1 = UNMutableNotificationContent()
-        content1.title = String(localized: "notification_title", defaultValue: "給水タイムかっぱ！")
-        content1.body = String(localized: "notification_body_1", defaultValue: "お皿が少し乾いてきたかっぱ！コップ1杯の水を飲んで潤すかっぱ〜。")
+        content1.title = AppTexts.reminderNotificationTitle
+        content1.body = AppTexts.reminderNotificationBody1
         content1.sound = .default
         
         let trigger1 = UNTimeIntervalNotificationTrigger(timeInterval: 7200, repeats: false)
@@ -37,8 +37,8 @@ final class NotificationManager {
         
         // 2回目のリマインド（追い通知: 3時間後 = 10800秒）
         let content2 = UNMutableNotificationContent()
-        content2.title = String(localized: "notification_title", defaultValue: "給水タイムかっぱ！")
-        content2.body = String(localized: "notification_body_2", defaultValue: "お皿がからからになってきちゃったかっぱ…！お水を飲むのを忘れないでね。")
+        content2.title = AppTexts.reminderNotificationTitle
+        content2.body = AppTexts.reminderNotificationBody2
         content2.sound = .default
         
         let trigger2 = UNTimeIntervalNotificationTrigger(timeInterval: 10800, repeats: false)
