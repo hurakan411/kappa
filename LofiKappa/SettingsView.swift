@@ -179,7 +179,7 @@ struct SettingsView: View {
                         // MARK: - リマインダー通知設定
                         settingCard {
                             VStack(alignment: .leading, spacing: 16) {
-                                sectionHeader(icon: "bell.fill", title: "通知")
+                                sectionHeader(icon: "bell.fill", title: AppTexts.reminderSectionTitle)
                                 
                                 Toggle(isOn: Binding(get: {
                                     isReminderEnabled
@@ -197,10 +197,10 @@ struct SettingsView: View {
                                     }
                                 })) {
                                     VStack(alignment: .leading, spacing: 6) {
-                                        Text("給水リマインダーかっぱ")
+                                        Text(AppTexts.reminderToggleTitle)
                                             .font(.system(.body, design: .rounded).bold())
                                             .foregroundColor(Theme.Colors.text(for: colorScheme))
-                                        Text("お水を最後に飲んでから2時間後と3時間後にカッパが通知します（給水するとリセットされます）")
+                                        Text(AppTexts.reminderToggleDescription)
                                             .font(.system(.caption, design: .rounded))
                                             .foregroundColor(Theme.Colors.text(for: colorScheme).opacity(0.6))
                                             .fixedSize(horizontal: false, vertical: true)

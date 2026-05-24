@@ -201,6 +201,9 @@ struct AppTexts {
     }
     
     // MARK: - Reminders
+    static let reminderSectionTitle = String(localized: "reminder_section_title", defaultValue: "通知")
+    static let reminderToggleTitle = String(localized: "reminder_toggle_title", defaultValue: "給水リマインダーかっぱ")
+    static let reminderToggleDescription = String(localized: "reminder_toggle_desc", defaultValue: "お水を最後に飲んでから2時間後と3時間後にカッパが通知します（給水するとリセットされます）")
     static let reminderNotificationTitle = String(localized: "notification_title", defaultValue: "給水タイムかっぱ！")
     static let reminderNotificationBody1 = String(localized: "notification_body_1", defaultValue: "お皿が少し乾いてきたかっぱ！コップ1杯の水を飲んで潤すかっぱ〜。")
     static let reminderNotificationBody2 = String(localized: "notification_body_2", defaultValue: "お皿がからからになってきちゃったかっぱ…！お水を飲むのを忘れないでね。")
