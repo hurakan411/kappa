@@ -111,18 +111,6 @@ struct AppTexts {
     
     static let dataInit = String(localized: "settings_data_init", defaultValue: "データ初期化")
     
-    // MARK: - Kappa Data Names & Descriptions
-    static func kappaName(_ key: String, defaultName: String) -> String {
-        return NSLocalizedString(key, value: defaultName, comment: "")
-    }
-    static func kappaDesc(_ key: String, defaultDesc: String) -> String {
-        return NSLocalizedString(key, value: defaultDesc, comment: "")
-    }
-    
-    // おだんごかっぱ
-    static let kappaOdangoName = String(localized: "kappa_odango_name", defaultValue: "おだんごかっぱ")
-    static let kappaOdangoDesc = String(localized: "kappa_odango_desc", defaultValue: "お皿の上にお団子がちょこんと乗った、和菓子が大好きな甘党かっぱ。")
-    
     // MARK: - Onboarding
     static let onboardingStoryLines = [
         String(localized: "onboarding_story_1", defaultValue: "古来より日本に伝わる、"),

@@ -67,16 +67,16 @@ let allKappas: [KappaData] = [
     // 難易度: 難しい (1.6日)
     KappaData(
         id: "gamer",
-        name: AppTexts.kappaName("kappa_gamer_name", defaultName: "ゲーマーかっぱ"),
-        description: AppTexts.kappaDesc("kappa_gamer_desc", defaultDesc: "エナジードリンクばかり飲んでお皿が少しネオン色になっている。"),
+        name: String(localized: "kappa_gamer_name", defaultValue: "ゲーマーかっぱ"),
+        description: String(localized: "kappa_gamer_desc", defaultValue: "エナジードリンクばかり飲んでお皿が少しネオン色になっている。"),
         totalEvolutionMultiplier: 1.6,
-        storageFolderName: "1_gamer" // 👈 ここで明示的に定義
+        storageFolderName: "1_gamer"
     ),
     // 難易度: 普通 (1.2日)
     KappaData(
         id: "odango",
-        name: AppTexts.kappaOdangoName,
-        description: AppTexts.kappaOdangoDesc,
+        name: String(localized: "kappa_odango_name", defaultValue: "おだんごかっぱ"),
+        description: String(localized: "kappa_odango_desc", defaultValue: "お皿の上にお団子がちょこんと乗った、和菓子が大好きな甘党かっぱ。"),
         totalEvolutionMultiplier: 1.2,
         storageFolderName: "2_odango"
     )
