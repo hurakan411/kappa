@@ -2,9 +2,22 @@ import Foundation
 
 struct Env {
     private static var variables: [String: String] = {
-        // メインバンドルから .env ファイルを探索
-        guard let path = Bundle.main.path(forResource: ".env", ofType: nil) else {
-            print("⚠️ WARNING: .env file not found in main bundle.")
+        // メインバンドルおよびすべての利用可能なバンドルから .env ファイルを探索
+        var envPath: String? = nil
+        if let path = Bundle.main.path(forResource: ".env", ofType: nil) {
+            envPath = path
+        } else {
+            // 他のバンドル（WidgetExtensionなど）から探索
+            for bundle in Bundle.allBundles {
+                if let path = bundle.path(forResource: ".env", ofType: nil) {
+                    envPath = path
+                    break
+                }
+            }
+        }
+        
+        guard let path = envPath else {
+            print("⚠️ WARNING: .env file not found in any bundle.")
             return [:]
         }
         
