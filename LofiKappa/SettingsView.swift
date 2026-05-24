@@ -25,6 +25,8 @@ struct SettingsView: View {
     @State private var showingPrivacy = false
     @State private var showingWidgetGuide = false
     
+    @AppStorage("isReminderEnabled") private var isReminderEnabled = false
+    
     private let cupIcons = ["cup.and.saucer.fill", "mug.fill", "drop.fill", "waterbottle.fill", "takeoutbag.and.cup.and.straw.fill"]
     
     var body: some View {
@@ -171,6 +173,40 @@ struct SettingsView: View {
                                             .foregroundColor(.secondary)
                                     }
                                 }
+                            }
+                        }
+                        
+                        // MARK: - リマインダー通知設定
+                        settingCard {
+                            VStack(alignment: .leading, spacing: 16) {
+                                sectionHeader(icon: "bell.fill", title: "通知")
+                                
+                                Toggle(isOn: Binding(get: {
+                                    isReminderEnabled
+                                }, set: { newValue in
+                                    if newValue {
+                                        NotificationManager.shared.requestAuthorization { granted in
+                                            isReminderEnabled = granted
+                                            if granted {
+                                                NotificationManager.shared.resetReminder(isTargetCompleted: false)
+                                            }
+                                        }
+                                    } else {
+                                        isReminderEnabled = false
+                                        NotificationManager.shared.cancelAllReminders()
+                                    }
+                                })) {
+                                    VStack(alignment: .leading, spacing: 6) {
+                                        Text("給水リマインダーかっぱ")
+                                            .font(.system(.body, design: .rounded).bold())
+                                            .foregroundColor(Theme.Colors.text(for: colorScheme))
+                                        Text("お水を最後に飲んでから2時間後と3時間後にカッパが通知します（給水するとリセットされます）")
+                                            .font(.system(.caption, design: .rounded))
+                                            .foregroundColor(Theme.Colors.text(for: colorScheme).opacity(0.6))
+                                            .fixedSize(horizontal: false, vertical: true)
+                                    }
+                                }
+                                .tint(Theme.Colors.primaryBlue)
                             }
                         }
                         
@@ -342,6 +378,10 @@ struct SettingsView: View {
             UserDefaults.standard.removeObject(forKey: "hasReviewedStage3")
             UserDefaults.standard.removeObject(forKey: "hasReviewedFinalStage")
             UserDefaults.standard.removeObject(forKey: "hasReviewed3Kappas")
+            
+            // リマインダー通知設定をOFFにする
+            UserDefaults.standard.set(false, forKey: "isReminderEnabled")
+            NotificationManager.shared.cancelAllReminders()
             
             WidgetCenter.shared.reloadAllTimelines()
         } catch {

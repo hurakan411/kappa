@@ -438,6 +438,9 @@ struct HomeView: View {
         
         // 水分補給時のスパークルエフェクトをトリガー
         triggerSparkles(count: 16)
+        
+        // 給水リマインダーのスマートリセット
+        NotificationManager.shared.resetReminder(isTargetCompleted: log.isCompleted)
     }
     
     private func triggerSparkles(count: Int) {
@@ -589,6 +592,9 @@ struct HomeView: View {
                     unlockCurrentKappa()
                 }
                 try? modelContext.save()
+                
+                // ウィジェット経由の給水時もリマインダーをスマートリセット
+                NotificationManager.shared.resetReminder(isTargetCompleted: log.isCompleted)
             } else {
                 print("ℹ️ [HomeView] App data is up-to-date or ahead of widget data. No merge needed.")
             }
