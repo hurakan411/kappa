@@ -39,6 +39,16 @@ struct SupabaseConfig {
         "6_odango.png"
     ]
     
+    // 金魚かっぱのフォールバック用ファイル名
+    static let kingyoFilenames = [
+        "1_kingyo.png",
+        "2_kingyo.png",
+        "3_kingyo.png",
+        "4_kingyo.png",
+        "5_kingyo.png",
+        "6_kingyo.png"
+    ]
+    
     /// カッパ種IDと進化ステージから、Supabase Storage의 Public URLを返す
     static func imageUrl(for kappaId: String, stage: Int) -> URL? {
         let folderName = KappaData.find(by: kappaId)?.storageFolderName ?? "1_\(kappaId)"
@@ -59,6 +69,14 @@ struct SupabaseConfig {
                 fileName = matchedFileName
             } else if kappaId == "odango",
                       let matchedFileName = odangoFilenames.first(where: { name in
+                if let firstChar = name.first, String(firstChar) == String(stage) {
+                    return true
+                }
+                return false
+            }) {
+                fileName = matchedFileName
+            } else if kappaId == "kingyo",
+                      let matchedFileName = kingyoFilenames.first(where: { name in
                 if let firstChar = name.first, String(firstChar) == String(stage) {
                     return true
                 }

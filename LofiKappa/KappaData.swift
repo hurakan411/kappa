@@ -16,7 +16,7 @@ struct KappaData {
     var numberOfStages: Int {
         if id == "gamer" {
             return 7
-        } else if id == "odango" {
+        } else if id == "odango" || id == "kingyo" {
             return 6
         } else {
             return 5
@@ -79,5 +79,13 @@ let allKappas: [KappaData] = [
         description: String(localized: "kappa_odango_desc", defaultValue: "お皿の上にお団子がちょこんと乗った、和菓子が大好きな甘党かっぱ。"),
         totalEvolutionMultiplier: 1.2,
         storageFolderName: "2_odango"
+    ),
+    // 難易度: 普通 (1.2日)
+    KappaData(
+        id: "kingyo",
+        name: String(localized: "kappa_kingyo_name", defaultValue: "金魚かっぱ"),
+        description: String(localized: "kappa_kingyo_desc", defaultValue: "お皿の上を金魚が優雅に泳ぐ、涼しげで水が大好きな風流かっぱ。"),
+        totalEvolutionMultiplier: 1.2,
+        storageFolderName: "3_kingyo"
     )
 ]

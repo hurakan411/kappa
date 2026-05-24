@@ -292,6 +292,15 @@ struct KappaDetailView: View {
             case 5: return "Stage 5: 成長期（おだんごチャイルド）"
             default: return "Stage 6: 成体期（おだんごかっぱ最終形態）"
             }
+        } else if baseId == "kingyo" {
+            switch stage {
+            case 1: return "Stage 1: 卵期"
+            case 2: return "Stage 2: ひび割れ期"
+            case 3: return "Stage 3: 幼生期"
+            case 4: return "Stage 4: 成長期（金魚ベビー）"
+            case 5: return "Stage 5: 成長期（金魚チャイルド）"
+            default: return "Stage 6: 成体期（金魚カッパ最終形態）"
+            }
         } else {
             switch stage {
             case 1: return "Stage 1: 卵期"

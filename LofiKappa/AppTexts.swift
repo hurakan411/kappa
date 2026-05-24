@@ -25,7 +25,7 @@ struct AppTexts {
     }
     static let evolutionComplete = String(localized: "home_evolution_complete", defaultValue: "進化完了！")
     static let todaysWater = String(localized: "home_todays_water", defaultValue: "本日の水分量")
-    static let raiseNextKappa = String(localized: "home_raise_next_kappa", defaultValue: "次のかっぱを育てる")
+    static let raiseNextKappa = String(localized: "home_raise_next_kappa", defaultValue: "次のカッパを育てる")
     static let shareBtnText = String(localized: "home_share_btn_text", defaultValue: "この姿をシェアする")
     
     static func stageText(_ stage: Int) -> String {
@@ -59,14 +59,14 @@ struct AppTexts {
     
     // MARK: - AlbumView
     static let albumTitle = String(localized: "album_title", defaultValue: "思い出アルバム")
-    static let albumEmpty = String(localized: "album_empty", defaultValue: "まだかっぱがいません。水分補給をして解放しましょう！")
-    static let albumCollectedKappas = String(localized: "album_collected_kappas", defaultValue: "収集したかっぱ")
+    static let albumEmpty = String(localized: "album_empty", defaultValue: "まだカッパがいません。水分補給をして解放しましょう！")
+    static let albumCollectedKappas = String(localized: "album_collected_kappas", defaultValue: "収集したカッパ")
     static func albumSpeciesCountText(_ count: Int) -> String {
         let format = String(localized: "album_species_count_format", defaultValue: "%d 種")
         return String(format: format, count)
     }
-    static let albumEmptyTitle = String(localized: "album_empty_title", defaultValue: "まだかっぱを発見していません。")
-    static let albumEmptyDetail = String(localized: "album_empty_detail", defaultValue: "ホーム画面で水分を記録し、お皿を水で満たしてかっぱを完全に成長させると、ここに思い出として登録されます。")
+    static let albumEmptyTitle = String(localized: "album_empty_title", defaultValue: "まだカッパを発見していません。")
+    static let albumEmptyDetail = String(localized: "album_empty_detail", defaultValue: "ホーム画面で水分を記録し、お皿を水で満たしてカッパを完全に成長させると、ここに思い出として登録されます。")
     static let albumUndiscovered = String(localized: "album_undiscovered", defaultValue: "未発見")
     
     // MARK: - SettingsView
