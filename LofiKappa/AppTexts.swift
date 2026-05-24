@@ -26,6 +26,7 @@ struct AppTexts {
     static let evolutionComplete = String(localized: "home_evolution_complete", defaultValue: "進化完了！")
     static let todaysWater = String(localized: "home_todays_water", defaultValue: "本日の水分量")
     static let raiseNextKappa = String(localized: "home_raise_next_kappa", defaultValue: "次のかっぱを育てる")
+    static let shareBtnText = String(localized: "home_share_btn_text", defaultValue: "この姿をシェアする")
     
     static func stageText(_ stage: Int) -> String {
         switch stage {
@@ -50,10 +51,23 @@ struct AppTexts {
         String(localized: "weekday_fri", defaultValue: "金"),
         String(localized: "weekday_sat", defaultValue: "土")
     ]
+    static let logWeeklyStamp = String(localized: "log_weekly_stamp", defaultValue: "週間のスタンプ")
+    static func logTotalAmountText(_ amount: Int) -> String {
+        let format = String(localized: "log_total_amount_format", defaultValue: "計 %d ml")
+        return String(format: format, amount)
+    }
     
     // MARK: - AlbumView
     static let albumTitle = String(localized: "album_title", defaultValue: "思い出アルバム")
     static let albumEmpty = String(localized: "album_empty", defaultValue: "まだかっぱがいません。水分補給をして解放しましょう！")
+    static let albumCollectedKappas = String(localized: "album_collected_kappas", defaultValue: "収集したかっぱ")
+    static func albumSpeciesCountText(_ count: Int) -> String {
+        let format = String(localized: "album_species_count_format", defaultValue: "%d 種")
+        return String(format: format, count)
+    }
+    static let albumEmptyTitle = String(localized: "album_empty_title", defaultValue: "まだかっぱを発見していません。")
+    static let albumEmptyDetail = String(localized: "album_empty_detail", defaultValue: "ホーム画面で水分を記録し、お皿を水で満たしてかっぱを完全に成長させると、ここに思い出として登録されます。")
+    static let albumUndiscovered = String(localized: "album_undiscovered", defaultValue: "未発見")
     
     // MARK: - SettingsView
     static let settingsTitle = String(localized: "settings_title", defaultValue: "設定")
@@ -69,9 +83,28 @@ struct AppTexts {
         return String(format: format, amount)
     }
     static let resetGoalButton = String(localized: "settings_reset_goal", defaultValue: "簡易設定（性別）に戻す")
+    static let settingsCurrentGoalTitleLabel = String(localized: "settings_current_goal_title_label", defaultValue: "現在の目標")
+    static let settingsGoalNotice = String(localized: "settings_goal_notice", defaultValue: "表示される目標量はあくまで一般的な目安です。体調・持病・服薬状況などによって適切な水分量は異なります。ご自身の体調を優先し、不安な場合は医師や専門家にご相談ください。")
+    static let settingsWidgetTitle = String(localized: "settings_widget_title", defaultValue: "ウィジェット")
+    static let settingsWidgetGuideBtn = String(localized: "settings_widget_guide_btn", defaultValue: "ウィジェットの設定方法")
+    static let settingsPolicySectionTitle = String(localized: "settings_policy_section_title", defaultValue: "ポリシー・規約")
+    static let settingsTermsTitle = String(localized: "settings_terms_title", defaultValue: "利用規約")
+    static let settingsPrivacyTitle = String(localized: "settings_privacy_title", defaultValue: "プライバシーポリシー")
+    static let settingsResetAlertMessage = String(localized: "settings_reset_alert_message", defaultValue: "データを初期化しますか？\nすべての記録と図鑑がリセットされます。")
+    static let settingsResetConfirmBtn = String(localized: "settings_reset_confirm_btn", defaultValue: "初期化する")
     
     // MARK: - WaterAnalysisView
     static let analysisTitle = String(localized: "analysis_title", defaultValue: "目標水分量の分析")
+    
+    static let analysisMethodTitle = String(localized: "analysis_method_title", defaultValue: "目標の決め方を選んでください")
+    static let analysisMethodSimpleTitle = String(localized: "analysis_method_simple_title", defaultValue: "簡易設定")
+    static let analysisMethodSimpleDesc = String(localized: "analysis_method_simple_desc", defaultValue: "性別を選択して標準的な目標量を設定します")
+    static let analysisMethodDetailTitle = String(localized: "analysis_method_detail_title", defaultValue: "詳細分析")
+    static let analysisMethodDetailDesc = String(localized: "analysis_method_detail_desc", defaultValue: "生活スタイルや気候からあなた専用の目標量を算出します")
+    
+    static let analysisGenderTitle = String(localized: "analysis_gender_title", defaultValue: "性別を選択してください")
+    static let analysisGenderFemale = String(localized: "analysis_gender_female", defaultValue: "女性")
+    static let analysisGenderMale = String(localized: "analysis_gender_male", defaultValue: "男性")
     
     static let q1Title = String(localized: "analysis_q1_title", defaultValue: "あなたのことを教えてください")
     static let q1WeightPlaceholder = String(localized: "analysis_q1_weight", defaultValue: "体重 (kg)")
@@ -102,6 +135,7 @@ struct AppTexts {
         return String(format: format, amount)
     }
     static let analysisApply = String(localized: "analysis_apply", defaultValue: "この目標量を設定する")
+    static let analysisRetry = String(localized: "analysis_retry", defaultValue: "やり直す")
     
     static let myCupSection = String(localized: "settings_my_cup_section", defaultValue: "マイコップ設定")
     static func cupLabel(_ index: Int) -> String {
@@ -202,9 +236,31 @@ struct AppTexts {
     
     // MARK: - Reminders
     static let reminderSectionTitle = String(localized: "reminder_section_title", defaultValue: "通知")
-    static let reminderToggleTitle = String(localized: "reminder_toggle_title", defaultValue: "給水リマインダーかっぱ")
+    static let reminderToggleTitle = String(localized: "reminder_toggle_title", defaultValue: "給水リマインダー")
     static let reminderToggleDescription = String(localized: "reminder_toggle_desc", defaultValue: "お水を最後に飲んでから2時間後と3時間後にカッパが通知します（給水するとリセットされます）")
     static let reminderNotificationTitle = String(localized: "notification_title", defaultValue: "給水タイムかっぱ！")
-    static let reminderNotificationBody1 = String(localized: "notification_body_1", defaultValue: "お皿が少し乾いてきたかっぱ！コップ1杯の水を飲んで潤すかっぱ〜。")
-    static let reminderNotificationBody2 = String(localized: "notification_body_2", defaultValue: "お皿がからからになってきちゃったかっぱ…！お水を飲むのを忘れないでね。")
+    static let reminderNotificationBody1 = String(localized: "notification_body_1", defaultValue: "お皿が少し乾いてきたかっぱ…!コップ1杯のお水ください…!")
+    static let reminderNotificationBody2 = String(localized: "notification_body_2", defaultValue: "お皿にもう水が無いかっぱ…お、お水を…くだ…さい…")
+    
+    // MARK: - Common UI Buttons
+    static let backBtnText = String(localized: "back_btn_text", defaultValue: "戻る")
+    static let cancelBtnText = String(localized: "cancel_btn_text", defaultValue: "キャンセル")
+    static let closeBtnText = String(localized: "close_btn_text", defaultValue: "閉じる")
+    
+    // MARK: - WidgetGuideView
+    static let widgetGuideTitle = String(localized: "widget_guide_title", defaultValue: "ウィジェット設定ガイド")
+    static let widgetGuideHeaderTitle = String(localized: "widget_guide_header_title", defaultValue: "ホーム画面にウィジェットを追加しよう")
+    static let widgetGuideHeaderDesc = String(localized: "widget_guide_header_desc", defaultValue: "カッパをホーム画面に配置して、アプリを開かずに簡単に水分を補給できるようになります。")
+    static let widgetGuideStep1Title = String(localized: "widget_guide_step1_title", defaultValue: "ホーム画面を長押し")
+    static let widgetGuideStep1Desc = String(localized: "widget_guide_step1_desc", defaultValue: "ホーム画面の空いている場所（アプリアイコンやウィジェットがないスペース）を、アイコンが揺れ始めるまで長押しします。")
+    static let widgetGuideStep2Title = String(localized: "widget_guide_step2_title", defaultValue: "「＋」ボタンをタップ")
+    static let widgetGuideStep2Desc = String(localized: "widget_guide_step2_desc", defaultValue: "画面の左上（または右上）に表示される「＋」追加ボタンをタップして、ウィジェットギャラリーを開きます。")
+    static let widgetGuideStep3Title = String(localized: "widget_guide_step3_title", defaultValue: "「KapStation」を検索")
+    static let widgetGuideStep3Desc = String(localized: "widget_guide_step3_desc", defaultValue: "ウィジェットギャラリーの上部検索バーで「KapStation」と入力するか、アプリ一覧から見つけてタップします。")
+    static let widgetGuideStep4Title = String(localized: "widget_guide_step4_title", defaultValue: "サイズを選んで追加")
+    static let widgetGuideStep4Desc = String(localized: "widget_guide_step4_desc", defaultValue: "お好みのウィジェットサイズ（小・中）を選択し、下部の「ウィジェットを追加」ボタンをタップします。")
+    static let widgetGuideStep5Title = String(localized: "widget_guide_step5_title", defaultValue: "配置の完了と給水操作")
+    static let widgetGuideStep5Desc = String(localized: "widget_guide_step5_desc", defaultValue: "ホーム画面にウィジェットが配置されたら、完了ボタンを押します。ウィジェット上の給水ボタンをタップするだけで、すぐに今日の記録へ反映されます！")
+    static let widgetGuideTroubleTitle = String(localized: "widget_guide_trouble_title", defaultValue: "うまく同期されない時は？")
+    static let widgetGuideTroubleDesc = String(localized: "widget_guide_trouble_desc", defaultValue: "ウィジェットの追加直後や、日付が変わったタイミングなどでデータが表示されない場合は、一度アプリを起動して水分を補給してみてください。自動的にデータが同期・更新されます。")
 }

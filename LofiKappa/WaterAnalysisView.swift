@@ -54,13 +54,13 @@ struct WaterAnalysisView: View {
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
                     if step != .choice {
-                        Button("戻る") {
+                        Button(AppTexts.backBtnText) {
                             withAnimation { step = .choice }
                         }
                     }
                 }
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("キャンセル") {
+                    Button(AppTexts.cancelBtnText) {
                         dismiss()
                     }
                 }
@@ -70,7 +70,7 @@ struct WaterAnalysisView: View {
     
     private var choiceView: some View {
         VStack(spacing: 30) {
-            Text("目標の決め方を選んでください")
+            Text(AppTexts.analysisMethodTitle)
                 .font(.system(.title2, design: .rounded).bold())
                 .foregroundColor(Theme.Colors.text(for: colorScheme))
                 .padding(.top, 40)
@@ -80,10 +80,10 @@ struct WaterAnalysisView: View {
             }) {
                 VStack(spacing: 12) {
                     Image(systemName: "person.2.fill")
-                        .font(.largeTitle)
-                    Text("簡易設定")
+                         .font(.largeTitle)
+                    Text(AppTexts.analysisMethodSimpleTitle)
                         .font(.system(.headline, design: .rounded).bold())
-                    Text("性別を選択して標準的な目標量を設定します")
+                    Text(AppTexts.analysisMethodSimpleDesc)
                         .font(.system(.caption, design: .rounded))
                         .multilineTextAlignment(.center)
                 }
@@ -102,9 +102,9 @@ struct WaterAnalysisView: View {
                 VStack(spacing: 12) {
                     Image(systemName: "doc.text.magnifyingglass")
                         .font(.largeTitle)
-                    Text("詳細分析")
+                    Text(AppTexts.analysisMethodDetailTitle)
                         .font(.system(.headline, design: .rounded).bold())
-                    Text("生活スタイルや気候からあなた専用の目標量を算出します")
+                    Text(AppTexts.analysisMethodDetailDesc)
                         .font(.system(.caption, design: .rounded))
                         .multilineTextAlignment(.center)
                 }
@@ -124,7 +124,7 @@ struct WaterAnalysisView: View {
     
     private var simpleView: some View {
         VStack(spacing: 30) {
-            Text("性別を選択してください")
+            Text(AppTexts.analysisGenderTitle)
                 .font(.system(.title2, design: .rounded).bold())
                 .foregroundColor(Theme.Colors.text(for: colorScheme))
                 .padding(.top, 40)
@@ -138,7 +138,7 @@ struct WaterAnalysisView: View {
                     VStack(spacing: 12) {
                         Image(systemName: "person.fill")
                             .font(.system(size: 40))
-                        Text("女性")
+                        Text(AppTexts.analysisGenderFemale)
                             .font(.system(.headline, design: .rounded).bold())
                         Text("1500ml")
                             .font(.system(.caption, design: .rounded).bold())
@@ -160,7 +160,7 @@ struct WaterAnalysisView: View {
                     VStack(spacing: 12) {
                         Image(systemName: "person.fill")
                             .font(.system(size: 40))
-                        Text("男性")
+                        Text(AppTexts.analysisGenderMale)
                             .font(.system(.headline, design: .rounded).bold())
                         Text("2000ml")
                             .font(.system(.caption, design: .rounded).bold())
@@ -296,7 +296,7 @@ struct WaterAnalysisView: View {
             }
             .padding(.horizontal, 30)
             
-            Button("やり直す") {
+            Button(AppTexts.analysisRetry) {
                 withAnimation { step = .detailed }
             }
             .font(.system(.body, design: .rounded).bold())

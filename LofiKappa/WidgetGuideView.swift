@@ -20,12 +20,12 @@ struct WidgetGuideView: View {
                                 .shadow(color: Theme.Colors.primaryBlue.opacity(0.2), radius: 8, x: 0, y: 4)
                                 .padding(.top, 12)
                             
-                            Text("ホーム画面にウィジェットを追加しよう")
+                            Text(AppTexts.widgetGuideHeaderTitle)
                                 .font(.system(.title3, design: .rounded).bold())
                                 .foregroundColor(Theme.Colors.text(for: colorScheme))
                                 .multilineTextAlignment(.center)
                             
-                            Text("カッパをホーム画面に配置して、アプリを開かずに簡単に水分を補給できるようになります。")
+                            Text(AppTexts.widgetGuideHeaderDesc)
                                 .font(.system(.caption, design: .rounded))
                                 .foregroundColor(.secondary)
                                 .multilineTextAlignment(.center)
@@ -41,36 +41,36 @@ struct WidgetGuideView: View {
                             stepCard(
                                 number: 1,
                                 icon: "touchid",
-                                title: "ホーム画面を長押し",
-                                description: "ホーム画面の空いている場所（アプリアイコンやウィジェットがないスペース）を、アイコンが揺れ始めるまで長押しします。"
+                                title: AppTexts.widgetGuideStep1Title,
+                                description: AppTexts.widgetGuideStep1Desc
                             )
                             
                             stepCard(
                                 number: 2,
                                 icon: "plus",
-                                title: "「＋」ボタンをタップ",
-                                description: "画面の左上（または右上）に表示される「＋」追加ボタンをタップして、ウィジェットギャラリーを開きます。"
+                                title: AppTexts.widgetGuideStep2Title,
+                                description: AppTexts.widgetGuideStep2Desc
                             )
                             
                             stepCard(
                                 number: 3,
                                 icon: "magnifyingglass",
-                                title: "「KapStation」を検索",
-                                description: "ウィジェットギャラリーの上部検索バーで「KapStation」と入力するか、アプリ一覧から見つけてタップします。"
+                                title: AppTexts.widgetGuideStep3Title,
+                                description: AppTexts.widgetGuideStep3Desc
                             )
                             
                             stepCard(
                                 number: 4,
                                 icon: "square.on.square.intersection.dashed",
-                                title: "サイズを選んで追加",
-                                description: "お好みのウィジェットサイズ（小・中）を選択し、下部の「ウィジェットを追加」ボタンをタップします。"
+                                title: AppTexts.widgetGuideStep4Title,
+                                description: AppTexts.widgetGuideStep4Desc
                             )
                             
                             stepCard(
                                 number: 5,
                                 icon: "checkmark.circle.fill",
-                                title: "配置の完了と給水操作",
-                                description: "ホーム画面にウィジェットが配置されたら、完了ボタンを押します。ウィジェット上の給水ボタンをタップするだけで、すぐに今日の記録へ反映されます！"
+                                title: AppTexts.widgetGuideStep5Title,
+                                description: AppTexts.widgetGuideStep5Desc
                             )
                         }
                         .padding(.horizontal, 16)
@@ -80,12 +80,12 @@ struct WidgetGuideView: View {
                             HStack {
                                 Image(systemName: "lightbulb.fill")
                                     .foregroundColor(.yellow)
-                                Text("うまく同期されない時は？")
+                                Text(AppTexts.widgetGuideTroubleTitle)
                                     .font(.system(.body, design: .rounded).bold())
                                     .foregroundColor(Theme.Colors.text(for: colorScheme))
                             }
                             
-                            Text("ウィジェットの追加直後や、日付が変わったタイミングなどでデータが表示されない場合は、一度アプリを起動して水分を補給してみてください。自動的にデータが同期・更新されます。")
+                            Text(AppTexts.widgetGuideTroubleDesc)
                                 .font(.system(.caption, design: .rounded))
                                 .foregroundColor(Theme.Colors.text(for: colorScheme).opacity(0.8))
                                 .fixedSize(horizontal: false, vertical: true)
@@ -101,11 +101,11 @@ struct WidgetGuideView: View {
                     .padding(.vertical, 16)
                 }
             }
-            .navigationTitle("ウィジェット設定ガイド")
+            .navigationTitle(AppTexts.widgetGuideTitle)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("閉じる") {
+                    Button(AppTexts.closeBtnText) {
                         dismiss()
                     }
                     .font(.system(.body, design: .rounded).bold())

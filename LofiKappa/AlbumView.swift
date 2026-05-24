@@ -35,11 +35,11 @@ struct AlbumView: View {
                     VStack(alignment: .leading, spacing: 20) {
                         // コレクション数バッジ（クラフト紙風ラベル）
                         HStack {
-                            Text("収集したかっぱ")
+                            Text(AppTexts.albumCollectedKappas)
                                 .font(.system(.subheadline, design: .rounded).bold())
                                 .foregroundColor(Theme.Colors.text(for: colorScheme))
                             Spacer()
-                            Text("\(uniqueKappas.count) 種")
+                            Text(AppTexts.albumSpeciesCountText(uniqueKappas.count))
                                 .font(.system(.subheadline, design: .rounded).bold())
                                 .foregroundColor(.white)
                                 .padding(.horizontal, 14)
@@ -58,10 +58,10 @@ struct AlbumView: View {
                                 Image(systemName: "photo.on.rectangle.angled")
                                     .font(.system(size: 64))
                                     .foregroundColor(Theme.Colors.text(for: colorScheme).opacity(0.15))
-                                Text("まだかっぱを発見していません。")
+                                Text(AppTexts.albumEmptyTitle)
                                     .font(.system(.headline, design: .rounded).bold())
                                     .foregroundColor(Theme.Colors.text(for: colorScheme).opacity(0.4))
-                                Text("ホーム画面で水分を記録し、お皿を水で満たしてかっぱを完全に成長させると、ここに思い出として登録されます。")
+                                Text(AppTexts.albumEmptyDetail)
                                     .font(.system(.subheadline, design: .rounded))
                                     .foregroundColor(Theme.Colors.text(for: colorScheme).opacity(0.3))
                                     .multilineTextAlignment(.center)
@@ -161,7 +161,7 @@ struct KappaCardDummy: View {
                         .font(.system(size: 32))
                         .foregroundColor(Theme.Colors.text(for: colorScheme).opacity(0.12))
                     
-                    Text("未発見")
+                    Text(AppTexts.albumUndiscovered)
                         .font(.system(size: 11, weight: .bold, design: .rounded))
                         .foregroundColor(Theme.Colors.text(for: colorScheme).opacity(0.2))
                 }

@@ -46,7 +46,7 @@ struct SettingsView: View {
                                 // 現在の目標
                                 HStack {
                                     VStack(alignment: .leading, spacing: 4) {
-                                        Text("現在の目標")
+                                        Text(AppTexts.settingsCurrentGoalTitleLabel)
                                             .font(.system(.caption, design: .rounded).bold())
                                             .foregroundColor(.secondary)
                                         Text("\(settings.dailyGoal) ml")
@@ -85,7 +85,7 @@ struct SettingsView: View {
                                 .foregroundColor(.orange)
                                 .font(.footnote)
                                 .padding(.top, 1)
-                            Text("表示される目標量はあくまで一般的な目安です。体調・持病・服薬状況などによって適切な水分量は異なります。ご自身の体調を優先し、不安な場合は医師や専門家にご相談ください。")
+                            Text(AppTexts.settingsGoalNotice)
                                 .font(.system(.caption, design: .rounded))
                                 .foregroundColor(Theme.Colors.text(for: colorScheme).opacity(0.8))
                                 .fixedSize(horizontal: false, vertical: true)
@@ -156,7 +156,7 @@ struct SettingsView: View {
                         // MARK: - ウィジェット設定ガイド
                         settingCard {
                             VStack(alignment: .leading, spacing: 16) {
-                                sectionHeader(icon: "square.text.square.fill", title: "ウィジェット")
+                                sectionHeader(icon: "square.text.square.fill", title: AppTexts.settingsWidgetTitle)
                                 
                                 Button(action: { showingWidgetGuide = true }) {
                                     HStack {
@@ -164,7 +164,7 @@ struct SettingsView: View {
                                             .font(.body)
                                             .foregroundColor(Theme.Colors.primaryBlue)
                                             .frame(width: 24)
-                                        Text("ウィジェットの設定方法")
+                                        Text(AppTexts.settingsWidgetGuideBtn)
                                             .font(.system(.body, design: .rounded).bold())
                                             .foregroundColor(Theme.Colors.text(for: colorScheme))
                                         Spacer()
@@ -213,16 +213,16 @@ struct SettingsView: View {
                         // MARK: - プライバシーポリシー & 利用規約
                         settingCard {
                             VStack(alignment: .leading, spacing: 16) {
-                                sectionHeader(icon: "doc.text.fill", title: "ポリシー・規約")
+                                sectionHeader(icon: "doc.text.fill", title: AppTexts.settingsPolicySectionTitle)
                                 
                                 // 利用規約ボタン
                                 Button(action: { showingTerms = true }) {
                                     HStack {
-                                        Image(systemName: "hand.raised.fill")
+                                        Image(systemName: "doc.text.fill")
                                             .font(.body)
                                             .foregroundColor(Theme.Colors.primaryBlue)
                                             .frame(width: 24)
-                                        Text("利用規約")
+                                        Text(AppTexts.settingsTermsTitle)
                                             .font(.system(.body, design: .rounded).bold())
                                             .foregroundColor(Theme.Colors.text(for: colorScheme))
                                         Spacer()
@@ -241,7 +241,7 @@ struct SettingsView: View {
                                             .font(.body)
                                             .foregroundColor(Theme.Colors.primaryBlue)
                                             .frame(width: 24)
-                                        Text("プライバシーポリシー")
+                                        Text(AppTexts.settingsPrivacyTitle)
                                             .font(.system(.body, design: .rounded).bold())
                                             .foregroundColor(Theme.Colors.text(for: colorScheme))
                                         Spacer()
@@ -291,23 +291,23 @@ struct SettingsView: View {
                 }))
             }
             .sheet(isPresented: $showingTerms) {
-                PolicyDocumentView(title: "利用規約", content: PolicyTexts.termsOfService)
+                PolicyDocumentView(title: AppTexts.settingsTermsTitle, content: PolicyTexts.termsOfService)
             }
             .sheet(isPresented: $showingPrivacy) {
-                PolicyDocumentView(title: "プライバシーポリシー", content: PolicyTexts.privacyPolicy)
+                PolicyDocumentView(title: AppTexts.settingsPrivacyTitle, content: PolicyTexts.privacyPolicy)
             }
             .sheet(isPresented: $showingWidgetGuide) {
                 WidgetGuideView()
             }
             .confirmationDialog(
-                "データを初期化しますか？\nすべての記録と図鑑がリセットされます。",
+                AppTexts.settingsResetAlertMessage,
                 isPresented: $showDeleteConfirm,
                 titleVisibility: .visible
             ) {
-                Button("初期化する", role: .destructive) {
+                Button(AppTexts.settingsResetConfirmBtn, role: .destructive) {
                     resetData()
                 }
-                Button("キャンセル", role: .cancel) {}
+                Button(AppTexts.cancelBtnText, role: .cancel) {}
             }
             .onAppear {
                 selectedGender = settings.gender

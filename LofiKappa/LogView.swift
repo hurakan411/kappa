@@ -25,7 +25,7 @@ struct LogView: View {
                                 .font(.system(.title3, design: .rounded).bold())
                                 .foregroundColor(Theme.Colors.text(for: colorScheme))
                             Spacer()
-                            Text("週間のスタンプ")
+                            Text(AppTexts.logWeeklyStamp)
                                 .font(.caption.bold())
                                 .foregroundColor(.secondary)
                         }
@@ -76,7 +76,7 @@ struct LogView: View {
                         }
                         Spacer()
                         if let intakes = todayLog?.intakes, !intakes.isEmpty {
-                            Text("計 \(intakes.reduce(0) { $0 + $1.amount }) ml")
+                            Text(AppTexts.logTotalAmountText(intakes.reduce(0) { $0 + $1.amount }))
                                 .font(.caption.bold())
                                 .foregroundColor(.white)
                                 .padding(.horizontal, 12)

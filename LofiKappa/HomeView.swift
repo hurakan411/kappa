@@ -234,7 +234,7 @@ struct HomeView: View {
                 HStack(spacing: 8) {
                     Image(systemName: "square.and.arrow.up")
                         .font(.system(size: 13, weight: .bold))
-                    Text("この姿をシェアする")
+                    Text(AppTexts.shareBtnText)
                         .font(.system(.caption, design: .rounded).bold())
                 }
                 .foregroundColor(Theme.Colors.primaryBlue)

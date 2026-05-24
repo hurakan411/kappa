@@ -48,7 +48,7 @@ struct PolicyDocumentView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("閉じる") {
+                    Button(AppTexts.closeBtnText) {
                         dismiss()
                     }
                     .font(.system(.body, design: .rounded).bold())
