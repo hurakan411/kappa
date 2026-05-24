@@ -12,9 +12,15 @@ struct KappaData {
     // Supabase Storage上のフォルダ名（必須プロパティとしてここでハードコード定義）
     let storageFolderName: String
     
-    // 段階進化の最大ステージ数（デフォルトは5。ゲーマーかっぱは7）
+    // 段階進化の最大ステージ数（デフォルトは5。ゲーマーかっぱは7、おだんごかっぱは6）
     var numberOfStages: Int {
-        id == "gamer" ? 7 : 5
+        if id == "gamer" {
+            return 7
+        } else if id == "odango" {
+            return 6
+        } else {
+            return 5
+        }
     }
     
     // ユーザーの1日目標量をもとに各ステージの閾値を動的に計算
@@ -28,6 +34,15 @@ struct KappaData {
                 Int(total * 0.45),
                 Int(total * 0.60),
                 Int(total * 0.75),
+                Int(total)
+            ]
+        } else if numberOfStages == 6 {
+            // 6段階進化の場合：20%, 40%, 60%, 80%, 100% の5つの閾値
+            return [
+                Int(total * 0.20),
+                Int(total * 0.40),
+                Int(total * 0.60),
+                Int(total * 0.80),
                 Int(total)
             ]
         } else {
@@ -56,5 +71,13 @@ let allKappas: [KappaData] = [
         description: AppTexts.kappaDesc("kappa_gamer_desc", defaultDesc: "エナジードリンクばかり飲んでお皿が少しネオン色になっている。"),
         totalEvolutionMultiplier: 1.6,
         storageFolderName: "1_gamer" // 👈 ここで明示的に定義
+    ),
+    // 難易度: 普通 (1.2日)
+    KappaData(
+        id: "odango",
+        name: AppTexts.kappaOdangoName,
+        description: AppTexts.kappaOdangoDesc,
+        totalEvolutionMultiplier: 1.2,
+        storageFolderName: "2_odango"
     )
 ]

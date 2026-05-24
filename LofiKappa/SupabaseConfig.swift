@@ -29,6 +29,16 @@ struct SupabaseConfig {
         "7_kappa_gamer_pro.jpg"
     ]
     
+    // おだんごかっぱのフォールバック用ファイル名（実際のアップロード名に適合）
+    static let odangoFilenames = [
+        "1_odango.png",
+        "2_odango.png",
+        "3_odango.png",
+        "4_odango.png",
+        "5_odango.png",
+        "6_odango.png"
+    ]
+    
     /// カッパ種IDと進化ステージから、Supabase Storage의 Public URLを返す
     static func imageUrl(for kappaId: String, stage: Int) -> URL? {
         let folderName = KappaData.find(by: kappaId)?.storageFolderName ?? "1_\(kappaId)"
@@ -38,9 +48,17 @@ struct SupabaseConfig {
         if let dynamicFileName = SupabaseStorageManager.shared.fileName(for: kappaId, stage: stage) {
             fileName = dynamicFileName
         } else {
-            // 2. なければフォールバック配列から先頭の数字が一致するものを探す (gamerのみフォールバックあり)
+            // 2. なければフォールバック配列から先頭の数字が一致するものを探す
             if kappaId == "gamer",
                let matchedFileName = gamerFilenames.first(where: { name in
+                if let firstChar = name.first, String(firstChar) == String(stage) {
+                    return true
+                }
+                return false
+            }) {
+                fileName = matchedFileName
+            } else if kappaId == "odango",
+                      let matchedFileName = odangoFilenames.first(where: { name in
                 if let firstChar = name.first, String(firstChar) == String(stage) {
                     return true
                 }

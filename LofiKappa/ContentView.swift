@@ -39,7 +39,9 @@ struct ContentView: View {
         }
         .animation(.easeInOut(duration: 0.8), value: hasCompletedOnboarding)
         .onAppear {
-            SupabaseStorageManager.shared.fetchFileList(for: "gamer")
+            for kappa in allKappas {
+                SupabaseStorageManager.shared.fetchFileList(for: kappa.id)
+            }
         }
     }
 }

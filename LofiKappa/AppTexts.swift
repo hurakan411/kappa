@@ -119,6 +119,10 @@ struct AppTexts {
         return NSLocalizedString(key, value: defaultDesc, comment: "")
     }
     
+    // おだんごかっぱ
+    static let kappaOdangoName = String(localized: "kappa_odango_name", defaultValue: "おだんごかっぱ")
+    static let kappaOdangoDesc = String(localized: "kappa_odango_desc", defaultValue: "お皿の上にお団子がちょこんと乗った、和菓子が大好きな甘党かっぱ。")
+    
     // MARK: - Onboarding
     static let onboardingStoryLines = [
         String(localized: "onboarding_story_1", defaultValue: "古来より日本に伝わる、"),
@@ -199,6 +203,6 @@ struct AppTexts {
     ]
     
     static let onboardingGoalSetupTitle = String(localized: "onboarding_goal_title", defaultValue: "お水の目標を設定しましょう")
-    static let onboardingGoalSetupDesc = String(localized: "onboarding_goal_desc", defaultValue: "カッパのお皿を潤すために、あなたに最適な１日の補給目標量を自動で分析・診断します。")
+    static let onboardingGoalSetupDesc = String(localized: "onboarding_goal_desc", defaultValue: "河童のお皿を潤すために、あなたに最適な１日の補給目標量を自動で分析・診断します。")
     static let onboardingGoalSetupButton = String(localized: "onboarding_goal_button", defaultValue: "最適な目標量を診断する")
 }
