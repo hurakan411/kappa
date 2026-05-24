@@ -204,8 +204,8 @@ struct HomeView: View {
             
             Spacer()
             
-            // カッパイラスト（ぷにぷにタッチ対応 ＆ シェアボタン搭載）
-            ZStack(alignment: .bottomTrailing) {
+            // カッパイラスト（ぷにぷにタッチ対応）
+            ZStack {
                 // スパークルエフェクトの描画レイヤー
                 ForEach(sparkles) { sparkle in
                     Image(systemName: "sparkles")
@@ -223,27 +223,29 @@ struct HomeView: View {
                     .onTapGesture {
                         triggerSparkles(count: 8)
                     }
-                
-                // グラスモルフィズム風のプレミアムシェアボタン
-                Button(action: {
-                    let generator = UIImpactFeedbackGenerator(style: .medium)
-                    generator.impactOccurred()
-                    shareKappa()
-                }) {
-                    Image(systemName: "square.and.arrow.up")
-                        .font(.system(size: 18, weight: .semibold))
-                        .foregroundColor(Theme.Colors.primaryBlue)
-                        .padding(12)
-                        .background(.ultraThinMaterial)
-                        .clipShape(Circle())
-                        .overlay(
-                            Circle()
-                                .stroke(.white.opacity(0.3), lineWidth: 1)
-                        )
-                        .shadow(color: .black.opacity(0.12), radius: 8, x: 0, y: 4)
-                }
-                .padding(16)
             }
+            
+            // 画像の外（直下）に設置された手書き風のプレミアムシェアボタン
+            Button(action: {
+                let generator = UIImpactFeedbackGenerator(style: .medium)
+                generator.impactOccurred()
+                shareKappa()
+            }) {
+                HStack(spacing: 8) {
+                    Image(systemName: "square.and.arrow.up")
+                        .font(.system(size: 13, weight: .bold))
+                    Text("この姿をシェアする")
+                        .font(.system(.caption, design: .rounded).bold())
+                }
+                .foregroundColor(Theme.Colors.primaryBlue)
+                .padding(.horizontal, 16)
+                .padding(.vertical, 8)
+                .background(Theme.Colors.lightBlue.opacity(0.18))
+                .cornerRadius(20)
+                .handDrawnBorder(color: Theme.Colors.primaryBlue.opacity(0.3), cornerRadius: 20)
+                .shadow(color: .black.opacity(0.04), radius: 4, x: 0, y: 2)
+            }
+            .padding(.top, 10)
             
             Spacer(minLength: 24)
             
