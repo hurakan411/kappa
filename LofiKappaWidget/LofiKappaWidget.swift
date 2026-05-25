@@ -437,14 +437,9 @@ struct LofiKappaShowcaseWidgetEntryView : View {
                             // 今日
                             VStack(alignment: .leading, spacing: 3) {
                                 HStack {
-                                    HStack(spacing: 3) {
-                                        Image(systemName: "drop.fill")
-                                            .font(.system(size: 9))
-                                            .foregroundColor(.white)
-                                        Text(AppTexts.widgetTodayWater)
-                                            .font(.system(size: 8.5).bold())
-                                            .foregroundColor(.white)
-                                    }
+                                    Image(systemName: "drop.fill")
+                                        .font(.system(size: 9))
+                                        .foregroundColor(.white)
                                     Spacer()
                                     // 1日の給水目標（分母）を明示
                                     Text("\(entry.currentAmount)/\(entry.dailyGoal)ml")
@@ -463,14 +458,9 @@ struct LofiKappaShowcaseWidgetEntryView : View {
                             // 進化
                             VStack(alignment: .leading, spacing: 3) {
                                 HStack {
-                                    HStack(spacing: 3) {
-                                        Image(systemName: "sparkles")
-                                            .font(.system(size: 9))
-                                            .foregroundColor(.white)
-                                        Text(AppTexts.widgetEvolutionProgress)
-                                            .font(.system(size: 8.5).bold())
-                                            .foregroundColor(.white)
-                                    }
+                                    Image(systemName: "sparkles")
+                                        .font(.system(size: 9))
+                                        .foregroundColor(.white)
                                     Spacer()
                                     if entry.kappaStage >= (allKappas.first(where: { $0.id == entry.kappaId })?.numberOfStages ?? 3) {
                                         Text("MAX")
@@ -557,15 +547,10 @@ struct LofiKappaShowcaseWidgetEntryView : View {
                         
                         // 左上：ダブルプログレスバーコンテナ（少し横幅を持たせて綺麗に）
                         VStack(alignment: .leading, spacing: 8) {
-                            Text(AppTexts.widgetStatusRecord)
-                                .font(.system(size: 9, design: .rounded).bold())
-                                .foregroundColor(.white)
-                                .shadow(color: Color.black.opacity(0.35), radius: 1, x: 0, y: 0.8)
-                            
                             // 今日
                             VStack(alignment: .leading, spacing: 3) {
                                 HStack {
-                                    Label(AppTexts.widgetTodayAmount, systemImage: "drop.bubble.fill")
+                                    Image(systemName: "drop.bubble.fill")
                                         .font(.system(size: 9).bold())
                                         .foregroundColor(.white)
                                     Spacer()
@@ -585,7 +570,7 @@ struct LofiKappaShowcaseWidgetEntryView : View {
                             // 進化
                             VStack(alignment: .leading, spacing: 3) {
                                 HStack {
-                                    Label(AppTexts.widgetEvolutionProgress, systemImage: "sparkles")
+                                    Image(systemName: "sparkles")
                                         .font(.system(size: 9).bold())
                                         .foregroundColor(.white)
                                     Spacer()
