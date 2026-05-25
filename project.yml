@@ -51,6 +51,7 @@ targets:
       - path: LofiKappa/SupabaseStorageManager.swift
       - path: LofiKappa/KappaData.swift
       - path: LofiKappa/AppTexts.swift
+      - path: LofiKappa/LanguageManager.swift
     info:
       path: LofiKappaWidget/Info.plist
       properties:

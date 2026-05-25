@@ -2,17 +2,36 @@ import Foundation
 
 struct KappaData {
     let id: String
-    let name: String
-    let description: String
+    private let nameKey: String
+    private let defaultName: String
+    private let descKey: String
+    private let defaultDesc: String
+    
+    var name: String {
+        LanguageManager.shared.localizedString(forKey: nameKey, defaultValue: defaultName)
+    }
+    
+    var description: String {
+        LanguageManager.shared.localizedString(forKey: descKey, defaultValue: defaultDesc)
+    }
     
     // 1日の目標量の何倍で完全進化するか（カッパごとの難易度）
-    // 例: 1.0 = 1日分でコンプリート、2.0 = 2日分必要
     let totalEvolutionMultiplier: Double
     
-    // Supabase Storage上のフォルダ名（必須プロパティとしてここでハードコード定義）
+    // Supabase Storage上のフォルダ名
     let storageFolderName: String
     
-    // 段階進化の最大ステージ数（デフォルトは5。ゲーマーかっぱは7、おだんごかっぱは6）
+    init(id: String, nameKey: String, defaultName: String, descKey: String, defaultDesc: String, totalEvolutionMultiplier: Double, storageFolderName: String) {
+        self.id = id
+        self.nameKey = nameKey
+        self.defaultName = defaultName
+        self.descKey = descKey
+        self.defaultDesc = defaultDesc
+        self.totalEvolutionMultiplier = totalEvolutionMultiplier
+        self.storageFolderName = storageFolderName
+    }
+    
+    // 段階進化の最大ステージ数
     var numberOfStages: Int {
         if id == "gamer" {
             return 7
@@ -27,7 +46,6 @@ struct KappaData {
     func scaledRequirements(dailyGoal: Int) -> [Int] {
         let total = Double(dailyGoal) * totalEvolutionMultiplier
         if numberOfStages == 7 {
-            // 7段階進化の場合：15%, 30%, 45%, 60%, 75%, 100% の6つの閾値
             return [
                 Int(total * 0.15),
                 Int(total * 0.30),
@@ -37,7 +55,6 @@ struct KappaData {
                 Int(total)
             ]
         } else if numberOfStages == 6 {
-            // 6段階進化の場合：20%, 40%, 60%, 80%, 100% の5つの閾値
             return [
                 Int(total * 0.20),
                 Int(total * 0.40),
@@ -46,7 +63,6 @@ struct KappaData {
                 Int(total)
             ]
         } else {
-            // 5段階進化の場合：20%, 40%, 60%, 100% の4つの閾値
             return [
                 Int(total * 0.20),
                 Int(total * 0.40),
@@ -67,24 +83,30 @@ let allKappas: [KappaData] = [
     // 難易度: 難しい (1.6日)
     KappaData(
         id: "gamer",
-        name: String(localized: "kappa_gamer_name", defaultValue: "ゲーマーかっぱ"),
-        description: String(localized: "kappa_gamer_desc", defaultValue: "エナジードリンクばかり飲んでお皿が少しネオン色になっている。"),
+        nameKey: "kappa_gamer_name",
+        defaultName: "ゲーマーかっぱ",
+        descKey: "kappa_gamer_desc",
+        defaultDesc: "エナジードリンクばかり飲んでお皿が少しネオン色になっている。",
         totalEvolutionMultiplier: 1.6,
         storageFolderName: "1_gamer"
     ),
     // 難易度: 普通 (1.2日)
     KappaData(
         id: "odango",
-        name: String(localized: "kappa_odango_name", defaultValue: "おだんごかっぱ"),
-        description: String(localized: "kappa_odango_desc", defaultValue: "お皿の上にお団子がちょこんと乗った、和菓子が大好きな甘党かっぱ。"),
+        nameKey: "kappa_odango_name",
+        defaultName: "おだんごかっぱ",
+        descKey: "kappa_odango_desc",
+        defaultDesc: "お皿の上にお団子がちょこんと乗った、和菓子が大好きな甘党かっぱ。",
         totalEvolutionMultiplier: 1.2,
         storageFolderName: "2_odango"
     ),
     // 難易度: 普通 (1.2日)
     KappaData(
         id: "kingyo",
-        name: String(localized: "kappa_kingyo_name", defaultValue: "金魚かっぱ"),
-        description: String(localized: "kappa_kingyo_desc", defaultValue: "お皿の上を金魚が優雅に泳ぐ、涼しげで水が大好きな風流かっぱ。"),
+        nameKey: "kappa_kingyo_name",
+        defaultName: "金魚かっぱ",
+        descKey: "kappa_kingyo_desc",
+        defaultDesc: "お皿の上を金魚が優雅に泳ぐ、涼しげで水が大好きな風流かっぱ。",
         totalEvolutionMultiplier: 1.2,
         storageFolderName: "3_kingyo"
     )

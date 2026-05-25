@@ -1,0 +1,187 @@
+/* Tab Bar */
+"tab_home" = "Home";
+"tab_album" = "Album";
+"tab_log" = "Log";
+"tab_settings" = "Settings";
+
+/* HomeView */
+"home_next_evolution" = "Next Evolution";
+"home_remaining_ml" = "%d ml left";
+"home_evolution_complete" = "Fully Evolved!";
+"home_todays_water" = "Today's Intake";
+"home_raise_next_kappa" = "Raise Next Kappa";
+"home_share_btn_text" = "Share This State";
+
+"stage_1" = "Stage 1: Egg";
+"stage_2" = "Stage 2: Cracked";
+"stage_3" = "Stage 3: Hatchling";
+"stage_4" = "Stage 4: Growth";
+"stage_5" = "Stage 5: Adult";
+
+/* LogView */
+"log_title" = "Logs";
+"log_today" = "Today's Log";
+"log_empty" = "No water logs recorded for today.";
+"weekday_sun" = "S";
+"weekday_mon" = "M";
+"weekday_tue" = "T";
+"weekday_wed" = "W";
+"weekday_thu" = "T";
+"weekday_fri" = "F";
+"weekday_sat" = "S";
+"log_weekly_stamp" = "Weekly Stamps";
+"log_total_amount_format" = "Total %d ml";
+
+/* AlbumView */
+"album_title" = "Memories Album";
+"album_empty" = "No Kappas here yet. Hydrate to discover them!";
+"album_collected_kappas" = "Discovered Kappas";
+"album_species_count_format" = "%d species";
+"album_empty_title" = "No Kappas discovered yet.";
+"album_empty_detail" = "Record your water intake on the home screen. Once a Kappa is fully grown, it will be registered here as a memory.";
+"album_undiscovered" = "Undiscovered";
+
+/* SettingsView */
+"settings_title" = "Settings";
+"settings_personal_section" = "Personal Settings";
+"settings_mode_selection" = "Mode Select";
+"settings_gender_female" = "Female (1500ml)";
+"settings_gender_male" = "Male (2000ml)";
+"settings_custom_goal_section" = "Daily Water Goal";
+"settings_custom_goal_title" = "Analyze your optimal goal";
+"settings_current_goal" = "Goal: %dml";
+"settings_reset_goal" = "Reset to Gender Default";
+"settings_current_goal_title_label" = "Current Goal";
+"settings_goal_notice" = "The recommended intake volume is a general guideline. Appropriate amounts differ by health conditions and medication. Please prioritize your physical status and consult a doctor if you have concerns.";
+"settings_widget_title" = "Widget";
+"settings_widget_guide_btn" = "Widget Setup Guide";
+"settings_policy_section_title" = "Policies & Terms";
+"settings_terms_title" = "Terms of Service";
+"settings_privacy_title" = "Privacy Policy";
+"settings_reset_alert_message" = "Do you want to reset all data?\nAll records and album progress will be permanently lost.";
+"settings_reset_confirm_btn" = "Reset Data";
+"settings_my_cup_section" = "My Cups";
+"settings_cup_label" = "Cup %d";
+"settings_data_init" = "Reset Data";
+
+/* WaterAnalysisView */
+"analysis_title" = "Water Goal Analysis";
+"analysis_method_title" = "Choose configuration method";
+"analysis_method_simple_title" = "Simple Config";
+"analysis_method_simple_desc" = "Set goal based on gender standard";
+"analysis_method_detail_title" = "Detail Analysis";
+"analysis_method_detail_desc" = "Calculate custom goal based on lifestyle and climate";
+"analysis_gender_title" = "Select your biological sex";
+"analysis_gender_female" = "Female";
+"analysis_gender_male" = "Male";
+"analysis_q1_title" = "Tell us about yourself";
+"analysis_q1_weight" = "Weight (kg)";
+"analysis_q1_age1" = "18 - 54 years";
+"analysis_q1_age2" = "55 - 64 years";
+"analysis_q1_age3" = "65+ years";
+"analysis_q2_title" = "Usual activity level / job style";
+"analysis_q2_opt1" = "Sedentary\n(Deskwork, staying home)";
+"analysis_q2_opt2" = "Moderately Active\n(Standing jobs, walking often)";
+"analysis_q2_opt3" = "Regular Exercise\n(Gym a few times/week, labor)";
+"analysis_q2_opt4" = "Athletic / Heavy\n(Intense daily training, etc.)";
+"analysis_q3_title" = "Current season / local climate";
+"analysis_q3_opt1" = "Cool / Cold\n(Spring/Fall/Winter, AC)";
+"analysis_q3_opt2" = "Warm / Mild\n(Early summer, 25°C - 30°C)";
+"analysis_q3_opt3" = "Extreme Heat\n(Midsummer, over 30°C)";
+"analysis_q4_title" = "Special status (Optional)";
+"analysis_q4_opt1" = "Pregnant";
+"analysis_q4_opt2" = "Breastfeeding";
+"analysis_q4_opt3" = "Not Applicable / Skip";
+"analysis_next" = "Next";
+"analysis_complete" = "Analysis Complete!";
+"analysis_result" = "Your optimal intake is\n%dml per day";
+"analysis_apply" = "Apply This Goal";
+"analysis_retry" = "Retry";
+
+/* Onboarding */
+"onboarding_story_1" = "Since ancient times in Japan,";
+"onboarding_story_2" = "there has been a legendary creature...";
+"onboarding_story_3" = "The Kappa.";
+"onboarding_story_4" = "The plate on their heads";
+"onboarding_story_5" = "requires water to remain full.";
+"onboarding_story_6" = "If the plate dries out,";
+"onboarding_story_7" = "their life will be lost...";
+
+"onboarding_human_title" = "Humans are like Kappas too";
+"onboarding_human_message" = "Just as the Kappa's plate must never dry,\nwe humans also must never let\nour daily hydration run dry.";
+"onboarding_benefits_title" = "4 Hydration Benefits";
+"onboarding_benefits_subtitle" = "Tap cards for details";
+"onboarding_benefit1_title" = "① Boost Metabolism";
+"onboarding_benefit1_sub" = "Burns fat easier";
+"onboarding_benefit1_desc" = "Sufficient hydration improves blood circulation and boosts overall basal metabolism. Calories burned naturally increase, raising fat-burning efficiency.";
+"onboarding_benefit2_title" = "② Skin Health";
+"onboarding_benefit2_sub" = "Skin hydration";
+"onboarding_benefit2_desc" = "Hydration is the ultimate skincare. Normalizing turnover helps improve dryness, elasticity, radiance, and overall skin clarity.";
+"onboarding_benefit3_title" = "③ Detoxification";
+"onboarding_benefit3_sub" = "Relieve bloating & constipation";
+"onboarding_benefit3_desc" = "Regulate the digestive tract for smoother digestion. Dehydration forces the body to hold onto water, causing bloating. Drink well to flush wastes out.";
+"onboarding_benefit4_title" = "④ Reduce Fatigue";
+"onboarding_benefit4_sub" = "Maintain focus";
+"onboarding_benefit4_desc" = "A mere 1-2% drop in hydration causes sluggishness and reduced concentration. Keeping hydrated is the simplest switch to peak performance.";
+"onboarding_precondition_title" = "The Key to Maximum Effect";
+"onboarding_precondition_desc" = "The human body absorbs about 200–250ml (one glass) of water at one time. Spacing out intake to 7–8 times a day is the best strategy.";
+
+"onboarding_guide_title" = "How to use";
+"onboarding_guide_subtitle" = "Tap numbers to explore functions";
+"onboarding_guide_hint" = "Swipe or tap outside the card to proceed";
+"onboarding_guide1_title" = "Record Water Intake";
+"onboarding_guide1_desc" = "One tap on the cup icon records your hydration instantly. Turn everyday drinking into an easy, visual habit.";
+"onboarding_guide2_title" = "Drink and Grow Kappas";
+"onboarding_guide2_desc" = "When you drink water, it refills the Kappa's plate. Drink well to revive various unique Kappas in the modern world.";
+"onboarding_guide3_title" = "Quick Log via Widget";
+"onboarding_guide3_desc" = "Add widgets on your home screen to record hydration instantly with one tap without opening the app.";
+
+"onboarding_goal_title" = "Let's set your water goal";
+"onboarding_goal_desc" = "To hydrate your Kappa's plate, let's analyze and diagnose the optimal daily intake volume for you.";
+"onboarding_goal_button" = "Diagnose Optimal Goal";
+
+/* Share Text */
+"share_message_format" = "#LofiKappa Hydration logs! Today's water: %dml ";
+
+/* Reminders */
+"reminder_section_title" = "Notifications";
+"reminder_toggle_title" = "Water Reminders";
+"reminder_toggle_desc" = "The Kappa will notify you 2 hours and 3 hours after your last drink (resets upon recording)";
+"notification_title" = "Time for water, Kappa!";
+"notification_body_1" = "My plate is getting a bit dry... please give me a cup of water, Kappa!";
+"notification_body_2" = "My plate is completely empty... w-water... please... Kappa...";
+
+/* Common UI Buttons */
+"back_btn_text" = "Back";
+"cancel_btn_text" = "Cancel";
+"close_btn_text" = "Close";
+
+/* WidgetGuideView */
+"widget_guide_title" = "Widget Setup Guide";
+"widget_guide_header_title" = "Add Widget to Home Screen";
+"widget_guide_header_desc" = "Place a Kappa on your home screen to log hydration quickly and easily without launching the app.";
+"widget_guide_step1_title" = "Long-press Home Screen";
+"widget_guide_step1_desc" = "Touch and hold an empty area on your home screen until the apps begin to jiggle.";
+"widget_guide_step2_title" = "Tap the '+' Button";
+"widget_guide_step2_desc" = "Tap the add button '+' in the top-left (or top-right) corner to open the widget gallery.";
+"widget_guide_step3_title" = "Search 'KapStation'";
+"widget_guide_step3_desc" = "Type 'KapStation' in the search bar at the top, or find the app in the list and tap it.";
+"widget_guide_step4_title" = "Select Size and Add";
+"widget_guide_step4_desc" = "Select your preferred widget size (Small/Medium) and tap 'Add Widget' at the bottom.";
+"widget_guide_step5_title" = "Done and Hydrate";
+"widget_guide_step5_desc" = "Once placed, press 'Done'. Tap the quick hydration buttons on the widget to update your logs instantly!";
+"widget_guide_trouble_title" = "Sync issues?";
+"widget_guide_trouble_desc" = "If the data does not update right after adding or at midnight, simply open the main app once to force sync and refresh the widget.";
+
+/* Kappa Data */
+"kappa_gamer_name" = "Gamer Kappa";
+"kappa_gamer_desc" = "Only drinks energy drinks, which turned its plate neon-colored.";
+"kappa_odango_name" = "Odango Kappa";
+"kappa_odango_desc" = "Has a small dumpling resting on its plate. Has a huge sweet tooth.";
+"kappa_kingyo_name" = "Goldfish Kappa";
+"kappa_kingyo_desc" = "A cool, elegant Kappa with goldfish swimming elegantly in its plate.";
+
+/* Language Settings UI */
+"settings_lang_section_title" = "Language";
+"settings_lang_label" = "App Language";
+"lang_system" = "System Settings";

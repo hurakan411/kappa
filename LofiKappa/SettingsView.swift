@@ -6,6 +6,7 @@ struct SettingsView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.colorScheme) private var colorScheme
     @Query private var userSettings: [UserSettings]
+    @ObservedObject private var languageManager = LanguageManager.shared
     
     var settings: UserSettings {
         if let s = userSettings.first {
@@ -207,6 +208,34 @@ struct SettingsView: View {
                                     }
                                 }
                                 .tint(Theme.Colors.primaryBlue)
+                            }
+                        }
+                        
+                        // MARK: - 言語設定
+                        settingCard {
+                            VStack(alignment: .leading, spacing: 16) {
+                                sectionHeader(icon: "globe", title: LanguageManager.shared.localizedString(forKey: "settings_lang_section_title", defaultValue: "言語設定 (Language)"))
+                                
+                                HStack {
+                                    Text(LanguageManager.shared.localizedString(forKey: "settings_lang_label", defaultValue: "表示言語"))
+                                        .font(.system(.body, design: .rounded).bold())
+                                        .foregroundColor(Theme.Colors.text(for: colorScheme))
+                                    
+                                    Spacer()
+                                    
+                                    Picker("", selection: $languageManager.selectedLanguage) {
+                                        ForEach(AppLanguage.allCases) { lang in
+                                            Text(lang.displayName)
+                                                .tag(lang)
+                                        }
+                                    }
+                                    .pickerStyle(.menu)
+                                    .tint(Theme.Colors.primaryBlue)
+                                    .onChange(of: languageManager.selectedLanguage) { _ in
+                                        // 言語が変更されたら、ウィジェットのタイムラインも更新する
+                                        WidgetCenter.shared.reloadAllTimelines()
+                                    }
+                                }
                             }
                         }
                         
