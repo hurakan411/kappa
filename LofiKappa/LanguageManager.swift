@@ -3,7 +3,6 @@ import Combine
 import SwiftUI
 
 enum AppLanguage: String, CaseIterable, Identifiable {
-    case system = "system"
     case japanese = "ja"
     case english = "en"
     
@@ -11,8 +10,6 @@ enum AppLanguage: String, CaseIterable, Identifiable {
     
     var displayName: String {
         switch self {
-        case .system:
-            return LanguageManager.shared.localizedString(forKey: "lang_system", defaultValue: "システム設定")
         case .japanese:
             return "日本語"
         case .english:
@@ -24,7 +21,7 @@ enum AppLanguage: String, CaseIterable, Identifiable {
 class LanguageManager: ObservableObject {
     static let shared = LanguageManager()
     
-    @Published var selectedLanguage: AppLanguage = .system {
+    @Published var selectedLanguage: AppLanguage = .english {
         didSet {
             UserDefaults(suiteName: SharedDatabase.appGroupIdentifier)?.set(selectedLanguage.rawValue, forKey: "app_language")
             UserDefaults(suiteName: SharedDatabase.appGroupIdentifier)?.synchronize()
@@ -34,17 +31,24 @@ class LanguageManager: ObservableObject {
     }
     
     private init() {
-        let saved = UserDefaults(suiteName: SharedDatabase.appGroupIdentifier)?.string(forKey: "app_language") ?? "system"
-        self.selectedLanguage = AppLanguage(rawValue: saved) ?? .system
+        let sharedDefaults = UserDefaults(suiteName: SharedDatabase.appGroupIdentifier)
+        if let saved = sharedDefaults?.string(forKey: "app_language"),
+           let lang = AppLanguage(rawValue: saved) {
+            self.selectedLanguage = lang
+        } else {
+            // 初回起動時: デバイスの優先言語を検出してデフォルトを設定
+            let preferred = Bundle.main.preferredLocalizations.first ?? "en"
+            let defaultLang: AppLanguage = preferred.hasPrefix("ja") ? .japanese : .english
+            self.selectedLanguage = defaultLang
+            
+            // UserDefaultsに永続化
+            sharedDefaults?.set(defaultLang.rawValue, forKey: "app_language")
+            sharedDefaults?.synchronize()
+        }
     }
     
     var currentLanguageCode: String {
-        if selectedLanguage == .system {
-            let lang = Bundle.main.preferredLocalizations.first ?? "en"
-            return lang.hasPrefix("ja") ? "ja" : "en"
-        } else {
-            return selectedLanguage.rawValue
-        }
+        return selectedLanguage.rawValue
     }
     
     var bundle: Bundle {
