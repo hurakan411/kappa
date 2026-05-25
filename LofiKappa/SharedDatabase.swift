@@ -2,7 +2,7 @@ import Foundation
 import SwiftData
 
 public final class SharedDatabase {
-    public static let appGroupIdentifier = "group.com.lofikappa.app"
+    public static let appGroupIdentifier = "group.com.example.LofiKappa"
     
     public static let schema = Schema([
         UserSettings.self,

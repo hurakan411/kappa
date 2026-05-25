@@ -7,11 +7,48 @@ class SupabaseStorageManager: ObservableObject {
     @Published var fileMap: [String: [Int: String]] = [:] // [kappaId: [stage: fileName]]
     @Published var isLoading = false
     
-    private init() {}
+    private var sharedDefaults: UserDefaults? {
+        UserDefaults(suiteName: SharedDatabase.appGroupIdentifier)
+    }
+    
+    private init() {
+        // 起動時にキャッシュから復元
+        restoreFromCache()
+    }
     
     /// キャッシュされたファイル名を取得する
     func fileName(for kappaId: String, stage: Int) -> String? {
         return fileMap[kappaId]?[stage]
+    }
+    
+    /// UserDefaults からキャッシュを復元する
+    private func restoreFromCache() {
+        for kappa in allKappas {
+            let cacheKey = "widget_fileMap_\(kappa.id)"
+            if let cached = sharedDefaults?.dictionary(forKey: cacheKey) as? [String: String] {
+                var restoredMap: [Int: String] = [:]
+                for (key, value) in cached {
+                    if let intKey = Int(key) {
+                        restoredMap[intKey] = value
+                    }
+                }
+                if !restoredMap.isEmpty {
+                    fileMap[kappa.id] = restoredMap
+                    print("🟢 [SupabaseStorageManager] Restored cache for \(kappa.id): \(restoredMap)")
+                }
+            }
+        }
+    }
+    
+    /// fileMap を UserDefaults にキャッシュする
+    private func saveToCache(kappaId: String, stageMap: [Int: String]) {
+        let cacheKey = "widget_fileMap_\(kappaId)"
+        var stringKeyMap: [String: String] = [:]
+        for (key, value) in stageMap {
+            stringKeyMap[String(key)] = value
+        }
+        sharedDefaults?.set(stringKeyMap, forKey: cacheKey)
+        sharedDefaults?.synchronize()
     }
     
     /// 特定のカッパ種のファイルリストを取得し、ステージ番号とファイル名のマップを更新する
@@ -106,6 +143,9 @@ class SupabaseStorageManager: ObservableObject {
                 DispatchQueue.main.async {
                     self?.fileMap[kappaId] = stageMap
                 }
+                
+                // UserDefaults にもキャッシュ（ウィジェットとの共有用）
+                self?.saveToCache(kappaId: kappaId, stageMap: stageMap)
             } catch {
                 print("🔴 [SupabaseStorageManager] Failed to decode API response: \(error)")
             }

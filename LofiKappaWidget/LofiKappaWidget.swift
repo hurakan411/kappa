@@ -174,15 +174,15 @@ struct Provider: TimelineProvider {
     }
 
     func getSnapshot(in context: Context, completion: @escaping (SimpleEntry) -> ()) {
-        Task { @MainActor in
-            let entry = fetchEntry(for: Date())
+        Task {
+            let entry = await fetchEntry(for: Date())
             completion(entry)
         }
     }
 
     func getTimeline(in context: Context, completion: @escaping (Timeline<SimpleEntry>) -> ()) {
-        Task { @MainActor in
-            let entry = fetchEntry(for: Date())
+        Task {
+            let entry = await fetchEntry(for: Date())
             let nextUpdate = Calendar.current.date(byAdding: .minute, value: 30, to: Date()) ?? Date().addingTimeInterval(1800)
             let timeline = Timeline(entries: [entry], policy: .after(nextUpdate))
             completion(timeline)
@@ -190,7 +190,7 @@ struct Provider: TimelineProvider {
     }
     
     @MainActor
-    private func fetchEntry(for date: Date) -> SimpleEntry {
+    private func fetchDatabaseInfo(for date: Date) -> (currentAmount: Int, kappaCurrentAmount: Int, kappaId: String, isCompleted: Bool, dailyGoal: Int, settings: UserSettings) {
         let context = SharedDatabase.container.mainContext
         
         // 1. 設定情報の取得
@@ -213,7 +213,20 @@ struct Provider: TimelineProvider {
         let kappaId = localTodayLog?.targetKappaId ?? "gamer"
         let isCompleted = localTodayLog?.isCompleted ?? false
         
-                let currentKappa = allKappas.first(where: { $0.id == kappaId }) ?? allKappas[0]
+        return (currentAmount, kappaCurrentAmount, kappaId, isCompleted, dailyGoal, settings)
+    }
+    
+    private func fetchEntry(for date: Date) async -> SimpleEntry {
+        // 1. データベース情報の取得 (MainActorで実行)
+        let dbInfo = await fetchDatabaseInfo(for: date)
+        let currentAmount = dbInfo.currentAmount
+        let kappaCurrentAmount = dbInfo.kappaCurrentAmount
+        let kappaId = dbInfo.kappaId
+        let isCompleted = dbInfo.isCompleted
+        let dailyGoal = dbInfo.dailyGoal
+        let settings = dbInfo.settings
+        
+        let currentKappa = allKappas.first(where: { $0.id == kappaId }) ?? allKappas[0]
         
         // ステージ判定
         var kappaStage = 1
@@ -263,8 +276,27 @@ struct Provider: TimelineProvider {
         }
         
         // 動的フォルダマップの構築（Widget起動時用）
+        let cacheKey = "widget_fileMap_\(kappaId)"
+        let sharedDefaults = UserDefaults(suiteName: SharedDatabase.appGroupIdentifier)
+        
         if SupabaseStorageManager.shared.fileName(for: kappaId, stage: kappaStage) == nil {
-            let semaphore = DispatchSemaphore(value: 0)
+            // UserDefaults にキャッシュがあれば復元
+            if let cached = sharedDefaults?.dictionary(forKey: cacheKey) as? [String: String] {
+                var restoredMap: [Int: String] = [:]
+                for (key, value) in cached {
+                    if let intKey = Int(key) {
+                        restoredMap[intKey] = value
+                    }
+                }
+                if !restoredMap.isEmpty {
+                    SupabaseStorageManager.shared.fileMap[kappaId] = restoredMap
+                    print("🟢 [Widget] Restored fileMap from cache for \(kappaId): \(restoredMap)")
+                }
+            }
+        }
+        
+        // キャッシュにもなければ非同期でネットワークから取得
+        if SupabaseStorageManager.shared.fileName(for: kappaId, stage: kappaStage) == nil {
             let folderName = currentKappa.storageFolderName
             if let listURL = URL(string: "\(SupabaseConfig.supabaseUrl)/storage/v1/object/list/\(SupabaseConfig.bucketName)") {
                 var request = URLRequest(url: listURL)
@@ -283,44 +315,55 @@ struct Provider: TimelineProvider {
                 ]
                 request.httpBody = try? JSONSerialization.data(withJSONObject: body)
                 
-                URLSession.shared.dataTask(with: request) { data, response, error in
-                    if let data = data {
-                        struct SupabaseFile: Decodable {
-                            let name: String
+                do {
+                    let (data, _) = try await URLSession.shared.data(for: request)
+                    struct SupabaseFile: Decodable {
+                        let name: String
+                    }
+                    if let files = try? JSONDecoder().decode([SupabaseFile].self, from: data) {
+                        var stageMap: [Int: String] = [:]
+                        for file in files {
+                            let cleanName = URL(fileURLWithPath: file.name).lastPathComponent
+                            if let firstChar = cleanName.first, let stage = Int(String(firstChar)) {
+                                stageMap[stage] = cleanName
+                            }
                         }
-                        if let files = try? JSONDecoder().decode([SupabaseFile].self, from: data) {
-                            var stageMap: [Int: String] = [:]
-                            for file in files {
-                                let cleanName = URL(fileURLWithPath: file.name).lastPathComponent
-                                if let firstChar = cleanName.first, let stage = Int(String(firstChar)) {
-                                    stageMap[stage] = cleanName
-                                }
+                        if !stageMap.isEmpty {
+                            SupabaseStorageManager.shared.fileMap[kappaId] = stageMap
+                            
+                            // UserDefaults にもキャッシュ保存
+                            var stringKeyMap: [String: String] = [:]
+                            for (key, value) in stageMap {
+                                stringKeyMap[String(key)] = value
                             }
-                            if !stageMap.isEmpty {
-                                DispatchQueue.main.async {
-                                    SupabaseStorageManager.shared.fileMap[kappaId] = stageMap
-                                }
-                            }
+                            sharedDefaults?.set(stringKeyMap, forKey: cacheKey)
+                            sharedDefaults?.synchronize()
+                            print("🟢 [Widget] Fetched and cached fileMap for \(kappaId): \(stageMap)")
                         }
                     }
-                    semaphore.signal()
-                }.resume()
-                _ = semaphore.wait(timeout: .now() + 1.5)
+                } catch {
+                    print("🔴 [Widget] Failed to fetch file list: \(error.localizedDescription)")
+                }
             }
         }
         
-        // 画像の同期ダウンロード
+        // 画像の非同期ダウンロード
         var kappaImage: UIImage? = nil
         if let imageUrl = SupabaseConfig.imageUrl(for: kappaId, stage: kappaStage) {
-            let semaphore = DispatchSemaphore(value: 0)
-            let task = URLSession.shared.dataTask(with: imageUrl) { data, response, error in
-                if let data = data, let image = UIImage(data: data) {
+            print("🟢 [Widget] Loading image from: \(imageUrl)")
+            do {
+                let (data, _) = try await URLSession.shared.data(from: imageUrl)
+                if let image = UIImage(data: data) {
                     kappaImage = image
+                    print("🟢 [Widget] Image loaded successfully (\(data.count) bytes)")
+                } else {
+                    print("🔴 [Widget] Failed to decode image data")
                 }
-                semaphore.signal()
+            } catch {
+                print("🔴 [Widget] Failed to load image: \(error.localizedDescription)")
             }
-            task.resume()
-            _ = semaphore.wait(timeout: .now() + 1.5)
+        } else {
+            print("⚠️ [Widget] No image URL for kappaId=\(kappaId), stage=\(kappaStage)")
         }
         
         return SimpleEntry(
