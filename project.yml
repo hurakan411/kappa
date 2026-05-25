@@ -52,6 +52,10 @@ targets:
       - path: LofiKappa/KappaData.swift
       - path: LofiKappa/AppTexts.swift
       - path: LofiKappa/LanguageManager.swift
+      - path: LofiKappa/ja.lproj
+        buildPhase: resources
+      - path: LofiKappa/en.lproj
+        buildPhase: resources
     info:
       path: LofiKappaWidget/Info.plist
       properties:

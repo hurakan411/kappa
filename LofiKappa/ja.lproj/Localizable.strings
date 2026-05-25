@@ -185,3 +185,9 @@
 "settings_lang_section_title" = "言語設定 (Language)";
 "settings_lang_label" = "表示言語";
 "lang_system" = "システム設定";
+
+/* Widget */
+"widget_today_water" = "今日の給水";
+"widget_evolution_progress" = "進化の進捗";
+"widget_status_record" = "観察記録ステータス";
+"widget_today_amount" = "本日の水分量";

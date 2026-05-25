@@ -271,4 +271,10 @@ struct AppTexts {
     static var widgetGuideStep5Desc: String { LanguageManager.shared.localizedString(forKey: "widget_guide_step5_desc", defaultValue: "ホーム画面にウィジェットが配置されたら、完了ボタンを押します。ウィジェット上の給水ボタンをタップするだけで、すぐに今日の記録へ反映されます！") }
     static var widgetGuideTroubleTitle: String { LanguageManager.shared.localizedString(forKey: "widget_guide_trouble_title", defaultValue: "うまく同期されない時は？") }
     static var widgetGuideTroubleDesc: String { LanguageManager.shared.localizedString(forKey: "widget_guide_trouble_desc", defaultValue: "ウィジェットの追加直後や、日付が変わったタイミングなどでデータが表示されない場合は、一度アプリを起動して水分を補給してみてください。自動的にデータが同期・更新されます。") }
+    
+    // MARK: - Widget
+    static var widgetTodayWater: String { LanguageManager.shared.localizedString(forKey: "widget_today_water", defaultValue: "今日の給水") }
+    static var widgetEvolutionProgress: String { LanguageManager.shared.localizedString(forKey: "widget_evolution_progress", defaultValue: "進化の進捗") }
+    static var widgetStatusRecord: String { LanguageManager.shared.localizedString(forKey: "widget_status_record", defaultValue: "観察記録ステータス") }
+    static var widgetTodayAmount: String { LanguageManager.shared.localizedString(forKey: "widget_today_amount", defaultValue: "本日の水分量") }
 }

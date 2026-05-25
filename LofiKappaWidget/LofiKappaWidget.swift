@@ -441,7 +441,7 @@ struct LofiKappaShowcaseWidgetEntryView : View {
                                         Image(systemName: "drop.fill")
                                             .font(.system(size: 9))
                                             .foregroundColor(.white)
-                                        Text("今日の給水")
+                                        Text(AppTexts.widgetTodayWater)
                                             .font(.system(size: 8.5).bold())
                                             .foregroundColor(.white)
                                     }
@@ -467,7 +467,7 @@ struct LofiKappaShowcaseWidgetEntryView : View {
                                         Image(systemName: "sparkles")
                                             .font(.system(size: 9))
                                             .foregroundColor(.white)
-                                        Text("進化の進捗")
+                                        Text(AppTexts.widgetEvolutionProgress)
                                             .font(.system(size: 8.5).bold())
                                             .foregroundColor(.white)
                                     }
@@ -557,7 +557,7 @@ struct LofiKappaShowcaseWidgetEntryView : View {
                         
                         // 左上：ダブルプログレスバーコンテナ（少し横幅を持たせて綺麗に）
                         VStack(alignment: .leading, spacing: 8) {
-                            Text("観察記録ステータス")
+                            Text(AppTexts.widgetStatusRecord)
                                 .font(.system(size: 9, design: .rounded).bold())
                                 .foregroundColor(.white)
                                 .shadow(color: Color.black.opacity(0.35), radius: 1, x: 0, y: 0.8)
@@ -565,7 +565,7 @@ struct LofiKappaShowcaseWidgetEntryView : View {
                             // 今日
                             VStack(alignment: .leading, spacing: 3) {
                                 HStack {
-                                    Label("本日の水分量", systemImage: "drop.bubble.fill")
+                                    Label(AppTexts.widgetTodayAmount, systemImage: "drop.bubble.fill")
                                         .font(.system(size: 9).bold())
                                         .foregroundColor(.white)
                                     Spacer()
@@ -585,7 +585,7 @@ struct LofiKappaShowcaseWidgetEntryView : View {
                             // 進化
                             VStack(alignment: .leading, spacing: 3) {
                                 HStack {
-                                    Label("進化の進捗", systemImage: "sparkles")
+                                    Label(AppTexts.widgetEvolutionProgress, systemImage: "sparkles")
                                         .font(.system(size: 9).bold())
                                         .foregroundColor(.white)
                                     Spacer()

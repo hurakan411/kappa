@@ -185,3 +185,9 @@
 "settings_lang_section_title" = "Language";
 "settings_lang_label" = "App Language";
 "lang_system" = "System Settings";
+
+/* Widget */
+"widget_today_water" = "Today's Water";
+"widget_evolution_progress" = "Evolution";
+"widget_status_record" = "Observation Status";
+"widget_today_amount" = "Today's Intake";
