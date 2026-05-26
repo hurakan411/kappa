@@ -341,24 +341,25 @@ struct WaterAnalysisView: View {
         
         let multiplier: Double
         switch ageSelection {
-        case 0: multiplier = 35.0
-        case 1: multiplier = 30.0
-        case 2: multiplier = 25.0
-        default: multiplier = 35.0
+        case 0: multiplier = 8.0
+        case 1: multiplier = 6.0
+        case 2: multiplier = 4.0
+        default: multiplier = 8.0
         }
         
-        let base = weight * multiplier
+        let base = 1000.0 + (weight * multiplier)
         
-        let activityValues = [0, 200, 400, 700]
+        let activityValues = [0, 100, 200, 300]
         let activity = activityValues[activitySelection]
         
-        let weatherValues = [0, 250, 600]
+        let weatherValues = [0, 100, 200]
         let weather = weatherValues[weatherSelection]
         
-        let specialValues = [300, 600, 0]
+        let specialValues = [100, 200, 0]
         let special = specialValues[specialSelection]
         
-        calculatedTarget = min(Int(base) + activity + weather + special, 2500)
+        let rawTarget = Int(base) + activity + weather + special
+        calculatedTarget = max(1500, min(rawTarget, 2500))
         
         withAnimation {
             step = .result
