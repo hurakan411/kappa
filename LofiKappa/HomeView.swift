@@ -251,7 +251,6 @@ struct HomeView: View {
             
             Spacer(minLength: 24)
             
-            // セグメントバーカード
             VStack(spacing: 12) {
                 StatSegmentCard(
                     value: evolutionProgress,
@@ -259,6 +258,8 @@ struct HomeView: View {
                     label: AppTexts.nextEvolution,
                     currentText: currentStageIndex == maxStageIndex ? "MAX" : "\(currentKappaAmount) ml",
                     maxText: currentStageIndex == maxStageIndex ? "" : "/ \(nextEvolutionGoal) ml",
+                    tintColor: Theme.Colors.kappaGreenDark,
+                    lightTintColor: Theme.Colors.kappaGreenLight,
                     colorScheme: colorScheme
                 )
                 StatSegmentCard(
@@ -267,6 +268,8 @@ struct HomeView: View {
                     label: AppTexts.todaysWater,
                     currentText: "\(currentAmount) ml",
                     maxText: "/ \(todayGoal) ml",
+                    tintColor: Theme.Colors.primaryBlue,
+                    lightTintColor: Theme.Colors.lightBlue,
                     colorScheme: colorScheme
                 )
             }
@@ -777,6 +780,8 @@ struct StatSegmentCard: View {
     let label: String
     let currentText: String
     let maxText: String
+    let tintColor: Color    // メインのテーマカラー（primaryBlue または kappaGreenDark）
+    let lightTintColor: Color // サブのライトカラー（lightBlue または kappaGreenLight）
     let colorScheme: ColorScheme
 
     private let segmentCount = 10
@@ -788,7 +793,7 @@ struct StatSegmentCard: View {
             HStack(spacing: 6) {
                 Image(systemName: icon)
                     .font(.system(size: 12, weight: .semibold))
-                    .foregroundColor(Theme.Colors.primaryBlue)
+                    .foregroundColor(tintColor)
                 Text(label)
                     .font(.system(.caption, design: .rounded))
                     .foregroundColor(.secondary)
@@ -796,7 +801,7 @@ struct StatSegmentCard: View {
                 HStack(spacing: 2) {
                     Text(currentText)
                         .font(.system(.caption, design: .rounded).bold())
-                        .foregroundColor(Theme.Colors.primaryBlue)
+                        .foregroundColor(tintColor)
                     if !maxText.isEmpty {
                         Text(maxText)
                             .font(.system(size: 10, design: .rounded))
@@ -820,13 +825,13 @@ struct StatSegmentCard: View {
                                 filled
                                 ? AnyShapeStyle(LinearGradient(
                                     colors: [
-                                        Theme.Colors.lightBlue.opacity(0.8),
-                                        Theme.Colors.primaryBlue
+                                        lightTintColor.opacity(0.8),
+                                        tintColor
                                     ],
                                     startPoint: .leading,
                                     endPoint: .trailing
                                 ))
-                                : AnyShapeStyle(Theme.Colors.lightBlue.opacity(0.18))
+                                : AnyShapeStyle(lightTintColor.opacity(0.18))
                             )
                             .frame(width: segW, height: segH)
                             .animation(.easeOut(duration: 0.15).delay(Double(i) * 0.03), value: filled)
@@ -839,7 +844,7 @@ struct StatSegmentCard: View {
         .padding(.vertical, 14)
         .background(Theme.Colors.card(for: colorScheme))
         .cornerRadius(16)
-        .handDrawnBorder(color: Theme.Colors.primaryBlue.opacity(0.24), cornerRadius: 16)
+        .handDrawnBorder(color: tintColor.opacity(0.24), cornerRadius: 16)
         .shadow(color: .black.opacity(colorScheme == .dark ? 0.2 : 0.05), radius: 6, x: 0, y: 2)
     }
 }
