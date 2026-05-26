@@ -170,7 +170,7 @@ struct SettingsView: View {
                                             // 水分量が直感的に伝わる進捗グラデーション背景
                                             GeometryReader { geo in
                                                 let sizeVal = i < cupSizes.count ? (Double(cupSizes[i]) ?? 0) : 0
-                                                let progress = CGFloat(sizeVal / 500.0)
+                                                let progress = CGFloat(sizeVal / 1000.0)
                                                 let fillWidth = geo.size.width * progress
                                                 ZStack(alignment: .leading) {
                                                     Color.clear
@@ -457,7 +457,7 @@ struct SettingsView: View {
     private func adjustCupSize(index: Int, delta: Int) {
         guard index < cupSizes.count else { return }
         let currentValue = Int(cupSizes[index]) ?? 0
-        let newValue = max(0, min(500, currentValue + delta))
+        let newValue = max(0, min(1000, currentValue + delta))
         
         // タプティクスフィードバック
         let generator = UIImpactFeedbackGenerator(style: .light)
