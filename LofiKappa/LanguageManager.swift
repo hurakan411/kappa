@@ -53,10 +53,15 @@ class LanguageManager: ObservableObject {
     
     var bundle: Bundle {
         let code = currentLanguageCode
-        // 開発環境と本番環境の両方でリソースが配置されたバンドルを探索
-        // AppおよびWidgetの両ターゲットで正しく .lproj を参照できるようにする
+        // まずはメインアプリのバンドルを最優先で探索する
+        if let path = Bundle.main.path(forResource: code, ofType: "lproj"),
+           let langBundle = Bundle(path: path) {
+            return langBundle
+        }
+        // 見つからない場合は他のすべてのバンドルを探索（開発環境やウィジェットターゲットなどのため）
         for bundle in Bundle.allBundles {
-            if let path = bundle.path(forResource: code, ofType: "lproj"),
+            if bundle != Bundle.main,
+               let path = bundle.path(forResource: code, ofType: "lproj"),
                let langBundle = Bundle(path: path) {
                 return langBundle
             }

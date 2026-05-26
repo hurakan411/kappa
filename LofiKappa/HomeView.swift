@@ -170,6 +170,7 @@ struct HomeView: View {
                     .onAppear { initializeData() }
             }
         }
+        .id(languageManager.selectedLanguage)
         .onChange(of: safeDailyGoal) { newGoal in
             guard isReady, let log = localTodayLog, !log.isCompleted else { return }
             let currentRefGoal = log.referenceDailyGoal ?? newGoal

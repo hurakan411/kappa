@@ -191,3 +191,35 @@
 "widget_evolution_progress" = "進化の進捗";
 "widget_status_record" = "観察記録ステータス";
 "widget_today_amount" = "本日の水分量";
+
+/* Stages - Gamer */
+"stage_gamer_1" = "Stage 1: 卵期";
+"stage_gamer_2" = "Stage 2: ひび割れ期";
+"stage_gamer_3" = "Stage 3: ベビー期";
+"stage_gamer_4" = "Stage 4: ゲーマーベビー期";
+"stage_gamer_5" = "Stage 5: ゲーマーチャイルド期";
+"stage_gamer_6" = "Stage 6: ゲーマーアダルト期";
+"stage_gamer_7" = "Stage 7: ゲーマープロ期（最終形態）";
+
+/* Stages - Odango */
+"stage_odango_1" = "Stage 1: 卵期";
+"stage_odango_2" = "Stage 2: ひび割れ期";
+"stage_odango_3" = "Stage 3: 幼生期";
+"stage_odango_4" = "Stage 4: 成長期（おだんごベビー）";
+"stage_odango_5" = "Stage 5: 成長期（おだんごチャイルド）";
+"stage_odango_6" = "Stage 6: 成体期（おだんごかっぱ最終形態）";
+
+/* Stages - Kingyo */
+"stage_kingyo_1" = "Stage 1: 卵期";
+"stage_kingyo_2" = "Stage 2: ひび割れ期";
+"stage_kingyo_3" = "Stage 3: 幼生期";
+"stage_kingyo_4" = "Stage 4: 成長期（金魚ベビー）";
+"stage_kingyo_5" = "Stage 5: 成長期（金魚チャイルド）";
+"stage_kingyo_6" = "Stage 6: 成体期（金魚カッパ最終形態）";
+
+/* Stages - Default */
+"stage_default_1" = "Stage 1: 卵期";
+"stage_default_2" = "Stage 2: ひび割れ期";
+"stage_default_3" = "Stage 3: 幼生期";
+"stage_default_4" = "Stage 4: 成長期";
+"stage_default_5" = "Stage 5: 成体期（最終形態）";

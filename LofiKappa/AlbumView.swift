@@ -90,6 +90,7 @@ struct AlbumView: View {
             .navigationTitle(AppTexts.albumTitle)
             .navigationBarTitleDisplayMode(.inline)
         }
+        .id(languageManager.selectedLanguage)
     }
 }
 
@@ -127,7 +128,7 @@ struct KappaCard: View {
             
             // 名前エリア
             HStack {
-                Text(kappa.title)
+                Text(KappaData.find(by: baseId)?.name ?? kappa.title)
                     .font(.system(.caption, design: .rounded).bold())
                     .foregroundColor(Theme.Colors.text(for: colorScheme))
                     .lineLimit(1)
@@ -251,12 +252,12 @@ struct KappaDetailView: View {
                             .font(.system(.subheadline, design: .rounded).bold())
                             .foregroundColor(Theme.Colors.primaryBlue)
                         
-                        Text(kappa.title)
+                        Text(KappaData.find(by: baseId)?.name ?? kappa.title)
                             .font(.system(.title3, design: .rounded).bold())
                             .foregroundColor(Theme.Colors.text(for: colorScheme))
                             .multilineTextAlignment(.center)
                         
-                        Text(kappa.kappaDescription)
+                        Text(KappaData.find(by: baseId)?.description ?? kappa.kappaDescription)
                             .font(.system(.body, design: .rounded))
                             .foregroundColor(Theme.Colors.text(for: colorScheme).opacity(0.85))
                             .multilineTextAlignment(.center)
@@ -268,7 +269,7 @@ struct KappaDetailView: View {
                 }
             }
         }
-        .navigationTitle(kappa.title)
+        .navigationTitle(KappaData.find(by: baseId)?.name ?? kappa.title)
         .navigationBarTitleDisplayMode(.inline)
     }
     
@@ -276,39 +277,39 @@ struct KappaDetailView: View {
     private func stageName(for stage: Int) -> String {
         if baseId == "gamer" {
             switch stage {
-            case 1: return "Stage 1: 卵期"
-            case 2: return "Stage 2: ひび割れ期"
-            case 3: return "Stage 3: ベビー期"
-            case 4: return "Stage 4: ゲーマーベビー期"
-            case 5: return "Stage 5: ゲーマーチャイルド期"
-            case 6: return "Stage 6: ゲーマーアダルト期"
-            default: return "Stage 7: ゲーマープロ期（最終形態）"
+            case 1: return LanguageManager.shared.localizedString(forKey: "stage_gamer_1", defaultValue: "Stage 1: 卵期")
+            case 2: return LanguageManager.shared.localizedString(forKey: "stage_gamer_2", defaultValue: "Stage 2: ひび割れ期")
+            case 3: return LanguageManager.shared.localizedString(forKey: "stage_gamer_3", defaultValue: "Stage 3: ベビー期")
+            case 4: return LanguageManager.shared.localizedString(forKey: "stage_gamer_4", defaultValue: "Stage 4: ゲーマーベビー期")
+            case 5: return LanguageManager.shared.localizedString(forKey: "stage_gamer_5", defaultValue: "Stage 5: ゲーマーチャイルド期")
+            case 6: return LanguageManager.shared.localizedString(forKey: "stage_gamer_6", defaultValue: "Stage 6: ゲーマーアダルト期")
+            default: return LanguageManager.shared.localizedString(forKey: "stage_gamer_7", defaultValue: "Stage 7: ゲーマープロ期（最終形態）")
             }
         } else if baseId == "odango" {
             switch stage {
-            case 1: return "Stage 1: 卵期"
-            case 2: return "Stage 2: ひび割れ期"
-            case 3: return "Stage 3: 幼生期"
-            case 4: return "Stage 4: 成長期（おだんごベビー）"
-            case 5: return "Stage 5: 成長期（おだんごチャイルド）"
-            default: return "Stage 6: 成体期（おだんごかっぱ最終形態）"
+            case 1: return LanguageManager.shared.localizedString(forKey: "stage_odango_1", defaultValue: "Stage 1: 卵期")
+            case 2: return LanguageManager.shared.localizedString(forKey: "stage_odango_2", defaultValue: "Stage 2: ひび割れ期")
+            case 3: return LanguageManager.shared.localizedString(forKey: "stage_odango_3", defaultValue: "Stage 3: 幼生期")
+            case 4: return LanguageManager.shared.localizedString(forKey: "stage_odango_4", defaultValue: "Stage 4: 成長期（おだんごベビー）")
+            case 5: return LanguageManager.shared.localizedString(forKey: "stage_odango_5", defaultValue: "Stage 5: 成長期（おだんごチャイルド）")
+            default: return LanguageManager.shared.localizedString(forKey: "stage_odango_6", defaultValue: "Stage 6: 成体期（おだんごかっぱ最終形態）")
             }
         } else if baseId == "kingyo" {
             switch stage {
-            case 1: return "Stage 1: 卵期"
-            case 2: return "Stage 2: ひび割れ期"
-            case 3: return "Stage 3: 幼生期"
-            case 4: return "Stage 4: 成長期（金魚ベビー）"
-            case 5: return "Stage 5: 成長期（金魚チャイルド）"
-            default: return "Stage 6: 成体期（金魚カッパ最終形態）"
+            case 1: return LanguageManager.shared.localizedString(forKey: "stage_kingyo_1", defaultValue: "Stage 1: 卵期")
+            case 2: return LanguageManager.shared.localizedString(forKey: "stage_kingyo_2", defaultValue: "Stage 2: ひび割れ期")
+            case 3: return LanguageManager.shared.localizedString(forKey: "stage_kingyo_3", defaultValue: "Stage 3: 幼生期")
+            case 4: return LanguageManager.shared.localizedString(forKey: "stage_kingyo_4", defaultValue: "Stage 4: 成長期（金魚ベビー）")
+            case 5: return LanguageManager.shared.localizedString(forKey: "stage_kingyo_5", defaultValue: "Stage 5: 成長期（金魚チャイルド）")
+            default: return LanguageManager.shared.localizedString(forKey: "stage_kingyo_6", defaultValue: "Stage 6: 成体期（金魚カッパ最終形態）")
             }
         } else {
             switch stage {
-            case 1: return "Stage 1: 卵期"
-            case 2: return "Stage 2: ひび割れ期"
-            case 3: return "Stage 3: 幼生期"
-            case 4: return "Stage 4: 成長期"
-            default: return "Stage 5: 成体期（最終形態）"
+            case 1: return LanguageManager.shared.localizedString(forKey: "stage_default_1", defaultValue: "Stage 1: 卵期")
+            case 2: return LanguageManager.shared.localizedString(forKey: "stage_default_2", defaultValue: "Stage 2: ひび割れ期")
+            case 3: return LanguageManager.shared.localizedString(forKey: "stage_default_3", defaultValue: "Stage 3: 幼生期")
+            case 4: return LanguageManager.shared.localizedString(forKey: "stage_default_4", defaultValue: "Stage 4: 成長期")
+            default: return LanguageManager.shared.localizedString(forKey: "stage_default_5", defaultValue: "Stage 5: 成体期（最終形態）")
             }
         }
     }

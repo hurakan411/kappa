@@ -191,3 +191,35 @@
 "widget_evolution_progress" = "Evolution";
 "widget_status_record" = "Observation Status";
 "widget_today_amount" = "Today's Intake";
+
+/* Stages - Gamer */
+"stage_gamer_1" = "Stage 1: Egg";
+"stage_gamer_2" = "Stage 2: Cracked";
+"stage_gamer_3" = "Stage 3: Baby";
+"stage_gamer_4" = "Stage 4: Gamer Baby";
+"stage_gamer_5" = "Stage 5: Gamer Child";
+"stage_gamer_6" = "Stage 6: Gamer Adult";
+"stage_gamer_7" = "Stage 7: Pro Gamer (Final)";
+
+/* Stages - Odango */
+"stage_odango_1" = "Stage 1: Egg";
+"stage_odango_2" = "Stage 2: Cracked";
+"stage_odango_3" = "Stage 3: Hatchling";
+"stage_odango_4" = "Stage 4: Growth (Odango Baby)";
+"stage_odango_5" = "Stage 5: Growth (Odango Child)";
+"stage_odango_6" = "Stage 6: Adult (Final)";
+
+/* Stages - Kingyo */
+"stage_kingyo_1" = "Stage 1: Egg";
+"stage_kingyo_2" = "Stage 2: Cracked";
+"stage_kingyo_3" = "Stage 3: Hatchling";
+"stage_kingyo_4" = "Stage 4: Growth (Goldfish Baby)";
+"stage_kingyo_5" = "Stage 5: Growth (Goldfish Child)";
+"stage_kingyo_6" = "Stage 6: Adult (Final)";
+
+/* Stages - Default */
+"stage_default_1" = "Stage 1: Egg";
+"stage_default_2" = "Stage 2: Cracked";
+"stage_default_3" = "Stage 3: Hatchling";
+"stage_default_4" = "Stage 4: Growth";
+"stage_default_5" = "Stage 5: Adult (Final)";

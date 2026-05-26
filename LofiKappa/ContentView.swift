@@ -11,21 +11,25 @@ struct ContentView: View {
             if hasCompletedOnboarding {
                 TabView {
                     HomeView()
+                        .id(languageManager.selectedLanguage)
                         .tabItem {
                             Label(AppTexts.tabHome, systemImage: "drop.fill")
                         }
                     
                     AlbumView()
+                        .id(languageManager.selectedLanguage)
                         .tabItem {
                             Label(AppTexts.tabAlbum, systemImage: "book.fill")
                         }
                     
                     LogView()
+                        .id(languageManager.selectedLanguage)
                         .tabItem {
                             Label(AppTexts.tabLog, systemImage: "chart.bar.fill")
                         }
                     
                     SettingsView()
+                        .id(languageManager.selectedLanguage)
                         .tabItem {
                             Label(AppTexts.tabSettings, systemImage: "gearshape.fill")
                         }

@@ -124,6 +124,7 @@ struct LogView: View {
             .navigationTitle(AppTexts.logTitle)
             .navigationBarTitleDisplayMode(.inline)
         }
+        .id(languageManager.selectedLanguage)
     }
     
     // MARK: - Helpers
@@ -137,8 +138,14 @@ struct LogView: View {
     
     private var currentMonthLabel: String {
         let formatter = DateFormatter()
-        formatter.dateFormat = "yyyy年M月"
-        formatter.locale = Locale(identifier: "ja_JP")
+        let lang = LanguageManager.shared.currentLanguageCode
+        if lang == "ja" {
+            formatter.dateFormat = "yyyy年M月"
+            formatter.locale = Locale(identifier: "ja_JP")
+        } else {
+            formatter.dateFormat = "MMMM yyyy"
+            formatter.locale = Locale(identifier: "en_US")
+        }
         return formatter.string(from: Date())
     }
     
