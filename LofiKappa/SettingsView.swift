@@ -104,52 +104,87 @@ struct SettingsView: View {
                             VStack(alignment: .leading, spacing: 16) {
                                 sectionHeader(icon: "cup.and.saucer.fill", title: AppTexts.myCupSection)
                                 
-                                VStack(spacing: 12) {
+                                VStack(spacing: 10) {
                                     ForEach(0..<5, id: \.self) { i in
-                                        HStack(spacing: 14) {
-                                            Image(systemName: cupIcons[i])
-                                                .font(.body)
-                                                .foregroundColor(Theme.Colors.primaryBlue)
-                                                .frame(width: 24)
-                                            
-                                            Text(AppTexts.cupLabel(i + 1))
-                                                .font(.system(.body, design: .rounded).bold())
-                                                .foregroundColor(Theme.Colors.text(for: colorScheme))
+                                        HStack(spacing: 12) {
+                                            HStack(spacing: 10) {
+                                                ZStack {
+                                                    Circle()
+                                                        .fill(Theme.Colors.lightBlue.opacity(0.12))
+                                                        .frame(width: 38, height: 38)
+                                                        .handDrawnBorder(color: Theme.Colors.primaryBlue.opacity(0.15), cornerRadius: 19)
+                                                    
+                                                    Image(systemName: cupIcons[i])
+                                                        .font(.system(size: 16, weight: .bold))
+                                                        .foregroundColor(Theme.Colors.primaryBlue)
+                                                }
+                                                
+                                                Text(AppTexts.cupLabel(i + 1))
+                                                    .font(.system(.body, design: .rounded).bold())
+                                                    .foregroundColor(Theme.Colors.text(for: colorScheme))
+                                            }
                                             
                                             Spacer()
                                             
-                                            HStack(spacing: 4) {
-                                                Menu {
-                                                    ForEach([50, 100, 120, 150, 180, 200, 250, 300, 350, 400, 450, 500, 600, 700, 800, 1000], id: \.self) { size in
-                                                        Button("\(size) ml") {
-                                                            cupSizes[i] = "\(size)"
-                                                            saveCupSize(index: i, value: "\(size)")
-                                                        }
-                                                    }
-                                                } label: {
-                                                    HStack(spacing: 4) {
-                                                        Text("\(cupSizes[i])")
-                                                            .font(.system(.body, design: .rounded).bold())
-                                                            .foregroundColor(Theme.Colors.primaryBlue)
-                                                        Image(systemName: "chevron.up.chevron.down")
-                                                            .font(.caption2)
-                                                            .foregroundColor(.secondary)
-                                                    }
-                                                    .padding(.horizontal, 10)
-                                                    .padding(.vertical, 6)
-                                                    .background(Theme.Colors.lightBlue.opacity(0.12))
-                                                    .cornerRadius(8)
-                                                    .handDrawnBorder(color: Theme.Colors.primaryBlue.opacity(0.18), cornerRadius: 8)
+                                            HStack(spacing: 8) {
+                                                // 減らすボタン
+                                                Button(action: {
+                                                    adjustCupSize(index: i, delta: -50)
+                                                }) {
+                                                    Image(systemName: "minus")
+                                                        .font(.system(size: 12, weight: .bold))
+                                                        .foregroundColor(Theme.Colors.primaryBlue)
+                                                        .frame(width: 28, height: 28)
+                                                        .background(Theme.Colors.lightBlue.opacity(0.15))
+                                                        .clipShape(Circle())
+                                                        .handDrawnBorder(color: Theme.Colors.primaryBlue.opacity(0.25), cornerRadius: 14)
                                                 }
-                                                Text("ml")
-                                                    .font(.caption)
-                                                    .foregroundColor(.secondary)
+                                                .buttonStyle(BouncingButtonStyle())
+                                                
+                                                // 容量テキスト
+                                                if i < cupSizes.count {
+                                                    Text("\(cupSizes[i])ml")
+                                                        .font(.system(.body, design: .rounded).bold())
+                                                        .foregroundColor(Theme.Colors.text(for: colorScheme))
+                                                        .frame(width: 58, alignment: .center)
+                                                }
+                                                
+                                                // 増やすボタン
+                                                Button(action: {
+                                                    adjustCupSize(index: i, delta: 50)
+                                                }) {
+                                                    Image(systemName: "plus")
+                                                        .font(.system(size: 12, weight: .bold))
+                                                        .foregroundColor(Theme.Colors.primaryBlue)
+                                                        .frame(width: 28, height: 28)
+                                                        .background(Theme.Colors.lightBlue.opacity(0.15))
+                                                        .clipShape(Circle())
+                                                        .handDrawnBorder(color: Theme.Colors.primaryBlue.opacity(0.25), cornerRadius: 14)
+                                                }
+                                                .buttonStyle(BouncingButtonStyle())
                                             }
                                         }
-                                        
-                                        if i < 4 {
-                                            HandDrawnDivider(color: Theme.Colors.text(for: colorScheme).opacity(0.1))
-                                        }
+                                        .padding(.horizontal, 12)
+                                        .padding(.vertical, 8)
+                                        .background(
+                                            // 水分量が直感的に伝わる進捗グラデーション背景
+                                            GeometryReader { geo in
+                                                let sizeVal = i < cupSizes.count ? (Double(cupSizes[i]) ?? 0) : 0
+                                                let progress = CGFloat(sizeVal / 500.0)
+                                                let fillWidth = geo.size.width * progress
+                                                ZStack(alignment: .leading) {
+                                                    Color.clear
+                                                    LinearGradient(
+                                                        colors: [Theme.Colors.lightBlue.opacity(0.15), Theme.Colors.primaryBlue.opacity(0.06)],
+                                                        startPoint: .leading,
+                                                        endPoint: .trailing
+                                                    )
+                                                    .frame(width: fillWidth)
+                                                }
+                                            }
+                                        )
+                                        .cornerRadius(12)
+                                        .handDrawnBorder(color: Theme.Colors.text(for: colorScheme).opacity(0.08), cornerRadius: 12)
                                     }
                                 }
                             }
@@ -417,6 +452,29 @@ struct SettingsView: View {
         } catch {
             print("Failed to reset data: \(error)")
         }
+    }
+    
+    private func adjustCupSize(index: Int, delta: Int) {
+        guard index < cupSizes.count else { return }
+        let currentValue = Int(cupSizes[index]) ?? 0
+        let newValue = max(0, min(500, currentValue + delta))
+        
+        // タプティクスフィードバック
+        let generator = UIImpactFeedbackGenerator(style: .light)
+        generator.impactOccurred()
+        
+        withAnimation(.spring(response: 0.4, dampingFraction: 0.7)) {
+            cupSizes[index] = "\(newValue)"
+        }
+        saveCupSize(index: index, value: "\(newValue)")
+    }
+}
+
+struct BouncingButtonStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .scaleEffect(configuration.isPressed ? 0.9 : 1.0)
+            .animation(.spring(response: 0.2, dampingFraction: 0.6), value: configuration.isPressed)
     }
 }
 
