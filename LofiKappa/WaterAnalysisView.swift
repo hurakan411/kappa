@@ -26,8 +26,6 @@ struct WaterAnalysisView: View {
     // Q3
     @State private var weatherSelection: Int = 0 // 0: +0, 1: +250, 2: +600
     
-    // Q4
-    @State private var specialSelection: Int = 2 // 0: +300, 1: +600, 2: +0
     
     @State private var showingResult = false
     @State private var calculatedTarget = 0
@@ -236,19 +234,7 @@ struct WaterAnalysisView: View {
                 }
                 .padding(.horizontal)
                 
-                // Q4: Special
-                VStack(alignment: .leading, spacing: 10) {
-                    Text(AppTexts.q4Title)
-                        .font(.system(.headline, design: .rounded).bold())
-                        .foregroundColor(Theme.Colors.text(for: colorScheme))
-                    
-                    VStack(spacing: 12) {
-                        optionButton(text: AppTexts.q4Option1, icon: "figure.maternity", isSelected: specialSelection == 0) { specialSelection = 0 }
-                        optionButton(text: AppTexts.q4Option2, icon: "drop", isSelected: specialSelection == 1) { specialSelection = 1 }
-                        optionButton(text: AppTexts.q4Option3, icon: "xmark.circle", isSelected: specialSelection == 2) { specialSelection = 2 }
-                    }
-                }
-                .padding(.horizontal)
+
                 
                 Button(action: calculateResult) {
                     Text(AppTexts.analysisNext)
@@ -355,10 +341,7 @@ struct WaterAnalysisView: View {
         let weatherValues = [0, 100, 200]
         let weather = weatherValues[weatherSelection]
         
-        let specialValues = [100, 200, 0]
-        let special = specialValues[specialSelection]
-        
-        let rawTarget = Int(base) + activity + weather + special
+        let rawTarget = Int(base) + activity + weather
         calculatedTarget = max(1500, min(rawTarget, 2500))
         
         withAnimation {
