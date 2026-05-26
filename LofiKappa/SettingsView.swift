@@ -26,7 +26,7 @@ struct SettingsView: View {
     @State private var showingPrivacy = false
     @State private var showingWidgetGuide = false
     
-    @AppStorage("isReminderEnabled") private var isReminderEnabled = false
+    @AppStorage("isReminderEnabled") private var isReminderEnabled = true
     
     private let cupIcons = ["cup.and.saucer.fill", "mug.fill", "drop.fill", "waterbottle.fill", "takeoutbag.and.cup.and.straw.fill"]
     

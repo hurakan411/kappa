@@ -372,6 +372,9 @@ struct HomeView: View {
         
         // 4. 準備完了 → メイン画面を表示
         isReady = true
+        
+        // 給水リマインダーがデフォルトONのため、未決定の場合は通知許可をリクエスト
+        NotificationManager.shared.requestAuthorizationIfNotDetermined()
     }
     
     /// 特定の進化ステージ変化を検知してレビュー依頼を要求する

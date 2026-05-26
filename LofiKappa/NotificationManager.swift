@@ -79,4 +79,30 @@ final class NotificationManager {
             scheduleReminder()
         }
     }
+    
+    /// 初回起動時など、通知設定が未決定の場合にのみ自動で許可をリクエストする
+    func requestAuthorizationIfNotDetermined() {
+        // リマインダー設定が有効でなければ何もしない
+        guard UserDefaults.standard.bool(forKey: "isReminderEnabled") else { return }
+        
+        UNUserNotificationCenter.current().getNotificationSettings { settings in
+            if settings.authorizationStatus == .notDetermined {
+                self.requestAuthorization { granted in
+                    if granted {
+                        // 許可されたらリマインダーをスケジュール
+                        self.resetReminder(isTargetCompleted: false)
+                    } else {
+                        // 拒否されたら設定をOFFにする
+                        UserDefaults.standard.set(false, forKey: "isReminderEnabled")
+                    }
+                }
+            } else if settings.authorizationStatus == .authorized {
+                // すでに許可されている場合は、スケジュールを確実に行う
+                self.scheduleReminder()
+            } else if settings.authorizationStatus == .denied {
+                // 拒否されている場合は、トグルをOFFにしておく
+                UserDefaults.standard.set(false, forKey: "isReminderEnabled")
+            }
+        }
+    }
 }
