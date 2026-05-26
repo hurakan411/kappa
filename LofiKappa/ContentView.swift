@@ -4,6 +4,7 @@ import SwiftData
 struct ContentView: View {
     @Environment(\.colorScheme) var colorScheme
     @AppStorage("hasCompletedOnboarding") private var hasCompletedOnboarding = false
+    @ObservedObject private var languageManager = LanguageManager.shared
     
     var body: some View {
         ZStack {

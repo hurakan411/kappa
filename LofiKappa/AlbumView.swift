@@ -5,6 +5,7 @@ struct AlbumView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.colorScheme) private var colorScheme
     @Query(sort: \KappaCollection.dateUnlocked, order: .forward) private var kappas: [KappaCollection]
+    @ObservedObject private var languageManager = LanguageManager.shared
     
     // 重複したカッパ種を排除したユニークなリスト
     private var uniqueKappas: [KappaCollection] {

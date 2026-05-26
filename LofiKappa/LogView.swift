@@ -5,9 +5,10 @@ struct LogView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.colorScheme) private var colorScheme
     @Query(sort: \DailyWaterLog.dateString, order: .reverse) private var waterLogs: [DailyWaterLog]
+    @ObservedObject private var languageManager = LanguageManager.shared
     
     let columns = Array(repeating: GridItem(.flexible(), spacing: 6), count: 7)
-    let weekdays = AppTexts.weekdays
+    var weekdays: [String] { AppTexts.weekdays }
     
     var body: some View {
         NavigationView {

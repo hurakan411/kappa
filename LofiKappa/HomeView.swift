@@ -20,6 +20,7 @@ struct HomeView: View {
     @Query private var userSettings: [UserSettings]
     @Query private var waterLogs: [DailyWaterLog]
     @Query private var unlockedKappas: [KappaCollection]
+    @ObservedObject private var languageManager = LanguageManager.shared
     
     @State private var isAnimating = false
     @State private var isReady = false
