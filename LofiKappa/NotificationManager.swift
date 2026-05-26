@@ -6,6 +6,14 @@ final class NotificationManager {
     
     private init() {}
     
+    /// リマインダーの有効状態（UserDefaultsに値がない初回起動時はデフォルトでtrueとみなす）
+    private var isReminderEnabled: Bool {
+        if UserDefaults.standard.object(forKey: "isReminderEnabled") == nil {
+            return true
+        }
+        return UserDefaults.standard.bool(forKey: "isReminderEnabled")
+    }
+    
     /// 通知の利用許可をリクエストする
     func requestAuthorization(completion: @escaping (Bool) -> Void) {
         UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound]) { granted, error in
@@ -21,7 +29,7 @@ final class NotificationManager {
     /// 給水リマインダー通知をスケジュールする（最後の給水から2時間後、3時間後の計2回）
     func scheduleReminder() {
         // 設定が有効でなければスケジュールしない
-        guard UserDefaults.standard.bool(forKey: "isReminderEnabled") else { return }
+        guard isReminderEnabled else { return }
         
         // 既存の未送信リマインダーを一度キャンセル
         cancelAllReminders()
@@ -83,7 +91,7 @@ final class NotificationManager {
     /// 初回起動時など、通知設定が未決定の場合にのみ自動で許可をリクエストする
     func requestAuthorizationIfNotDetermined() {
         // リマインダー設定が有効でなければ何もしない
-        guard UserDefaults.standard.bool(forKey: "isReminderEnabled") else { return }
+        guard isReminderEnabled else { return }
         
         UNUserNotificationCenter.current().getNotificationSettings { settings in
             if settings.authorizationStatus == .notDetermined {
