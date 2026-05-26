@@ -51,25 +51,25 @@ struct SupabaseConfig {
 
     // 新規カッパ6種のフォールバック用ファイル名配列
     static let seaweedFilenames = [
-        "1_seaweed.png", "2_seaweed.png", "3_seaweed.png", "4_seaweed.png", "5_seaweed.png"
+        "seaweed_1.png", "seaweed_2.png", "seaweed_3.png", "seaweed_4.png", "seaweed_5.png"
     ]
     static let bonsaiFilenames = [
-        "1_bonsai.png", "2_bonsai.png", "3_bonsai.png", "4_bonsai.png", "5_bonsai.png", "6_bonsai.png", "7_bonsai.png"
+        "bonsai_1.png", "bonsai_2.png", "bonsai_3.png", "bonsai_4.png", "bonsai_5.png", "bonsai_6.png", "bonsai_7.png"
     ]
     static let karesansuiFilenames = [
-        "1_karesansui.png", "2_karesansui.png", "3_karesansui.png", "4_karesansui.png", "5_karesansui.png", "6_karesansui.png"
+        "karesansui_1.png", "karesansui_2.png", "karesansui_3.png", "karesansui_4.png", "karesansui_5.png", "karesansui_6.png"
     ]
     static let cyberFilenames = [
-        "1_cyber.png", "2_cyber.png", "3_cyber.png", "4_cyber.png", "5_cyber.png", "6_cyber.png"
+        "cyber_1.png", "cyber_2.png", "cyber_3.png", "cyber_4.png", "cyber_5.png", "cyber_6.png"
     ]
     static let creamsodaFilenames = [
-        "1_creamsoda.png", "2_creamsoda.png", "3_creamsoda.png", "4_creamsoda.png", "5_creamsoda.png", "6_creamsoda.png", "7_creamsoda.png", "8_creamsoda.png"
+        "creamsoda_1.png", "creamsoda_2.png", "creamsoda_3.png", "creamsoda_4.png", "creamsoda_5.png", "creamsoda_6.png", "creamsoda_7.png", "creamsoda_8.png"
     ]
     static let atrierFilenames = [
-        "1_atrier.png", "2_atrier.png", "3_atrier.png", "4_atrier.png", "5_atrier.png", "6_atrier.png"
+        "atrier_1.png", "atrier_2.png", "atrier_3.png", "atrier_4.png", "atrier_5.png", "atrier_6.png"
     ]
     
-    /// カッパ種IDと進化ステージから、Supabase Storage의 Public URLを返す
+    /// カッパ種IDと進化ステージから、Supabase Storageの Public URLを返す
     static func imageUrl(for kappaId: String, stage: Int) -> URL? {
         let folderName = KappaData.find(by: kappaId)?.storageFolderName ?? "1_\(kappaId)"
         
@@ -78,78 +78,31 @@ struct SupabaseConfig {
         if let dynamicFileName = SupabaseStorageManager.shared.fileName(for: kappaId, stage: stage) {
             fileName = dynamicFileName
         } else {
-            // 2. なければフォールバック配列から先頭の数字が一致するものを探す
-            if kappaId == "gamer",
-               let matchedFileName = gamerFilenames.first(where: { name in
+            // 2. なければフォールバック配列からマッチするものを探す（先頭数字、またはアンダースコア直後の数字）
+            let matchBlock = { (name: String) -> Bool in
                 if let firstChar = name.first, String(firstChar) == String(stage) {
                     return true
                 }
-                return false
-            }) {
+                return name.contains("_\(stage).")
+            }
+            
+            if kappaId == "gamer", let matchedFileName = gamerFilenames.first(where: matchBlock) {
                 fileName = matchedFileName
-            } else if kappaId == "odango",
-                      let matchedFileName = odangoFilenames.first(where: { name in
-                if let firstChar = name.first, String(firstChar) == String(stage) {
-                    return true
-                }
-                return false
-            }) {
+            } else if kappaId == "odango", let matchedFileName = odangoFilenames.first(where: matchBlock) {
                 fileName = matchedFileName
-            } else if kappaId == "kingyo",
-                      let matchedFileName = kingyoFilenames.first(where: { name in
-                if let firstChar = name.first, String(firstChar) == String(stage) {
-                    return true
-                }
-                return false
-            }) {
+            } else if kappaId == "kingyo", let matchedFileName = kingyoFilenames.first(where: matchBlock) {
                 fileName = matchedFileName
-            } else if kappaId == "seaweed",
-                      let matchedFileName = seaweedFilenames.first(where: { name in
-                if let firstChar = name.first, String(firstChar) == String(stage) {
-                    return true
-                }
-                return false
-            }) {
+            } else if kappaId == "seaweed", let matchedFileName = seaweedFilenames.first(where: matchBlock) {
                 fileName = matchedFileName
-            } else if kappaId == "bonsai",
-                      let matchedFileName = bonsaiFilenames.first(where: { name in
-                if let firstChar = name.first, String(firstChar) == String(stage) {
-                    return true
-                }
-                return false
-            }) {
+            } else if kappaId == "bonsai", let matchedFileName = bonsaiFilenames.first(where: matchBlock) {
                 fileName = matchedFileName
-            } else if kappaId == "karesansui",
-                      let matchedFileName = karesansuiFilenames.first(where: { name in
-                if let firstChar = name.first, String(firstChar) == String(stage) {
-                    return true
-                }
-                return false
-            }) {
+            } else if kappaId == "karesansui", let matchedFileName = karesansuiFilenames.first(where: matchBlock) {
                 fileName = matchedFileName
-            } else if kappaId == "cyber",
-                      let matchedFileName = cyberFilenames.first(where: { name in
-                if let firstChar = name.first, String(firstChar) == String(stage) {
-                    return true
-                }
-                return false
-            }) {
+            } else if kappaId == "cyber", let matchedFileName = cyberFilenames.first(where: matchBlock) {
                 fileName = matchedFileName
-            } else if kappaId == "creamsoda",
-                      let matchedFileName = creamsodaFilenames.first(where: { name in
-                if let firstChar = name.first, String(firstChar) == String(stage) {
-                    return true
-                }
-                return false
-            }) {
+            } else if kappaId == "creamsoda", let matchedFileName = creamsodaFilenames.first(where: matchBlock) {
                 fileName = matchedFileName
-            } else if kappaId == "atrier",
-                      let matchedFileName = atrierFilenames.first(where: { name in
-                if let firstChar = name.first, String(firstChar) == String(stage) {
-                    return true
-                }
-                return false
-            }) {
+            } else if kappaId == "atrier", let matchedFileName = atrierFilenames.first(where: matchBlock) {
                 fileName = matchedFileName
             } else {
                 return nil

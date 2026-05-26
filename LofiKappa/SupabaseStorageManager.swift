@@ -125,10 +125,19 @@ class SupabaseStorageManager: ObservableObject {
                     // パス全体であっても最後のコンポーネントを取り出す
                     let cleanName = URL(fileURLWithPath: file.name).lastPathComponent
                     
-                    // 先頭の文字が数字であるか調べ、ステージ番号として判定する
+                    // ステージ番号として判定するロジック
+                    // 1. 先頭の文字が数字である場合 (例: "1_odango.png")
                     if let firstChar = cleanName.first,
                        let stage = Int(String(firstChar)) {
                         stageMap[stage] = cleanName
+                    }
+                    // 2. アンダースコアの後にステージ数がくる場合 (例: "seaweed_1.png")
+                    else {
+                        let nameWithoutExtension = (cleanName as NSString).deletingPathExtension
+                        if let lastPart = nameWithoutExtension.components(separatedBy: "_").last,
+                           let stage = Int(lastPart) {
+                            stageMap[stage] = cleanName
+                        }
                     }
                 }
                 
