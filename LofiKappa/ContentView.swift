@@ -7,29 +7,26 @@ struct ContentView: View {
     @ObservedObject private var languageManager = LanguageManager.shared
     
     var body: some View {
+        let _ = languageManager.selectedLanguage // 言語変更を検知してタブバー表記などを即座に再描画させる
         ZStack {
             if hasCompletedOnboarding {
                 TabView {
                     HomeView()
-                        .id(languageManager.selectedLanguage)
                         .tabItem {
                             Label(AppTexts.tabHome, systemImage: "drop.fill")
                         }
                     
                     AlbumView()
-                        .id(languageManager.selectedLanguage)
                         .tabItem {
                             Label(AppTexts.tabAlbum, systemImage: "book.fill")
                         }
                     
                     LogView()
-                        .id(languageManager.selectedLanguage)
                         .tabItem {
                             Label(AppTexts.tabLog, systemImage: "chart.bar.fill")
                         }
                     
                     SettingsView()
-                        .id(languageManager.selectedLanguage)
                         .tabItem {
                             Label(AppTexts.tabSettings, systemImage: "gearshape.fill")
                         }

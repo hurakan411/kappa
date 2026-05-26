@@ -349,6 +349,7 @@ struct SettingsView: View {
                 ]
             }
         }
+        .id(languageManager.selectedLanguage)
     }
     
     // MARK: - Helper Views
