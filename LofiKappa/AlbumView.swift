@@ -6,6 +6,8 @@ struct AlbumView: View {
     @Environment(\.colorScheme) private var colorScheme
     @Query(sort: \KappaCollection.dateUnlocked, order: .forward) private var kappas: [KappaCollection]
     @ObservedObject private var languageManager = LanguageManager.shared
+    @Binding var selectedTab: Int
+    @State private var animatedIndexLimit = -1
     
     // 重複したカッパ種を排除したユニークなリスト
     private var uniqueKappas: [KappaCollection] {
@@ -21,10 +23,20 @@ struct AlbumView: View {
         return result
     }
     
-    let columns = [
-        GridItem(.flexible(), spacing: 16),
-        GridItem(.flexible(), spacing: 16)
-    ]
+    // 2列のグリッド用に行単位に分割したデータ
+    private var kappaRows: [[(offset: Int, element: KappaCollection)]] {
+        let enumerated = Array(uniqueKappas.enumerated())
+        var rows = [[(offset: Int, element: KappaCollection)]]()
+        for i in stride(from: 0, to: enumerated.count, by: 2) {
+            var row = [(offset: Int, element: KappaCollection)]()
+            row.append(enumerated[i])
+            if i + 1 < enumerated.count {
+                row.append(enumerated[i + 1])
+            }
+            rows.append(row)
+        }
+        return rows
+    }
     
     var body: some View {
         let _ = languageManager.selectedLanguage // 言語変更を検知してコンテンツを再描画
@@ -74,12 +86,26 @@ struct AlbumView: View {
                             .frame(maxWidth: .infinity)
                             .padding(.top, 40)
                         } else {
-                            LazyVGrid(columns: columns, spacing: 20) {
-                                ForEach(uniqueKappas, id: \.id) { collection in
-                                    NavigationLink(destination: KappaDetailView(kappa: collection)) {
-                                        KappaCard(kappa: collection, colorScheme: colorScheme)
+                            VStack(spacing: 20) {
+                                ForEach(0..<kappaRows.count, id: \.self) { rowIndex in
+                                    HStack(spacing: 16) {
+                                        ForEach(kappaRows[rowIndex], id: \.element.id) { cell in
+                                            let isAnimated = cell.offset <= animatedIndexLimit
+                                            NavigationLink(destination: KappaDetailView(kappa: cell.element)) {
+                                                KappaCard(kappa: cell.element, colorScheme: colorScheme)
+                                            }
+                                            .buttonStyle(PlainButtonStyle())
+                                            .frame(maxWidth: .infinity)
+                                            .offset(y: isAnimated ? 0 : -350)
+                                            .scaleEffect(isAnimated ? 1.0 : 0.85)
+                                            .rotationEffect(.degrees(isAnimated ? 0 : (cell.offset % 2 == 0 ? -4 : 4)))
+                                            .opacity(isAnimated ? 1.0 : 0.0)
+                                        }
+                                        if kappaRows[rowIndex].count < 2 {
+                                            Spacer()
+                                                .frame(maxWidth: .infinity)
+                                        }
                                     }
-                                    .buttonStyle(PlainButtonStyle())
                                 }
                             }
                             .padding(.horizontal, 16)
@@ -90,6 +116,32 @@ struct AlbumView: View {
             }
             .navigationTitle(AppTexts.albumTitle)
             .navigationBarTitleDisplayMode(.inline)
+            .onAppear {
+                triggerSequentialAnimation()
+            }
+            .onDisappear {
+                animatedIndexLimit = -1
+            }
+            .onChange(of: selectedTab) { newValue in
+                if newValue == 1 {
+                    triggerSequentialAnimation()
+                } else {
+                    animatedIndexLimit = -1
+                }
+            }
+        }
+    }
+    
+    private func triggerSequentialAnimation() {
+        animatedIndexLimit = -1
+        let count = uniqueKappas.count
+        for index in 0..<count {
+            // 各セルごとに0.12秒ずつの段階的な時差を持たせて個別にスプリングアニメーションを実行します
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.05 + Double(index) * 0.12) {
+                withAnimation(.spring(response: 0.65, dampingFraction: 0.72)) {
+                    animatedIndexLimit = index
+                }
+            }
         }
     }
 }
