@@ -358,7 +358,7 @@ struct WaterAnalysisView: View {
         let specialValues = [300, 600, 0]
         let special = specialValues[specialSelection]
         
-        calculatedTarget = Int(base) + activity + weather + special
+        calculatedTarget = min(Int(base) + activity + weather + special, 2500)
         
         withAnimation {
             step = .result
