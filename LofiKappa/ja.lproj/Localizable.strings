@@ -33,7 +33,7 @@
 "log_total_amount_format" = "計 %d ml";
 
 /* AlbumView */
-"album_title" = "思い出アルバム";
+"album_title" = "図鑑";
 "album_empty" = "まだカッパがいません。水分補給をして解放しましょう！";
 "album_collected_kappas" = "収集したカッパ";
 "album_species_count_format" = "%d 種";

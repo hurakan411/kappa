@@ -18,6 +18,17 @@ struct LogView: View {
                 TimeLightingBackground()
                 
                 VStack(spacing: 0) {
+                    // ヘッダー（手書き風セクション）
+                    VStack(spacing: 4) {
+                        Text(AppTexts.logTitle)
+                            .font(.system(.headline, design: .rounded).bold())
+                            .foregroundColor(Theme.Colors.text(for: colorScheme))
+                            .padding(.top, 16)
+                        
+                        HandDrawnDivider(color: Theme.Colors.text(for: colorScheme).opacity(0.15))
+                            .frame(width: 120)
+                    }
+                    .padding(.bottom, 10)
                     
                     // MARK: - 週間カレンダーカード
                     VStack(spacing: 16) {
@@ -122,8 +133,8 @@ struct LogView: View {
                     }
                 }
             }
-            .navigationTitle(AppTexts.logTitle)
-            .navigationBarTitleDisplayMode(.inline)
+            .navigationTitle("")
+            .navigationBarHidden(true)
         }
     }
     

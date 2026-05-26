@@ -46,76 +46,90 @@ struct AlbumView: View {
                 TimeLightingBackground()
                 
                 ScrollView {
-                    VStack(alignment: .leading, spacing: 20) {
-                        // コレクション数バッジ（クラフト紙風ラベル）
-                        HStack {
-                            Text(AppTexts.albumCollectedKappas)
-                                .font(.system(.subheadline, design: .rounded).bold())
+                    VStack(spacing: 0) {
+                        // ヘッダー（手書き風セクション）
+                        VStack(spacing: 4) {
+                            Text(AppTexts.albumTitle)
+                                .font(.system(.headline, design: .rounded).bold())
                                 .foregroundColor(Theme.Colors.text(for: colorScheme))
-                            Spacer()
-                            Text(AppTexts.albumSpeciesCountText(uniqueKappas.count))
-                                .font(.system(.subheadline, design: .rounded).bold())
-                                .foregroundColor(.white)
-                                .padding(.horizontal, 14)
-                                .padding(.vertical, 6)
-                                .background(Theme.Colors.primaryBlue)
-                                .cornerRadius(20)
-                                .handDrawnBorder(color: .white.opacity(0.3), cornerRadius: 20)
+                                .padding(.top, 16)
+                            
+                            HandDrawnDivider(color: Theme.Colors.text(for: colorScheme).opacity(0.15))
+                                .frame(width: 120)
                         }
-                        .padding(.horizontal, 20)
-                        .padding(.top, 20)
+                        .padding(.bottom, 10)
                         
-                        // コレクションシェルフ風グリッド
-                        if uniqueKappas.isEmpty {
-                            VStack(spacing: 20) {
-                                Spacer(minLength: 60)
-                                Image(systemName: "photo.on.rectangle.angled")
-                                    .font(.system(size: 64))
-                                    .foregroundColor(Theme.Colors.text(for: colorScheme).opacity(0.15))
-                                Text(AppTexts.albumEmptyTitle)
-                                    .font(.system(.headline, design: .rounded).bold())
-                                    .foregroundColor(Theme.Colors.text(for: colorScheme).opacity(0.4))
-                                Text(AppTexts.albumEmptyDetail)
-                                    .font(.system(.subheadline, design: .rounded))
-                                    .foregroundColor(Theme.Colors.text(for: colorScheme).opacity(0.3))
-                                    .multilineTextAlignment(.center)
-                                    .lineSpacing(6)
-                                    .padding(.horizontal, 40)
-                                Spacer(minLength: 60)
+                        VStack(alignment: .leading, spacing: 20) {
+                            // コレクション数バッジ（クラフト紙風ラベル）
+                            HStack {
+                                Text(AppTexts.albumCollectedKappas)
+                                    .font(.system(.subheadline, design: .rounded).bold())
+                                    .foregroundColor(Theme.Colors.text(for: colorScheme))
+                                Spacer()
+                                Text(AppTexts.albumSpeciesCountText(uniqueKappas.count))
+                                    .font(.system(.subheadline, design: .rounded).bold())
+                                    .foregroundColor(.white)
+                                    .padding(.horizontal, 14)
+                                    .padding(.vertical, 6)
+                                    .background(Theme.Colors.primaryBlue)
+                                    .cornerRadius(20)
+                                    .handDrawnBorder(color: .white.opacity(0.3), cornerRadius: 20)
                             }
-                            .frame(maxWidth: .infinity)
-                            .padding(.top, 40)
-                        } else {
-                            VStack(spacing: 20) {
-                                ForEach(0..<kappaRows.count, id: \.self) { rowIndex in
-                                    HStack(spacing: 16) {
-                                        ForEach(kappaRows[rowIndex], id: \.element.id) { cell in
-                                            let isAnimated = cell.offset <= animatedIndexLimit
-                                            NavigationLink(destination: KappaDetailView(kappa: cell.element)) {
-                                                KappaCard(kappa: cell.element, colorScheme: colorScheme)
-                                            }
-                                            .buttonStyle(PlainButtonStyle())
-                                            .frame(maxWidth: .infinity)
-                                            .offset(y: isAnimated ? 0 : -350)
-                                            .scaleEffect(isAnimated ? 1.0 : 0.85)
-                                            .rotationEffect(.degrees(isAnimated ? 0 : (cell.offset % 2 == 0 ? -4 : 4)))
-                                            .opacity(isAnimated ? 1.0 : 0.0)
-                                        }
-                                        if kappaRows[rowIndex].count < 2 {
-                                            Spacer()
+                            .padding(.horizontal, 20)
+                            .padding(.top, 10)
+                            
+                            // コレクションシェルフ風グリッド
+                            if uniqueKappas.isEmpty {
+                                VStack(spacing: 20) {
+                                    Spacer(minLength: 60)
+                                    Image(systemName: "photo.on.rectangle.angled")
+                                        .font(.system(size: 64))
+                                        .foregroundColor(Theme.Colors.text(for: colorScheme).opacity(0.15))
+                                    Text(AppTexts.albumEmptyTitle)
+                                        .font(.system(.headline, design: .rounded).bold())
+                                        .foregroundColor(Theme.Colors.text(for: colorScheme).opacity(0.4))
+                                    Text(AppTexts.albumEmptyDetail)
+                                        .font(.system(.subheadline, design: .rounded))
+                                        .foregroundColor(Theme.Colors.text(for: colorScheme).opacity(0.3))
+                                        .multilineTextAlignment(.center)
+                                        .lineSpacing(6)
+                                        .padding(.horizontal, 40)
+                                    Spacer(minLength: 60)
+                                }
+                                .frame(maxWidth: .infinity)
+                                .padding(.top, 40)
+                            } else {
+                                VStack(spacing: 20) {
+                                    ForEach(0..<kappaRows.count, id: \.self) { rowIndex in
+                                        HStack(spacing: 16) {
+                                            ForEach(kappaRows[rowIndex], id: \.element.id) { cell in
+                                                let isAnimated = cell.offset <= animatedIndexLimit
+                                                NavigationLink(destination: KappaDetailView(kappa: cell.element)) {
+                                                    KappaCard(kappa: cell.element, colorScheme: colorScheme)
+                                                }
+                                                .buttonStyle(PlainButtonStyle())
                                                 .frame(maxWidth: .infinity)
+                                                .offset(y: isAnimated ? 0 : -350)
+                                                .scaleEffect(isAnimated ? 1.0 : 0.85)
+                                                .rotationEffect(.degrees(isAnimated ? 0 : (cell.offset % 2 == 0 ? -4 : 4)))
+                                                .opacity(isAnimated ? 1.0 : 0.0)
+                                            }
+                                            if kappaRows[rowIndex].count < 2 {
+                                                Spacer()
+                                                    .frame(maxWidth: .infinity)
+                                            }
                                         }
                                     }
                                 }
+                                .padding(.horizontal, 16)
+                                .padding(.bottom, 30)
                             }
-                            .padding(.horizontal, 16)
-                            .padding(.bottom, 30)
                         }
                     }
                 }
             }
-            .navigationTitle(AppTexts.albumTitle)
-            .navigationBarTitleDisplayMode(.inline)
+            .navigationTitle("")
+            .navigationBarHidden(true)
             .onAppear {
                 triggerSequentialAnimation()
             }
@@ -323,6 +337,7 @@ struct KappaDetailView: View {
         }
         .navigationTitle(KappaData.find(by: baseId)?.name ?? kappa.title)
         .navigationBarTitleDisplayMode(.inline)
+        .navigationBarHidden(false)
     }
     
     // ステージに応じた表示名を取得するヘルパー

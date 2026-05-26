@@ -38,7 +38,20 @@ struct SettingsView: View {
                 TimeLightingBackground()
                 
                 ScrollView {
-                    VStack(spacing: 24) {
+                    VStack(spacing: 0) {
+                        // ヘッダー（手書き風セクション）
+                        VStack(spacing: 4) {
+                            Text(AppTexts.settingsTitle)
+                                .font(.system(.headline, design: .rounded).bold())
+                                .foregroundColor(Theme.Colors.text(for: colorScheme))
+                                .padding(.top, 16)
+                            
+                            HandDrawnDivider(color: Theme.Colors.text(for: colorScheme).opacity(0.15))
+                                .frame(width: 120)
+                        }
+                        .padding(.bottom, 10)
+                        
+                        VStack(spacing: 24) {
                         
                         // MARK: - 目標水分量カード
                         settingCard {
@@ -335,10 +348,11 @@ struct SettingsView: View {
                         Spacer(minLength: 40)
                     }
                     .padding(.top, 16)
+                    }
                 }
             }
-            .navigationTitle(AppTexts.settingsTitle)
-            .navigationBarTitleDisplayMode(.inline)
+            .navigationTitle("")
+            .navigationBarHidden(true)
             .sheet(isPresented: $showingAnalysis) {
                 WaterAnalysisView(customDailyGoal: Binding(get: {
                     settings.customDailyGoal

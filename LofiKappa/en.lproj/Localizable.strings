@@ -33,7 +33,7 @@
 "log_total_amount_format" = "Total %d ml";
 
 /* AlbumView */
-"album_title" = "Memories Album";
+"album_title" = "Album";
 "album_empty" = "No Kappas here yet. Hydrate to discover them!";
 "album_collected_kappas" = "Discovered Kappas";
 "album_species_count_format" = "%d species";

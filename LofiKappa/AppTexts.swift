@@ -60,7 +60,7 @@ struct AppTexts {
     }
     
     // MARK: - AlbumView
-    static var albumTitle: String { LanguageManager.shared.localizedString(forKey: "album_title", defaultValue: "思い出アルバム") }
+    static var albumTitle: String { LanguageManager.shared.localizedString(forKey: "album_title", defaultValue: "図鑑") }
     static var albumEmpty: String { LanguageManager.shared.localizedString(forKey: "album_empty", defaultValue: "まだカッパがいません。水分補給をして解放しましょう！") }
     static var albumCollectedKappas: String { LanguageManager.shared.localizedString(forKey: "album_collected_kappas", defaultValue: "収集したカッパ") }
     static func albumSpeciesCountText(_ count: Int) -> String {
