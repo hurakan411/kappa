@@ -3,12 +3,12 @@ import SwiftUI
 struct Theme {
     struct Colors {
         // Lofi Color Palette (Cozy Journal Style)
-        static let baseBackgroundLight = Color(hex: "FAF6F0") // 暖かみのある紙の白
-        static let baseBackgroundDark = Color(hex: "1C1917")  // ダークブラウンチャコール
-        static let paperCardLight = Color(hex: "FFFDFB")      // 手帳のページ
-        static let paperCardDark = Color(hex: "292524")       // ダーク時のカード
-        static let textDark = Color(hex: "3F3F46")            // 万年筆のインク風チャコールグレー
-        static let textLight = Color(hex: "E4E4E7")           // ホワイトウォッシュ
+        static let baseBackgroundLight = Color(hex: "EBF4F2") // 爽やかでコジーな薄水色・薄緑（ミントアクア）
+        static let baseBackgroundDark = Color(hex: "111C1A")  // 深い森の泉のようなグリーンチャコール
+        static let paperCardLight = Color(hex: "F7FBFB")      // 手帳のページ（極めて明るいペールミント）
+        static let paperCardDark = Color(hex: "1A2624")       // ダーク時のカード
+        static let textDark = Color(hex: "2D3E3A")            // 万年筆のインク風フォレストチャコールグレー
+        static let textLight = Color(hex: "E2EFEA")           // ペールセージグリーンホワイト
         
         static let primaryBlue = Color(hex: "60A5FA")         // 潤いの水色（お皿の水、プログレスバー）
         static let lightBlue = Color(hex: "93C5FD")           // 淡いパステルブルー（サブアクセント）

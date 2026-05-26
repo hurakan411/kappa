@@ -892,34 +892,34 @@ struct TimeLightingBackground: View {
     private func updateLighting() {
         let hour = Calendar.current.component(.hour, from: Date())
         if colorScheme == .dark {
-            // ダークモード時は常に落ち着いたミッドナイト＋常夜灯トーン
+            // ダークモード時は神秘的な森の深泉・ディープティールグリーン
             if hour >= 6 && hour < 10 {
                 // 朝
-                timeGradientColors = [Color(hex: "1F1D24"), Color(hex: "18151A")]
+                timeGradientColors = [Color(hex: "142220"), Color(hex: "0E1615")]
             } else if hour >= 10 && hour < 16 {
                 // 昼
-                timeGradientColors = [Color(hex: "221F21"), Color(hex: "1C1917")]
+                timeGradientColors = [Color(hex: "162624"), Color(hex: "111C1A")]
             } else if hour >= 16 && hour < 19 {
                 // 夕方
-                timeGradientColors = [Color(hex: "261C1F"), Color(hex: "1C1917")]
+                timeGradientColors = [Color(hex: "1C2D2A"), Color(hex: "111C1A")]
             } else {
                 // 夜・深夜
-                timeGradientColors = [Color(hex: "1A1829"), Color(hex: "1C1917")]
+                timeGradientColors = [Color(hex: "11211F"), Color(hex: "0B1312")]
             }
         } else {
-            // ライトモード時は明るく豊かなグラデーション
+            // ライトモード時は爽やかなミントアクア・薄水色・薄緑グラデーション
             if hour >= 6 && hour < 10 {
-                // 朝：ペールイエロー → 爽やかな薄いブルー
-                timeGradientColors = [Color(hex: "FEF9C3").opacity(0.45), Color(hex: "E0F2FE").opacity(0.65)]
+                // 朝：朝霧の薄緑 → 澄み渡る薄水色
+                timeGradientColors = [Color(hex: "E0F2F1").opacity(0.6), Color(hex: "E0F7FA").opacity(0.85)]
             } else if hour >= 10 && hour < 16 {
-                // 昼：ぽかぽかとした暖かなホワイトゴールド
-                timeGradientColors = [Color(hex: "FFFDF5"), Color(hex: "FAF6F0")]
+                // 昼：まぶしい木漏れ日を浴びた水面
+                timeGradientColors = [Color(hex: "EBF4F2"), Color(hex: "DDF0EC")]
             } else if hour >= 16 && hour < 19 {
-                // 夕方：アンバーと夕焼けピンク
-                timeGradientColors = [Color(hex: "FDE68A").opacity(0.3), Color(hex: "FCE7F3").opacity(0.55)]
+                // 夕方：木々のライムグリーンを反射した水辺
+                timeGradientColors = [Color(hex: "EBF4D3").opacity(0.55), Color(hex: "E0F2F1").opacity(0.75)]
             } else {
-                // 夜・深夜：ウォームオレンジと深いミッドナイト
-                timeGradientColors = [Color(hex: "FFEDD5").opacity(0.25), Color(hex: "DBEAFE").opacity(0.45)]
+                // 夜・深夜：月明かりに照らされる静かなアクアブルー
+                timeGradientColors = [Color(hex: "E2F0ED").opacity(0.5), Color(hex: "D0E8F2").opacity(0.7)]
             }
         }
     }
