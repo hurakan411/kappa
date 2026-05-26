@@ -27,6 +27,7 @@ struct AlbumView: View {
     ]
     
     var body: some View {
+        let _ = languageManager.selectedLanguage // 言語変更を検知してコンテンツを再描画
         NavigationView {
             ZStack {
                 // 手帳の背景テクスチャを統一
@@ -90,7 +91,6 @@ struct AlbumView: View {
             .navigationTitle(AppTexts.albumTitle)
             .navigationBarTitleDisplayMode(.inline)
         }
-        .id(languageManager.selectedLanguage)
     }
 }
 

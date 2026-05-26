@@ -31,6 +31,7 @@ struct SettingsView: View {
     private let cupIcons = ["cup.and.saucer.fill", "mug.fill", "drop.fill", "waterbottle.fill", "takeoutbag.and.cup.and.straw.fill"]
     
     var body: some View {
+        let _ = languageManager.selectedLanguage // 言語変更を検知してコンテンツを再描画
         NavigationView {
             ZStack {
                 // 手帳の背景テクスチャを統一
@@ -349,7 +350,6 @@ struct SettingsView: View {
                 ]
             }
         }
-        .id(languageManager.selectedLanguage)
     }
     
     // MARK: - Helper Views

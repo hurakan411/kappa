@@ -125,6 +125,7 @@ struct HomeView: View {
     // MARK: - Body
     
     var body: some View {
+        let _ = languageManager.selectedLanguage // 言語変更を検知してコンテンツを再描画
         ZStack(alignment: .bottom) {
             // アナログ手帖の時間帯ライティング背景
             TimeLightingBackground()
@@ -170,7 +171,6 @@ struct HomeView: View {
                     .onAppear { initializeData() }
             }
         }
-        .id(languageManager.selectedLanguage)
         .onChange(of: safeDailyGoal) { newGoal in
             guard isReady, let log = localTodayLog, !log.isCompleted else { return }
             let currentRefGoal = log.referenceDailyGoal ?? newGoal
