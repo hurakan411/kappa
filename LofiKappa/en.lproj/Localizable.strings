@@ -223,3 +223,67 @@
 "stage_default_3" = "Stage 3: Hatchling";
 "stage_default_4" = "Stage 4: Growth";
 "stage_default_5" = "Stage 5: Adult (Final)";
+
+/* Stages - Seaweed */
+"stage_seaweed_1" = "Stage 1: Egg";
+"stage_seaweed_2" = "Stage 2: Cracked";
+"stage_seaweed_3" = "Stage 3: Larva";
+"stage_seaweed_4" = "Stage 4: Growth (Seaweed Baby)";
+"stage_seaweed_5" = "Stage 5: Seaweed Kappa (Final)";
+
+/* Stages - Bonsai */
+"stage_bonsai_1" = "Stage 1: Egg";
+"stage_bonsai_2" = "Stage 2: Cracked";
+"stage_bonsai_3" = "Stage 3: Baby";
+"stage_bonsai_4" = "Stage 4: Bonsai Baby";
+"stage_bonsai_5" = "Stage 5: Bonsai Child";
+"stage_bonsai_6" = "Stage 6: Bonsai Adult";
+"stage_bonsai_7" = "Stage 7: Bonsai Master (Final)";
+
+/* Stages - Karesansui */
+"stage_karesansui_1" = "Stage 1: Egg";
+"stage_karesansui_2" = "Stage 2: Cracked";
+"stage_karesansui_3" = "Stage 3: Larva";
+"stage_karesansui_4" = "Stage 4: Growth (Zen Baby)";
+"stage_karesansui_5" = "Stage 5: Growth (Zen Child)";
+"stage_karesansui_6" = "Stage 6: Zen Garden Kappa (Final)";
+
+/* Stages - Cyber */
+"stage_cyber_1" = "Stage 1: Egg";
+"stage_cyber_2" = "Stage 2: Cracked";
+"stage_cyber_3" = "Stage 3: Cyber Larva";
+"stage_cyber_4" = "Stage 4: Cyber Baby";
+"stage_cyber_5" = "Stage 5: Cyber Child";
+"stage_cyber_6" = "Stage 6: Cyber Kappa (Final)";
+
+/* Stages - Creamsoda */
+"stage_creamsoda_1" = "Stage 1: Egg";
+"stage_creamsoda_2" = "Stage 2: Cracked";
+"stage_creamsoda_3" = "Stage 3: Baby";
+"stage_creamsoda_4" = "Stage 4: Soda Baby";
+"stage_creamsoda_5" = "Stage 5: Soda Child";
+"stage_creamsoda_6" = "Stage 6: Melon Soda Adult";
+"stage_creamsoda_7" = "Stage 7: Ice Cream Topped";
+"stage_creamsoda_8" = "Stage 8: Cream Soda Kappa (Final)";
+
+/* Stages - Atrier */
+"stage_atrier_1" = "Stage 1: Egg";
+"stage_atrier_2" = "Stage 2: Cracked";
+"stage_atrier_3" = "Stage 3: Larva";
+"stage_atrier_4" = "Stage 4: Atelier Baby";
+"stage_atrier_5" = "Stage 5: Atelier Child";
+"stage_atrier_6" = "Stage 6: Atelier Kappa (Final)";
+
+/* New Kappa Names and Descriptions */
+"kappa_seaweed_name" = "Seaweed Kappa";
+"kappa_seaweed_desc" = "A kappa that wrapped grilled seaweed around its dish, loving rice balls and carrying a fresh ocean scent.";
+"kappa_bonsai_name" = "Bonsai Kappa";
+"kappa_bonsai_desc" = "A very calm and sophisticated kappa that grows a magnificent pine bonsai tree right on its head dish.";
+"kappa_karesansui_name" = "Zen Garden Kappa";
+"kappa_karesansui_desc" = "A very zen kappa who designed a beautiful dry landscape garden with white sand and small pebbles on its head dish.";
+"kappa_cyber_name" = "Cyber Kappa";
+"kappa_cyber_desc" = "A futuristic kappa from the digital world, whose holographic head dish glows psychedelically.";
+"kappa_creamsoda_name" = "Cream Soda Kappa";
+"kappa_creamsoda_desc" = "A retro-pop kappa whose head dish is filled with sweet melon soda, topped with vanilla ice cream and a cherry.";
+"kappa_atrier_name" = "Atelier Kappa";
+"kappa_atrier_desc" = "An artistic and creative kappa who melts colorful paints on its head dish, using it as a palette.";

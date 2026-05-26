@@ -355,6 +355,62 @@ struct KappaDetailView: View {
             case 5: return LanguageManager.shared.localizedString(forKey: "stage_kingyo_5", defaultValue: "Stage 5: 成長期（金魚チャイルド）")
             default: return LanguageManager.shared.localizedString(forKey: "stage_kingyo_6", defaultValue: "Stage 6: 成体期（金魚カッパ最終形態）")
             }
+        } else if baseId == "seaweed" {
+            switch stage {
+            case 1: return LanguageManager.shared.localizedString(forKey: "stage_seaweed_1", defaultValue: "Stage 1: 卵期")
+            case 2: return LanguageManager.shared.localizedString(forKey: "stage_seaweed_2", defaultValue: "Stage 2: ひび割れ期")
+            case 3: return LanguageManager.shared.localizedString(forKey: "stage_seaweed_3", defaultValue: "Stage 3: 幼生期")
+            case 4: return LanguageManager.shared.localizedString(forKey: "stage_seaweed_4", defaultValue: "Stage 4: 成長期（のりベビー）")
+            default: return LanguageManager.shared.localizedString(forKey: "stage_seaweed_5", defaultValue: "Stage 5: 成体期（のりかっぱ最終形態）")
+            }
+        } else if baseId == "bonsai" {
+            switch stage {
+            case 1: return LanguageManager.shared.localizedString(forKey: "stage_bonsai_1", defaultValue: "Stage 1: 卵期")
+            case 2: return LanguageManager.shared.localizedString(forKey: "stage_bonsai_2", defaultValue: "Stage 2: ひび割れ期")
+            case 3: return LanguageManager.shared.localizedString(forKey: "stage_bonsai_3", defaultValue: "Stage 3: ベビー期")
+            case 4: return LanguageManager.shared.localizedString(forKey: "stage_bonsai_4", defaultValue: "Stage 4: 盆栽ベビー期")
+            case 5: return LanguageManager.shared.localizedString(forKey: "stage_bonsai_5", defaultValue: "Stage 5: 盆栽チャイルド期")
+            case 6: return LanguageManager.shared.localizedString(forKey: "stage_bonsai_6", defaultValue: "Stage 6: 盆栽アダルト期")
+            default: return LanguageManager.shared.localizedString(forKey: "stage_bonsai_7", defaultValue: "Stage 7: 盆栽マスター期（最終形態）")
+            }
+        } else if baseId == "karesansui" {
+            switch stage {
+            case 1: return LanguageManager.shared.localizedString(forKey: "stage_karesansui_1", defaultValue: "Stage 1: 卵期")
+            case 2: return LanguageManager.shared.localizedString(forKey: "stage_karesansui_2", defaultValue: "Stage 2: ひび割れ期")
+            case 3: return LanguageManager.shared.localizedString(forKey: "stage_karesansui_3", defaultValue: "Stage 3: 幼生期")
+            case 4: return LanguageManager.shared.localizedString(forKey: "stage_karesansui_4", defaultValue: "Stage 4: 成長期（枯山水ベビー）")
+            case 5: return LanguageManager.shared.localizedString(forKey: "stage_karesansui_5", defaultValue: "Stage 5: 成長期（枯山水チャイルド）")
+            default: return LanguageManager.shared.localizedString(forKey: "stage_karesansui_6", defaultValue: "Stage 6: 成体期（枯山水かっぱ最終形態）")
+            }
+        } else if baseId == "cyber" {
+            switch stage {
+            case 1: return LanguageManager.shared.localizedString(forKey: "stage_cyber_1", defaultValue: "Stage 1: 卵期")
+            case 2: return LanguageManager.shared.localizedString(forKey: "stage_cyber_2", defaultValue: "Stage 2: ひび割れ期")
+            case 3: return LanguageManager.shared.localizedString(forKey: "stage_cyber_3", defaultValue: "Stage 3: 電脳幼生期")
+            case 4: return LanguageManager.shared.localizedString(forKey: "stage_cyber_4", defaultValue: "Stage 4: 成長期（サイバーベビー）")
+            case 5: return LanguageManager.shared.localizedString(forKey: "stage_cyber_5", defaultValue: "Stage 5: 成長期（サイバーチャイルド）")
+            default: return LanguageManager.shared.localizedString(forKey: "stage_cyber_6", defaultValue: "Stage 6: 成体期（サイバーかっぱ最終形態）")
+            }
+        } else if baseId == "creamsoda" {
+            switch stage {
+            case 1: return LanguageManager.shared.localizedString(forKey: "stage_creamsoda_1", defaultValue: "Stage 1: 卵期")
+            case 2: return LanguageManager.shared.localizedString(forKey: "stage_creamsoda_2", defaultValue: "Stage 2: ひび割れ期")
+            case 3: return LanguageManager.shared.localizedString(forKey: "stage_creamsoda_3", defaultValue: "Stage 3: ベビー期")
+            case 4: return LanguageManager.shared.localizedString(forKey: "stage_creamsoda_4", defaultValue: "Stage 4: ソーダベビー期")
+            case 5: return LanguageManager.shared.localizedString(forKey: "stage_creamsoda_5", defaultValue: "Stage 5: ソーダチャイルド期")
+            case 6: return LanguageManager.shared.localizedString(forKey: "stage_creamsoda_6", defaultValue: "Stage 6: メロンソーダアダルト期")
+            case 7: return LanguageManager.shared.localizedString(forKey: "stage_creamsoda_7", defaultValue: "Stage 7: アイスクリーム期")
+            default: return LanguageManager.shared.localizedString(forKey: "stage_creamsoda_8", defaultValue: "Stage 8: クリームソーダかっぱ（極上最終形態）")
+            }
+        } else if baseId == "atrier" {
+            switch stage {
+            case 1: return LanguageManager.shared.localizedString(forKey: "stage_atrier_1", defaultValue: "Stage 1: 卵期")
+            case 2: return LanguageManager.shared.localizedString(forKey: "stage_atrier_2", defaultValue: "Stage 2: ひび割れ期")
+            case 3: return LanguageManager.shared.localizedString(forKey: "stage_atrier_3", defaultValue: "Stage 3: 幼生期")
+            case 4: return LanguageManager.shared.localizedString(forKey: "stage_atrier_4", defaultValue: "Stage 4: 成長期（アトリエベビー）")
+            case 5: return LanguageManager.shared.localizedString(forKey: "stage_atrier_5", defaultValue: "Stage 5: 成長期（アトリエチャイルド）")
+            default: return LanguageManager.shared.localizedString(forKey: "stage_atrier_6", defaultValue: "Stage 6: 成体期（アトリエかっぱ最終形態）")
+            }
         } else {
             switch stage {
             case 1: return LanguageManager.shared.localizedString(forKey: "stage_default_1", defaultValue: "Stage 1: 卵期")

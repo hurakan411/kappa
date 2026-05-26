@@ -33,9 +33,11 @@ struct KappaData {
     
     // 段階進化の最大ステージ数
     var numberOfStages: Int {
-        if id == "gamer" {
+        if id == "creamsoda" {
+            return 8
+        } else if id == "gamer" || id == "bonsai" {
             return 7
-        } else if id == "odango" || id == "kingyo" {
+        } else if id == "odango" || id == "kingyo" || id == "karesansui" || id == "cyber" || id == "atrier" {
             return 6
         } else {
             return 5
@@ -45,7 +47,17 @@ struct KappaData {
     // ユーザーの1日目標量をもとに各ステージの閾値を動的に計算
     func scaledRequirements(dailyGoal: Int) -> [Int] {
         let total = Double(dailyGoal) * totalEvolutionMultiplier
-        if numberOfStages == 7 {
+        if numberOfStages == 8 {
+            return [
+                Int(total * 0.14),
+                Int(total * 0.28),
+                Int(total * 0.42),
+                Int(total * 0.56),
+                Int(total * 0.70),
+                Int(total * 0.84),
+                Int(total)
+            ]
+        } else if numberOfStages == 7 {
             return [
                 Int(total * 0.15),
                 Int(total * 0.30),
@@ -109,5 +121,65 @@ let allKappas: [KappaData] = [
         defaultDesc: "お皿の上を金魚が優雅に泳ぐ、涼しげで水が大好きな風流かっぱ。",
         totalEvolutionMultiplier: 1.2,
         storageFolderName: "3_kingyo"
+    ),
+    // 難易度: 普通 (1.1日)
+    KappaData(
+        id: "seaweed",
+        nameKey: "kappa_seaweed_name",
+        defaultName: "のりかっぱ",
+        descKey: "kappa_seaweed_desc",
+        defaultDesc: "お皿のまわりに焼き海苔を巻いた、磯の香りが漂うおにぎり大好きなかっぱ。",
+        totalEvolutionMultiplier: 1.1,
+        storageFolderName: "4_seaweed"
+    ),
+    // 難易度: 難しい (1.5日)
+    KappaData(
+        id: "bonsai",
+        nameKey: "kappa_bonsai_name",
+        defaultName: "盆栽かっぱ",
+        descKey: "kappa_bonsai_desc",
+        defaultDesc: "お皿の上に立派な松の盆栽を育てている、とても落ち着きのある高尚なかっぱ。",
+        totalEvolutionMultiplier: 1.5,
+        storageFolderName: "5_bonsai"
+    ),
+    // 難易度: 普通 (1.3日)
+    KappaData(
+        id: "karesansui",
+        nameKey: "kappa_karesansui_name",
+        defaultName: "枯山水かっぱ",
+        descKey: "kappa_karesansui_desc",
+        defaultDesc: "お皿に白い砂と小石を配し、見事な枯山水の庭園を描き出したわびさび深いかっぱ。",
+        totalEvolutionMultiplier: 1.3,
+        storageFolderName: "6_karesansui"
+    ),
+    // 難易度: 普通 (1.3日)
+    KappaData(
+        id: "cyber",
+        nameKey: "kappa_cyber_name",
+        defaultName: "サイバーかっぱ",
+        descKey: "kappa_cyber_desc",
+        defaultDesc: "電脳世界からやってきた、ホログラムのお皿がサイケデリックに発光する未来派かっぱ。",
+        totalEvolutionMultiplier: 1.3,
+        storageFolderName: "7_cyber"
+    ),
+    // 難易度: 非常に難しい (1.7日)
+    KappaData(
+        id: "creamsoda",
+        nameKey: "kappa_creamsoda_name",
+        defaultName: "クリームソーダかっぱ",
+        descKey: "kappa_creamsoda_desc",
+        defaultDesc: "お皿がメロンソーダで満たされ、アイスクリームとチェリーを乗せた、レトロポップなかっぱ。",
+        totalEvolutionMultiplier: 1.7,
+        storageFolderName: "8_creamsoda"
+    ),
+    // 難易度: 普通 (1.3日)
+    KappaData(
+        id: "atrier",
+        nameKey: "kappa_atrier_name",
+        defaultName: "アトリエかっぱ",
+        descKey: "kappa_atrier_desc",
+        defaultDesc: "お皿をパレットにしてカラフルな絵の具を溶かしている、芸術家肌でクリエイティブなかっぱ。",
+        totalEvolutionMultiplier: 1.3,
+        storageFolderName: "9_atrier"
     )
 ]
