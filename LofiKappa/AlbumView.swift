@@ -9,6 +9,13 @@ struct AlbumView: View {
     @Binding var selectedTab: Int
     @State private var animatedIndexLimit = -1
     
+    enum AlbumViewMode: String, CaseIterable {
+        case grid
+        case honeycomb
+    }
+    
+    @State private var viewMode: AlbumViewMode = .grid
+    
     // 重複したカッパ種を排除したユニークなリスト
     private var uniqueKappas: [KappaCollection] {
         var seenBaseIds = Set<String>()
@@ -38,6 +45,28 @@ struct AlbumView: View {
         return rows
     }
     
+    // ハニカム（交互グリッド）用に行単位に交互（3個、2個、3個、2個...）に分割したデータ
+    private var honeycombRows: [[(offset: Int, element: KappaCollection)]] {
+        let enumerated = Array(uniqueKappas.enumerated())
+        var rows = [[(offset: Int, element: KappaCollection)]]()
+        var currentIndex = 0
+        var isWideRow = true
+        
+        while currentIndex < enumerated.count {
+            let rowCount = isWideRow ? 3 : 2
+            var row = [(offset: Int, element: KappaCollection)]()
+            for _ in 0..<rowCount {
+                if currentIndex < enumerated.count {
+                    row.append(enumerated[currentIndex])
+                    currentIndex += 1
+                }
+            }
+            rows.append(row)
+            isWideRow.toggle()
+        }
+        return rows
+    }
+    
     var body: some View {
         let _ = languageManager.selectedLanguage // 言語変更を検知してコンテンツを再描画
         NavigationView {
@@ -60,20 +89,57 @@ struct AlbumView: View {
                         .padding(.bottom, 10)
                         
                         VStack(alignment: .leading, spacing: 20) {
-                            // コレクション数バッジ（クラフト紙風ラベル）
-                            HStack {
+                            // コレクション数バッジ ＆ ビュー切り替えセレクター
+                            HStack(alignment: .center, spacing: 12) {
                                 Text(AppTexts.albumCollectedKappas)
                                     .font(.system(.subheadline, design: .rounded).bold())
                                     .foregroundColor(Theme.Colors.text(for: colorScheme))
-                                Spacer()
+                                
                                 Text(AppTexts.albumSpeciesCountText(uniqueKappas.count))
-                                    .font(.system(.subheadline, design: .rounded).bold())
+                                    .font(.system(.caption, design: .rounded).bold())
                                     .foregroundColor(.white)
-                                    .padding(.horizontal, 14)
-                                    .padding(.vertical, 6)
+                                    .padding(.horizontal, 10)
+                                    .padding(.vertical, 4)
                                     .background(Theme.Colors.primaryBlue)
                                     .cornerRadius(20)
                                     .handDrawnBorder(color: .white.opacity(0.3), cornerRadius: 20)
+                                
+                                Spacer()
+                                
+                                // ビューモード切り替えセレクター
+                                HStack(spacing: 8) {
+                                    Button(action: {
+                                        withAnimation(.spring(response: 0.4, dampingFraction: 0.75)) {
+                                            viewMode = .grid
+                                        }
+                                    }) {
+                                        Image(systemName: "square.grid.2x2.fill")
+                                            .font(.system(size: 13, weight: .bold))
+                                            .foregroundColor(viewMode == .grid ? .white : Theme.Colors.primaryBlue)
+                                            .padding(6)
+                                            .background(viewMode == .grid ? Theme.Colors.primaryBlue : Color.clear)
+                                            .clipShape(Circle())
+                                    }
+                                    .buttonStyle(PlainButtonStyle())
+                                    
+                                    Button(action: {
+                                        withAnimation(.spring(response: 0.4, dampingFraction: 0.75)) {
+                                            viewMode = .honeycomb
+                                        }
+                                    }) {
+                                        Image(systemName: "hexagon.fill")
+                                            .font(.system(size: 13, weight: .bold))
+                                            .foregroundColor(viewMode == .honeycomb ? .white : Theme.Colors.primaryBlue)
+                                            .padding(6)
+                                            .background(viewMode == .honeycomb ? Theme.Colors.primaryBlue : Color.clear)
+                                            .clipShape(Circle())
+                                    }
+                                    .buttonStyle(PlainButtonStyle())
+                                }
+                                .padding(4)
+                                .background(Theme.Colors.card(for: colorScheme))
+                                .cornerRadius(20)
+                                .handDrawnBorder(color: Theme.Colors.text(for: colorScheme).opacity(0.12), cornerRadius: 20)
                             }
                             .padding(.horizontal, 20)
                             .padding(.top, 10)
@@ -99,30 +165,56 @@ struct AlbumView: View {
                                 .frame(maxWidth: .infinity)
                                 .padding(.top, 40)
                             } else {
-                                VStack(spacing: 20) {
-                                    ForEach(0..<kappaRows.count, id: \.self) { rowIndex in
-                                        HStack(spacing: 16) {
-                                            ForEach(kappaRows[rowIndex], id: \.element.id) { cell in
-                                                let isAnimated = cell.offset <= animatedIndexLimit
-                                                NavigationLink(destination: KappaDetailView(kappa: cell.element)) {
-                                                    KappaCard(kappa: cell.element, colorScheme: colorScheme)
-                                                }
-                                                .buttonStyle(PlainButtonStyle())
-                                                .frame(maxWidth: .infinity)
-                                                .offset(y: isAnimated ? 0 : -350)
-                                                .scaleEffect(isAnimated ? 1.0 : 0.85)
-                                                .rotationEffect(.degrees(isAnimated ? 0 : (cell.offset % 2 == 0 ? -4 : 4)))
-                                                .opacity(isAnimated ? 1.0 : 0.0)
-                                            }
-                                            if kappaRows[rowIndex].count < 2 {
-                                                Spacer()
+                                if viewMode == .grid {
+                                    VStack(spacing: 20) {
+                                        ForEach(0..<kappaRows.count, id: \.self) { rowIndex in
+                                            HStack(spacing: 16) {
+                                                ForEach(kappaRows[rowIndex], id: \.element.id) { cell in
+                                                    let isAnimated = cell.offset <= animatedIndexLimit
+                                                    NavigationLink(destination: KappaDetailView(kappa: cell.element)) {
+                                                        KappaCard(kappa: cell.element, colorScheme: colorScheme)
+                                                    }
+                                                    .buttonStyle(PlainButtonStyle())
                                                     .frame(maxWidth: .infinity)
+                                                    .offset(y: isAnimated ? 0 : -350)
+                                                    .scaleEffect(isAnimated ? 1.0 : 0.85)
+                                                    .rotationEffect(.degrees(isAnimated ? 0 : (cell.offset % 2 == 0 ? -4 : 4)))
+                                                    .opacity(isAnimated ? 1.0 : 0.0)
+                                                }
+                                                if kappaRows[rowIndex].count < 2 {
+                                                    Spacer()
+                                                        .frame(maxWidth: .infinity)
+                                                }
                                             }
                                         }
                                     }
+                                    .padding(.horizontal, 16)
+                                    .padding(.bottom, 30)
+                                    .transition(.asymmetric(insertion: .opacity.combined(with: .scale(scale: 0.95)), removal: .opacity))
+                                } else {
+                                    // ハニカム（六角形）グリッド表示
+                                    VStack(spacing: -24) {
+                                        ForEach(0..<honeycombRows.count, id: \.self) { rowIndex in
+                                            let row = honeycombRows[rowIndex]
+                                            HStack(spacing: 10) {
+                                                ForEach(row, id: \.element.id) { cell in
+                                                    let isCellAnimated = cell.offset <= animatedIndexLimit
+                                                    NavigationLink(destination: KappaDetailView(kappa: cell.element)) {
+                                                        HexagonKappaCard(kappa: cell.element, colorScheme: colorScheme)
+                                                    }
+                                                    .buttonStyle(PlainButtonStyle())
+                                                    .offset(y: isCellAnimated ? 0 : -300)
+                                                    .scaleEffect(isCellAnimated ? 1.0 : 0.8)
+                                                    .opacity(isCellAnimated ? 1.0 : 0.0)
+                                                }
+                                            }
+                                            .padding(.horizontal, 8)
+                                        }
+                                    }
+                                    .padding(.horizontal, 8)
+                                    .padding(.bottom, 40)
+                                    .transition(.asymmetric(insertion: .opacity.combined(with: .scale(scale: 0.95)), removal: .opacity))
                                 }
-                                .padding(.horizontal, 16)
-                                .padding(.bottom, 30)
                             }
                         }
                     }
@@ -451,6 +543,80 @@ struct RoundedCorner: Shape {
             cornerRadii: CGSize(width: radius, height: radius)
         )
         return Path(path.cgPath)
+    }
+}
+
+// MARK: - Honeycomb Elements
+
+struct Hexagon: Shape {
+    func path(in rect: CGRect) -> Path {
+        var path = Path()
+        let width = rect.width
+        let height = rect.height
+        let ySpacing = height / 4
+        
+        path.move(to: CGPoint(x: width / 2, y: 0))
+        path.addLine(to: CGPoint(x: width, y: ySpacing))
+        path.addLine(to: CGPoint(x: width, y: ySpacing * 3))
+        path.addLine(to: CGPoint(x: width / 2, y: height))
+        path.addLine(to: CGPoint(x: 0, y: ySpacing * 3))
+        path.addLine(to: CGPoint(x: 0, y: ySpacing * 1))
+        path.closeSubpath()
+        return path
+    }
+}
+
+struct HexagonKappaCard: View {
+    let kappa: KappaCollection
+    let colorScheme: ColorScheme
+    
+    var baseId: String {
+        kappa.id.components(separatedBy: "_").first ?? "gamer"
+    }
+    
+    var maxStage: Int {
+        KappaData.find(by: baseId)?.numberOfStages ?? 5
+    }
+    
+    var body: some View {
+        ZStack {
+            // 背景のグラデーション六角形
+            Hexagon()
+                .fill(
+                    LinearGradient(
+                        colors: [Theme.Colors.lightBlue.opacity(0.22), Theme.Colors.primaryBlue.opacity(0.08)],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )
+                )
+            
+            // カッパイラスト
+            KappaImageView(kappaId: baseId, stage: maxStage)
+                .padding(14)
+                .aspectRatio(contentMode: .fit)
+                .clipShape(Hexagon())
+            
+            // 下部に半透明な名前帯を配置
+            VStack {
+                Spacer()
+                Text(KappaData.find(by: baseId)?.name ?? kappa.title)
+                    .font(.system(size: 10, weight: .bold, design: .rounded))
+                    .foregroundColor(Theme.Colors.text(for: colorScheme))
+                    .lineLimit(1)
+                    .padding(.horizontal, 6)
+                    .padding(.vertical, 3)
+                    .background(Theme.Colors.card(for: colorScheme).opacity(0.8))
+                    .cornerRadius(8)
+                    .padding(.bottom, 8)
+            }
+        }
+        .frame(width: 96, height: 110)
+        // 手書き風六角形ボーダー
+        .overlay(
+            Hexagon()
+                .stroke(Theme.Colors.text(for: colorScheme).opacity(0.22), lineWidth: 1.5)
+        )
+        .shadow(color: .black.opacity(colorScheme == .dark ? 0.3 : 0.07), radius: 6, x: 0, y: 3)
     }
 }
 
