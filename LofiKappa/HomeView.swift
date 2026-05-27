@@ -676,6 +676,17 @@ struct HomeView: View {
 
 // MARK: - ArcWaterMenu
 
+struct BubbleTailShape: Shape {
+    func path(in rect: CGRect) -> Path {
+        var path = Path()
+        path.move(to: CGPoint(x: rect.minX, y: rect.minY))
+        path.addLine(to: CGPoint(x: rect.maxX, y: rect.minY))
+        path.addLine(to: CGPoint(x: rect.midX, y: rect.maxY))
+        path.closeSubpath()
+        return path
+    }
+}
+
 struct ArcWaterMenu: View {
     @Binding var isOpen: Bool
     let items: [(amount: Int, icon: String)]
@@ -683,6 +694,9 @@ struct ArcWaterMenu: View {
     let isCoolingDown: Bool
     let coolDownRemaining: Int
     let onSelect: (Int) -> Void
+
+    @State private var pulseAnimation = false
+    @State private var rotationAnimation = 0.0
 
     private var angles: [Double] {
         let count = items.count
@@ -698,6 +712,25 @@ struct ArcWaterMenu: View {
 
     var body: some View {
         ZStack {
+            // クールダウン中の背景波紋（水紋エフェクト）
+            if isCoolingDown {
+                Circle()
+                    .stroke(Theme.Colors.primaryBlue.opacity(0.18), lineWidth: 1.5)
+                    .frame(width: triggerSize + 28, height: triggerSize + 28)
+                    .scaleEffect(pulseAnimation ? 1.3 : 0.95)
+                    .opacity(pulseAnimation ? 0.0 : 0.8)
+                    .animation(.easeOut(duration: 2.5).repeatForever(autoreverses: false), value: pulseAnimation)
+                    .offset(y: radius)
+
+                Circle()
+                    .stroke(Theme.Colors.primaryBlue.opacity(0.12), lineWidth: 1.0)
+                    .frame(width: triggerSize + 14, height: triggerSize + 14)
+                    .scaleEffect(pulseAnimation ? 1.2 : 0.98)
+                    .opacity(pulseAnimation ? 0.0 : 0.7)
+                    .animation(.easeOut(duration: 2.5).repeatForever(autoreverses: false).delay(1.0), value: pulseAnimation)
+                    .offset(y: radius)
+            }
+
             // アーチ線：Shape + .trim() で左から右へ描画アニメーション
             ArcLineShape(radius: radius, bottomOffset: triggerSize / 2)
                 .trim(from: 0, to: isOpen ? 1 : 0)
@@ -738,25 +771,70 @@ struct ArcWaterMenu: View {
                 )
             }
 
-            // クールタイム中のカウントダウン吹き出し（ふせん風）
+            // クールタイム中のカウントダウン吹き出し（和モダン・極上すりガラスUI）
             if isCoolingDown {
-                VStack(spacing: 4) {
-                    Text(AppTexts.cooldownMessage)
-                        .font(.system(.caption, design: .rounded).bold())
-                        .foregroundColor(Theme.Colors.primaryBlue)
+                VStack(spacing: 0) {
+                    VStack(spacing: 5) {
+                        HStack(spacing: 6) {
+                            Image(systemName: "drop.fill")
+                                .font(.system(size: 11))
+                                .foregroundColor(Theme.Colors.primaryBlue)
+                                .scaleEffect(pulseAnimation ? 1.18 : 0.9)
+                                .animation(.easeInOut(duration: 1.25).repeatForever(autoreverses: true), value: pulseAnimation)
+                            
+                            Text(AppTexts.cooldownMessage)
+                                .font(.system(.caption, design: .rounded).bold())
+                                .foregroundColor(Theme.Colors.text(for: colorScheme))
+                        }
+                        
+                        Text(AppTexts.cooldownTimerText(minutes: coolDownRemaining / 60, seconds: coolDownRemaining % 60))
+                            .font(.system(.caption2, design: .monospaced).bold())
+                            .foregroundColor(Theme.Colors.primaryBlue)
+                            .padding(.horizontal, 9)
+                            .padding(.vertical, 3.5)
+                            .background(Theme.Colors.lightBlue.opacity(0.15))
+                            .cornerRadius(6)
+                    }
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 10)
+                    .background(.ultraThinMaterial)
+                    .background(Theme.Colors.card(for: colorScheme).opacity(0.65))
+                    .cornerRadius(14)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 14)
+                            .stroke(
+                                LinearGradient(
+                                    colors: [
+                                        Theme.Colors.primaryBlue.opacity(0.38),
+                                        Theme.Colors.lightBlue.opacity(0.12)
+                                    ],
+                                    startPoint: .topLeading,
+                                    endPoint: .bottomTrailing
+                                ),
+                                lineWidth: 1.2
+                            )
+                    )
+                    .shadow(color: Theme.Colors.primaryBlue.opacity(0.06), radius: 8, x: 0, y: 4)
                     
-                    Text(AppTexts.cooldownTimerText(minutes: coolDownRemaining / 60, seconds: coolDownRemaining % 60))
-                        .font(.system(.caption2, design: .rounded).bold())
-                        .foregroundColor(.secondary)
+                    // 吹き出しのしっぽ
+                    BubbleTailShape()
+                        .fill(Theme.Colors.card(for: colorScheme).opacity(0.65))
+                        .background(
+                            BubbleTailShape()
+                                .fill(.ultraThinMaterial)
+                        )
+                        .frame(width: 14, height: 7)
+                        .overlay(
+                            BubbleTailShape()
+                                .stroke(Theme.Colors.lightBlue.opacity(0.24), lineWidth: 1.2)
+                        )
+                        .offset(y: -0.5)
                 }
-                .padding(.horizontal, 14)
-                .padding(.vertical, 8)
-                .background(Theme.Colors.card(for: colorScheme))
-                .cornerRadius(12)
-                .handDrawnBorder(color: Theme.Colors.primaryBlue.opacity(0.3), cornerRadius: 12)
-                .shadow(color: .black.opacity(0.04), radius: 4, x: 0, y: 2)
-                .offset(y: radius - 52)
-                .transition(.scale.combined(with: .opacity))
+                .offset(y: radius - 62)
+                .transition(.asymmetric(
+                    insertion: .scale(scale: 0.8, anchor: .bottom).combined(with: .opacity),
+                    removal: .opacity
+                ))
             }
 
             // トリガーボタン（フレーム下端に固定）
@@ -772,7 +850,7 @@ struct ArcWaterMenu: View {
                         .fill(
                             LinearGradient(
                                 colors: isCoolingDown
-                                    ? [Color.gray.opacity(0.4), Color.gray.opacity(0.3)]
+                                    ? [Color.gray.opacity(0.35), Color.gray.opacity(0.25)]
                                     : [Theme.Colors.primaryBlue, Theme.Colors.primaryBlue.opacity(0.82)],
                                 startPoint: .topLeading,
                                 endPoint: .bottomTrailing
@@ -784,14 +862,39 @@ struct ArcWaterMenu: View {
                     Image(systemName: isCoolingDown ? "hourglass" : (isOpen ? "xmark" : "drop.fill"))
                         .font(.system(size: 22, weight: .bold))
                         .foregroundColor(isCoolingDown ? .white.opacity(0.8) : .white)
-                        .rotationEffect(.degrees(isOpen ? 90 : 0))
-                        .animation(.spring(response: 0.3), value: isOpen)
+                        .rotationEffect(.degrees(isCoolingDown ? rotationAnimation : (isOpen ? 90 : 0)))
                 }
             }
             .disabled(isCoolingDown)
             .offset(y: radius)
         }
         .frame(height: radius * 2 + triggerSize)
+        .onAppear {
+            if isCoolingDown {
+                startAnimations()
+            }
+        }
+        .onChange(of: isCoolingDown) { cooling in
+            if cooling {
+                startAnimations()
+            } else {
+                stopAnimations()
+            }
+        }
+    }
+
+    private func startAnimations() {
+        withAnimation(.easeOut(duration: 2.5).repeatForever(autoreverses: false)) {
+            pulseAnimation = true
+        }
+        withAnimation(.linear(duration: 8.0).repeatForever(autoreverses: false)) {
+            rotationAnimation = 360.0
+        }
+    }
+
+    private func stopAnimations() {
+        pulseAnimation = false
+        rotationAnimation = 0.0
     }
 }
 
