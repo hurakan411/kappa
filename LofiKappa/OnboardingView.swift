@@ -606,7 +606,11 @@ struct OnboardingView: View {
     
     // MARK: - タイピングアニメーションの制御
     private func startTypingAnimation() {
-        Timer.scheduledTimer(withTimeInterval: 0.15, repeats: true) { timer in
+        let isEnglish = LanguageManager.shared.selectedLanguage == .english
+        // 英語はアルファベット数が多いためテンポを速め（0.04秒）、日本語はしっとり語る速度（0.15秒）にする
+        let interval = isEnglish ? 0.04 : 0.15
+        
+        Timer.scheduledTimer(withTimeInterval: interval, repeats: true) { timer in
             if textCharCount < totalCharCount {
                 textCharCount += 1
             } else {
