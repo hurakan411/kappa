@@ -26,6 +26,10 @@ struct HomeView: View {
     @State private var isReady = false
     @State private var isMenuOpen = false
     
+    // クールタイム監視用の状態変数とタイマー
+    @State private var now = Date()
+    private let cooldownTimer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
+    
     // タッチ＆エフェクト用ステート
     @State private var touchScaleX: CGFloat = 1.0
     @State private var touchScaleY: CGFloat = 1.0
@@ -56,6 +60,25 @@ struct HomeView: View {
     
     private var currentKappa: KappaData {
         allKappas.first(where: { $0.id == currentKappaId }) ?? allKappas[0]
+    }
+    
+    // 給水制限（クールタイム5分）の判定
+    private var isCoolingDown: Bool {
+        #if DEBUG
+        return false
+        #else
+        guard let lastDrink = localTodayLog?.lastDrinkTime else { return false }
+        let timePassed = now.timeIntervalSince(lastDrink)
+        return timePassed < 5 * 60
+        #endif
+    }
+    
+    // クールタイムの残り秒数
+    private var coolDownRemaining: Int {
+        guard let lastDrink = localTodayLog?.lastDrinkTime else { return 0 }
+        let timePassed = now.timeIntervalSince(lastDrink)
+        let remaining = 5 * 60 - timePassed
+        return max(0, Int(remaining))
     }
     
     private var currentGoal: Int {
@@ -162,6 +185,8 @@ struct HomeView: View {
                             (amount: safeSettings?.cupSize5 ?? 500, icon: "takeoutbag.and.cup.and.straw.fill")
                         ],
                         colorScheme: colorScheme,
+                        isCoolingDown: isCoolingDown,
+                        coolDownRemaining: coolDownRemaining,
                         onSelect: { amount in addWater(amount: amount) }
                     )
                     .padding(.bottom, 8)
@@ -187,6 +212,11 @@ struct HomeView: View {
             if newPhase == .active {
                 print("🟢 [HomeView] App entered active foreground. Syncing widget data via UserDefaults.")
                 syncFromWidget()
+            }
+        }
+        .onReceive(cooldownTimer) { _ in
+            if isCoolingDown {
+                self.now = Date()
             }
         }
     }
@@ -397,6 +427,15 @@ struct HomeView: View {
     
     private func addWater(amount: Int) {
         guard let log = localTodayLog else { return }
+        
+        #if !DEBUG
+        if let lastDrink = log.lastDrinkTime {
+            let timePassed = Date().timeIntervalSince(lastDrink)
+            if timePassed < 5 * 60 {
+                return
+            }
+        }
+        #endif
         
         let evolutionToAdd = amount
         
@@ -641,6 +680,8 @@ struct ArcWaterMenu: View {
     @Binding var isOpen: Bool
     let items: [(amount: Int, icon: String)]
     let colorScheme: ColorScheme
+    let isCoolingDown: Bool
+    let coolDownRemaining: Int
     let onSelect: (Int) -> Void
 
     private var angles: [Double] {
@@ -697,31 +738,57 @@ struct ArcWaterMenu: View {
                 )
             }
 
+            // クールタイム中のカウントダウン吹き出し（ふせん風）
+            if isCoolingDown {
+                VStack(spacing: 4) {
+                    Text(AppTexts.cooldownMessage)
+                        .font(.system(.caption, design: .rounded).bold())
+                        .foregroundColor(Theme.Colors.primaryBlue)
+                    
+                    Text(AppTexts.cooldownTimerText(minutes: coolDownRemaining / 60, seconds: coolDownRemaining % 60))
+                        .font(.system(.caption2, design: .rounded).bold())
+                        .foregroundColor(.secondary)
+                }
+                .padding(.horizontal, 14)
+                .padding(.vertical, 8)
+                .background(Theme.Colors.card(for: colorScheme))
+                .cornerRadius(12)
+                .handDrawnBorder(color: Theme.Colors.primaryBlue.opacity(0.3), cornerRadius: 12)
+                .shadow(color: .black.opacity(0.04), radius: 4, x: 0, y: 2)
+                .offset(y: radius - 52)
+                .transition(.scale.combined(with: .opacity))
+            }
+
             // トリガーボタン（フレーム下端に固定）
             Button {
-                withAnimation(.spring(response: 0.38, dampingFraction: 0.7)) {
-                    isOpen.toggle()
+                if !isCoolingDown {
+                    withAnimation(.spring(response: 0.38, dampingFraction: 0.7)) {
+                        isOpen.toggle()
+                    }
                 }
             } label: {
                 ZStack {
                     Circle()
                         .fill(
                             LinearGradient(
-                                colors: [Theme.Colors.primaryBlue, Theme.Colors.primaryBlue.opacity(0.82)],
+                                colors: isCoolingDown
+                                    ? [Color.gray.opacity(0.4), Color.gray.opacity(0.3)]
+                                    : [Theme.Colors.primaryBlue, Theme.Colors.primaryBlue.opacity(0.82)],
                                 startPoint: .topLeading,
                                 endPoint: .bottomTrailing
                             )
                         )
                         .frame(width: triggerSize, height: triggerSize)
-                        .shadow(color: Theme.Colors.primaryBlue.opacity(0.4), radius: 10, x: 0, y: 5)
+                        .shadow(color: isCoolingDown ? .clear : Theme.Colors.primaryBlue.opacity(0.4), radius: 10, x: 0, y: 5)
 
-                    Image(systemName: isOpen ? "xmark" : "drop.fill")
+                    Image(systemName: isCoolingDown ? "hourglass" : (isOpen ? "xmark" : "drop.fill"))
                         .font(.system(size: 22, weight: .bold))
-                        .foregroundColor(.white)
+                        .foregroundColor(isCoolingDown ? .white.opacity(0.8) : .white)
                         .rotationEffect(.degrees(isOpen ? 90 : 0))
                         .animation(.spring(response: 0.3), value: isOpen)
                 }
             }
+            .disabled(isCoolingDown)
             .offset(y: radius)
         }
         .frame(height: radius * 2 + triggerSize)

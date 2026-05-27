@@ -71,6 +71,16 @@ struct AddWaterIntent: AppIntent {
             context.insert(targetLog)
         }
         
+        // 4. クールタイムのガード
+        #if !DEBUG
+        if let lastDrink = targetLog.lastDrinkTime {
+            let timePassed = Date().timeIntervalSince(lastDrink)
+            if timePassed < 5 * 60 {
+                return .result() // クールタイム中のため給水処理を行わずに終了
+            }
+        }
+        #endif
+        
         // 4. 給水を記録
         targetLog.currentAmount += amount
         targetLog.lastDrinkTime = Date()
@@ -147,6 +157,7 @@ struct SimpleEntry: TimelineEntry {
     let cupSize3: Int
     let cupSize4: Int
     let cupSize5: Int
+    let isCoolingDown: Bool
 }
 
 // MARK: - Timeline Provider
@@ -169,7 +180,8 @@ struct Provider: TimelineProvider {
             cupSize2: 200,
             cupSize3: 300,
             cupSize4: 400,
-            cupSize5: 500
+            cupSize5: 500,
+            isCoolingDown: false
         )
     }
 
@@ -183,14 +195,29 @@ struct Provider: TimelineProvider {
     func getTimeline(in context: Context, completion: @escaping (Timeline<SimpleEntry>) -> ()) {
         Task {
             let entry = await fetchEntry(for: Date())
-            let nextUpdate = Calendar.current.date(byAdding: .minute, value: 30, to: Date()) ?? Date().addingTimeInterval(1800)
+            
+            // クールタイムが残っている場合は、そのクールタイムが明ける時間を次の更新時刻とする
+            // そうでない場合は、通常の30分後
+            let nextUpdate: Date
+            let dbInfo = await fetchDatabaseInfo(for: Date())
+            if let lastDrink = dbInfo.lastDrinkTime {
+                let coolDownEnd = lastDrink.addingTimeInterval(5 * 60)
+                if coolDownEnd > Date() {
+                    nextUpdate = coolDownEnd.addingTimeInterval(1) // 念のため1秒マージン
+                } else {
+                    nextUpdate = Calendar.current.date(byAdding: .minute, value: 30, to: Date()) ?? Date().addingTimeInterval(1800)
+                }
+            } else {
+                nextUpdate = Calendar.current.date(byAdding: .minute, value: 30, to: Date()) ?? Date().addingTimeInterval(1800)
+            }
+            
             let timeline = Timeline(entries: [entry], policy: .after(nextUpdate))
             completion(timeline)
         }
     }
     
     @MainActor
-    private func fetchDatabaseInfo(for date: Date) -> (currentAmount: Int, kappaCurrentAmount: Int, kappaId: String, isCompleted: Bool, dailyGoal: Int, settings: UserSettings) {
+    private func fetchDatabaseInfo(for date: Date) -> (currentAmount: Int, kappaCurrentAmount: Int, kappaId: String, isCompleted: Bool, dailyGoal: Int, settings: UserSettings, lastDrinkTime: Date?) {
         let context = SharedDatabase.container.mainContext
         
         // 1. 設定情報の取得
@@ -212,8 +239,9 @@ struct Provider: TimelineProvider {
         let kappaCurrentAmount = localTodayLog?.kappaCurrentAmount ?? 0
         let kappaId = localTodayLog?.targetKappaId ?? "gamer"
         let isCompleted = localTodayLog?.isCompleted ?? false
+        let lastDrinkTime = localTodayLog?.lastDrinkTime
         
-        return (currentAmount, kappaCurrentAmount, kappaId, isCompleted, dailyGoal, settings)
+        return (currentAmount, kappaCurrentAmount, kappaId, isCompleted, dailyGoal, settings, lastDrinkTime)
     }
     
     private func fetchEntry(for date: Date) async -> SimpleEntry {
@@ -225,6 +253,7 @@ struct Provider: TimelineProvider {
         let isCompleted = dbInfo.isCompleted
         let dailyGoal = dbInfo.dailyGoal
         let settings = dbInfo.settings
+        let lastDrinkTime = dbInfo.lastDrinkTime
         
         let currentKappa = allKappas.first(where: { $0.id == kappaId }) ?? allKappas[0]
         
@@ -365,6 +394,19 @@ struct Provider: TimelineProvider {
         } else {
             print("⚠️ [Widget] No image URL for kappaId=\(kappaId), stage=\(kappaStage)")
         }
+
+        // クールタイム判定
+        let isCoolingDown: Bool
+        #if DEBUG
+        isCoolingDown = false
+        #else
+        if let lastDrink = lastDrinkTime {
+            let timePassed = date.timeIntervalSince(lastDrink)
+            isCoolingDown = timePassed < 5 * 60
+        } else {
+            isCoolingDown = false
+        }
+        #endif
         
         return SimpleEntry(
             date: date,
@@ -382,7 +424,8 @@ struct Provider: TimelineProvider {
             cupSize2: settings.cupSize2,
             cupSize3: settings.cupSize3,
             cupSize4: settings.cupSize4,
-            cupSize5: settings.cupSize5
+            cupSize5: settings.cupSize5,
+            isCoolingDown: isCoolingDown
         )
     }
 }
@@ -510,11 +553,11 @@ struct LofiKappaShowcaseWidgetEntryView : View {
                         
                         // 右上：縦並びのクイック給水ボタン（設定された5種類すべてをアイコン付きで表示、白文字で透過）
                         VStack(spacing: 4) {
-                            WidgetCompactDrinkButton(amount: entry.cupSize1, label: "+\(entry.cupSize1)", icon: "cup.and.saucer.fill")
-                            WidgetCompactDrinkButton(amount: entry.cupSize2, label: "+\(entry.cupSize2)", icon: "mug.fill")
-                            WidgetCompactDrinkButton(amount: entry.cupSize3, label: "+\(entry.cupSize3)", icon: "drop.fill")
-                            WidgetCompactDrinkButton(amount: entry.cupSize4, label: "+\(entry.cupSize4)", icon: "waterbottle.fill")
-                            WidgetCompactDrinkButton(amount: entry.cupSize5, label: "+\(entry.cupSize5)", icon: "takeoutbag.and.cup.and.straw.fill")
+                            WidgetCompactDrinkButton(amount: entry.cupSize1, label: "+\(entry.cupSize1)", icon: "cup.and.saucer.fill", isCoolingDown: entry.isCoolingDown)
+                            WidgetCompactDrinkButton(amount: entry.cupSize2, label: "+\(entry.cupSize2)", icon: "mug.fill", isCoolingDown: entry.isCoolingDown)
+                            WidgetCompactDrinkButton(amount: entry.cupSize3, label: "+\(entry.cupSize3)", icon: "drop.fill", isCoolingDown: entry.isCoolingDown)
+                            WidgetCompactDrinkButton(amount: entry.cupSize4, label: "+\(entry.cupSize4)", icon: "waterbottle.fill", isCoolingDown: entry.isCoolingDown)
+                            WidgetCompactDrinkButton(amount: entry.cupSize5, label: "+\(entry.cupSize5)", icon: "takeoutbag.and.cup.and.straw.fill", isCoolingDown: entry.isCoolingDown)
                         }
                         .frame(width: 78) // 62から78に広げて、アイコンサイズ11に適合
                     }
@@ -622,11 +665,11 @@ struct LofiKappaShowcaseWidgetEntryView : View {
                         
                         // 右上：縦並びのクイック給水ボタン（設定された5種類すべてをアイコン付きで表示）
                         VStack(spacing: 4) {
-                            WidgetCompactDrinkButton(amount: entry.cupSize1, label: "+\(entry.cupSize1)", icon: "cup.and.saucer.fill")
-                            WidgetCompactDrinkButton(amount: entry.cupSize2, label: "+\(entry.cupSize2)", icon: "mug.fill")
-                            WidgetCompactDrinkButton(amount: entry.cupSize3, label: "+\(entry.cupSize3)", icon: "drop.fill")
-                            WidgetCompactDrinkButton(amount: entry.cupSize4, label: "+\(entry.cupSize4)", icon: "waterbottle.fill")
-                            WidgetCompactDrinkButton(amount: entry.cupSize5, label: "+\(entry.cupSize5)", icon: "takeoutbag.and.cup.and.straw.fill")
+                            WidgetCompactDrinkButton(amount: entry.cupSize1, label: "+\(entry.cupSize1)", icon: "cup.and.saucer.fill", isCoolingDown: entry.isCoolingDown)
+                            WidgetCompactDrinkButton(amount: entry.cupSize2, label: "+\(entry.cupSize2)", icon: "mug.fill", isCoolingDown: entry.isCoolingDown)
+                            WidgetCompactDrinkButton(amount: entry.cupSize3, label: "+\(entry.cupSize3)", icon: "drop.fill", isCoolingDown: entry.isCoolingDown)
+                            WidgetCompactDrinkButton(amount: entry.cupSize4, label: "+\(entry.cupSize4)", icon: "waterbottle.fill", isCoolingDown: entry.isCoolingDown)
+                            WidgetCompactDrinkButton(amount: entry.cupSize5, label: "+\(entry.cupSize5)", icon: "takeoutbag.and.cup.and.straw.fill", isCoolingDown: entry.isCoolingDown)
                         }
                         .frame(width: 80)
                     }
@@ -701,6 +744,7 @@ struct WidgetCompactDrinkButton: View {
     let amount: Int
     let label: String
     let icon: String
+    let isCoolingDown: Bool
     
     var body: some View {
         Button(intent: AddWaterIntent(amount: amount)) {
@@ -717,17 +761,17 @@ struct WidgetCompactDrinkButton: View {
             .frame(maxWidth: .infinity)
             .padding(.vertical, 5)
             .background(
-                Color.white.opacity(0.16) // 透過度を大幅に向上
+                Color.white.opacity(isCoolingDown ? 0.06 : 0.16) // 透過度を大幅に向上
             )
             .background(
-                Color(hex: "E0F2FE").opacity(0.08)
+                Color(hex: "E0F2FE").opacity(isCoolingDown ? 0.03 : 0.08)
             )
             .cornerRadius(10)
             .overlay(
                 RoundedRectangle(cornerRadius: 10)
                     .stroke(
                         LinearGradient(
-                            colors: [.white.opacity(0.35), .white.opacity(0.05), .black.opacity(0.1)],
+                            colors: [.white.opacity(isCoolingDown ? 0.15 : 0.35), .white.opacity(0.05), .black.opacity(0.1)],
                             startPoint: .topLeading, endPoint: .bottomTrailing
                         ),
                         lineWidth: 0.8
@@ -738,8 +782,10 @@ struct WidgetCompactDrinkButton: View {
                     .stroke(Color.white.opacity(0.08), lineWidth: 0.5)
             )
             .shadow(color: Color.black.opacity(0.03), radius: 1.5, x: 0, y: 1)
+            .opacity(isCoolingDown ? 0.42 : 1.0) // クールダウン中は半透明
         }
         .buttonStyle(.plain)
+        .disabled(isCoolingDown) // クールタイム中は無効化
     }
 }
 

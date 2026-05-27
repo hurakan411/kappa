@@ -297,3 +297,8 @@
 
 "kappa_surf_name" = "Ukiyo-e Surf Kappa";
 "kappa_surf_desc" = "A kappa who enjoys surfing inside a ukiyo-e print. It is longing to escape from the painting.";
+
+/* Cooldown */
+"cooldown_message" = "Your plate is full of water!";
+"cooldown_timer" = "Next hydration in %d:%02d";
+

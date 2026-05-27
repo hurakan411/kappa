@@ -277,4 +277,12 @@ struct AppTexts {
     static var widgetEvolutionProgress: String { LanguageManager.shared.localizedString(forKey: "widget_evolution_progress", defaultValue: "進化の進捗") }
     static var widgetStatusRecord: String { LanguageManager.shared.localizedString(forKey: "widget_status_record", defaultValue: "観察記録ステータス") }
     static var widgetTodayAmount: String { LanguageManager.shared.localizedString(forKey: "widget_today_amount", defaultValue: "本日の水分量") }
+    
+    // MARK: - Cooldown
+    static var cooldownMessage: String { LanguageManager.shared.localizedString(forKey: "cooldown_message", defaultValue: "お皿は水でいっぱいかっぱ！") }
+    static func cooldownTimerText(minutes: Int, seconds: Int) -> String {
+        let format = LanguageManager.shared.localizedString(forKey: "cooldown_timer", defaultValue: "次の給水まで あと %d:%02d")
+        return String(format: format, minutes, seconds)
+    }
 }
+

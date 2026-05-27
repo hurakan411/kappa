@@ -297,3 +297,8 @@
 
 "kappa_surf_name" = "浮世絵波乗りカッパ";
 "kappa_surf_desc" = "浮世絵の中でサーフィンを嗜むカッパ。浮世絵から出たがっている";
+
+/* Cooldown */
+"cooldown_message" = "お皿は水でいっぱいかっぱ！";
+"cooldown_timer" = "次の給水まで あと %d:%02d";
+
