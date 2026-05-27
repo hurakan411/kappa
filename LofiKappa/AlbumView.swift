@@ -596,11 +596,6 @@ struct KappaDetailView: View {
                     
                     // 詳細テキスト（観察ノート、背景ボックスなし）
                     VStack(spacing: 16) {
-                        // ステージ名（スワイプしたステージに応じて動的に変更）
-                        Text(stageName(for: selectedStage))
-                            .font(.system(.subheadline, design: .rounded).bold())
-                            .foregroundColor(Theme.Colors.primaryBlue)
-                        
                         Text(KappaData.find(by: baseId)?.name ?? kappa.title)
                             .font(.system(.title3, design: .rounded).bold())
                             .foregroundColor(Theme.Colors.text(for: colorScheme))
