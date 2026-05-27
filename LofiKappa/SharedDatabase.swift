@@ -32,7 +32,33 @@ public final class SharedDatabase {
         do {
             return try ModelContainer(for: schema, configurations: [modelConfiguration])
         } catch {
-            fatalError("🔴 [SharedDatabase] Could not create ModelContainer: \(error)")
+            print("🔴 [SharedDatabase] Failed to create ModelContainer: \(error). Attempting self-healing (recreating database)...")
+            
+            // データベースファイル(.sqlite, -shm, -wal)を削除して自己修復を試みます
+            if let groupURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: appGroupIdentifier) {
+                let databaseURL = groupURL.appendingPathComponent("LofiKappa.sqlite")
+                let shmURL = groupURL.appendingPathComponent("LofiKappa.sqlite-shm")
+                let walURL = groupURL.appendingPathComponent("LofiKappa.sqlite-wal")
+                try? FileManager.default.removeItem(at: databaseURL)
+                try? FileManager.default.removeItem(at: shmURL)
+                try? FileManager.default.removeItem(at: walURL)
+            }
+            
+            let fallbackURL = FileManager.default
+                .urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
+                .appendingPathComponent("LofiKappa.sqlite")
+            let shmURL = fallbackURL.deletingLastPathComponent().appendingPathComponent("LofiKappa.sqlite-shm")
+            let walURL = fallbackURL.deletingLastPathComponent().appendingPathComponent("LofiKappa.sqlite-wal")
+            try? FileManager.default.removeItem(at: fallbackURL)
+            try? FileManager.default.removeItem(at: shmURL)
+            try? FileManager.default.removeItem(at: walURL)
+            
+            do {
+                print("🟢 [SharedDatabase] Retrying ModelContainer initialization with a fresh database.")
+                return try ModelContainer(for: schema, configurations: [modelConfiguration])
+            } catch let retryError {
+                fatalError("🔴 [SharedDatabase] Fatal: Recreating database failed: \(retryError)")
+            }
         }
     }()
 }

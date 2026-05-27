@@ -181,5 +181,15 @@ let allKappas: [KappaData] = [
         defaultDesc: "お皿をパレットにしてカラフルな絵の具を溶かしている、芸術家肌でクリエイティブなかっぱ。",
         totalEvolutionMultiplier: 1.3,
         storageFolderName: "9_atrier"
+    ),
+    // 難易度: 普通 (1.3日)
+    KappaData(
+        id: "surf",
+        nameKey: "kappa_surf_name",
+        defaultName: "波乗りかっぱ",
+        descKey: "kappa_surf_desc",
+        defaultDesc: "お皿の上に波をまとわせ、サーフボードでスタイリッシュに波を乗りこなす、アクティブで夏が大好きなかっぱ。",
+        totalEvolutionMultiplier: 1.3,
+        storageFolderName: "10_surf"
     )
 ]

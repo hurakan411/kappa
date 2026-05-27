@@ -110,6 +110,7 @@ final class KappaImageLoader: ObservableObject {
 struct KappaImageView: View {
     let kappaId: String
     let stage: Int
+    var contentMode: ContentMode = .fit
     
     @StateObject private var loader = KappaImageLoader()
     
@@ -122,7 +123,7 @@ struct KappaImageView: View {
             if let uiImage = loader.uiImage {
                 Image(uiImage: uiImage)
                     .resizable()
-                    .scaledToFit()
+                    .aspectRatio(contentMode: contentMode)
             } else if loader.hasFailed {
                 errorPlaceholderView()
             } else {

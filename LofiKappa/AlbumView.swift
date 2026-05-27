@@ -15,6 +15,11 @@ struct AlbumView: View {
     }
     
     @State private var viewMode: AlbumViewMode = .grid
+    @State private var selectedKappa: KappaCollection? = nil
+    @State private var zoomScale: CGFloat = 0.95
+    @State private var gestureZoomScale: CGFloat = 1.0
+    @State private var dragOffset: CGSize = .zero
+    @State private var gestureDragOffset: CGSize = .zero
     
     // 重複したカッパ種を排除したユニークなリスト
     private var uniqueKappas: [KappaCollection] {
@@ -45,26 +50,104 @@ struct AlbumView: View {
         return rows
     }
     
-    // ハニカム（交互グリッド）用に行単位に交互（3個、2個、3個、2個...）に分割したデータ
-    private var honeycombRows: [[(offset: Int, element: KappaCollection)]] {
-        let enumerated = Array(uniqueKappas.enumerated())
-        var rows = [[(offset: Int, element: KappaCollection)]]()
-        var currentIndex = 0
-        var isWideRow = true
+    // インデックスに応じた中心スパイラルハニカムピクセルオフセット座標の計算
+    private func honeycombOffset(for index: Int) -> CGPoint {
+        // スパイラル順のハニカム相対グリッド座標 (col, row)
+        // フラットトップ（上が平ら）の六角形用レイアウト。中心(0,0)からRing 1、Ring 2...と螺旋状に並べる
+        let gridCoordinates: [(col: Double, row: Double)] = [
+            (0.0, 0.0),    // 中心 (Ring 0)
+            
+            // Ring 1 (6個)
+            (0.0, -1.0),   // 上
+            (0.866, -0.5),  // 右上
+            (0.866, 0.5),   // 右下
+            (0.0, 1.0),    // 下
+            (-0.866, 0.5),  // 左下
+            (-0.866, -0.5), // 左上
+            
+            // Ring 2 (12個)
+            (0.0, -2.0),   // 上外
+            (0.866, -1.5),
+            (1.732, -1.0),  // 右上外
+            (1.732, 0.0),   // 右外
+            (1.732, 1.0),   // 右下外
+            (0.866, 1.5),
+            (0.0, 2.0),    // 下外
+            (-0.866, 1.5),
+            (-1.732, 1.0),  // 左下外
+            (-1.732, 0.0),  // 左外
+            (-1.732, -1.0), // 左上外
+            (-0.866, -1.5),
+            
+            // Ring 3 (18個) - 将来の追加・あふれ防止のために追加
+            (0.0, -3.0),
+            (0.866, -2.5),
+            (1.732, -2.0),
+            (2.598, -1.5),
+            (2.598, -0.5),
+            (2.598, 0.5),
+            (2.598, 1.5),
+            (1.732, 2.0),
+            (0.866, 2.5),
+            (0.0, 3.0),
+            (-0.866, 2.5),
+            (-1.732, 2.0),
+            (-2.598, 1.5),
+            (-2.598, 0.5),
+            (-2.598, -0.5),
+            (-2.598, -1.5),
+            (-1.732, -2.0),
+            (-0.866, -2.5)
+        ]
         
-        while currentIndex < enumerated.count {
-            let rowCount = isWideRow ? 3 : 2
-            var row = [(offset: Int, element: KappaCollection)]()
-            for _ in 0..<rowCount {
-                if currentIndex < enumerated.count {
-                    row.append(enumerated[currentIndex])
-                    currentIndex += 1
+        guard index < gridCoordinates.count else { return .zero }
+        let coord = gridCoordinates[index]
+        
+        // フラットトップ六角形の中心間距離（96pt）をステップサイズとして設定
+        let stepX: CGFloat = 96.0
+        let stepY: CGFloat = 96.0
+        
+        let px = CGFloat(coord.col) * stepX
+        let py = CGFloat(coord.row) * stepY
+        return CGPoint(x: px, y: py)
+    }
+    
+    private var panAndZoomGesture: some Gesture {
+        DragGesture(minimumDistance: 10)
+            .onChanged { value in
+                gestureDragOffset = value.translation
+            }
+            .onEnded { value in
+                let newWidth = dragOffset.width + value.translation.width
+                let newHeight = dragOffset.height + value.translation.height
+                
+                // 動かせる可動域を横±260、縦±300に設定して、見失わないようにします
+                let limitX: CGFloat = 260.0
+                let limitY: CGFloat = 300.0
+                // 確定値の更新とジェスチャ一時値のリセットを同一アニメーション内で行い、
+                // スナップバック（一瞬元の縮尺に戻る現象）を完全に防止します。
+                withAnimation(.spring(response: 0.35, dampingFraction: 0.75)) {
+                    dragOffset = CGSize(
+                        width: max(-limitX, min(newWidth, limitX)),
+                        height: max(-limitY, min(newHeight, limitY))
+                    )
+                    gestureDragOffset = .zero
                 }
             }
-            rows.append(row)
-            isWideRow.toggle()
-        }
-        return rows
+            .simultaneously(with:
+                MagnifyGesture()
+                    .onChanged { value in
+                        gestureZoomScale = value.magnification
+                    }
+                    .onEnded { value in
+                        // 確定値の更新とジェスチャ一時値のリセットを同一アニメーション内で行い、
+                        // スナップバック（一瞬元の縮尺に戻る現象）を完全に防止します。
+                        withAnimation(.spring(response: 0.35, dampingFraction: 0.75)) {
+                            zoomScale = max(0.55, min(zoomScale * value.magnification, 1.55))
+                            gestureZoomScale = 1.0
+                        }
+                    }
+            )
     }
     
     var body: some View {
@@ -74,98 +157,117 @@ struct AlbumView: View {
                 // 手帳の背景テクスチャを統一
                 TimeLightingBackground()
                 
-                ScrollView {
-                    VStack(spacing: 0) {
-                        // ヘッダー（手書き風セクション）
-                        VStack(spacing: 4) {
-                            Text(AppTexts.albumTitle)
-                                .font(.system(.headline, design: .rounded).bold())
-                                .foregroundColor(Theme.Colors.text(for: colorScheme))
-                                .padding(.top, 16)
-                            
-                            HandDrawnDivider(color: Theme.Colors.text(for: colorScheme).opacity(0.15))
-                                .frame(width: 120)
+                // ハニカムモード用のプログラム的遷移用の非表示NavigationLink
+                NavigationLink(
+                    destination: Group {
+                        if let selected = selectedKappa {
+                            KappaDetailView(kappa: selected)
                         }
-                        .padding(.bottom, 10)
+                    },
+                    isActive: Binding(
+                        get: { selectedKappa != nil },
+                        set: { if !$0 { selectedKappa = nil } }
+                    )
+                ) {
+                    EmptyView()
+                }
+                .hidden()
+                
+                VStack(spacing: 0) {
+                    // ヘッダー（手書き風セクション）
+                    VStack(spacing: 4) {
+                        Text(AppTexts.albumTitle)
+                            .font(.system(.headline, design: .rounded).bold())
+                            .foregroundColor(Theme.Colors.text(for: colorScheme))
+                            .padding(.top, 16)
                         
-                        VStack(alignment: .leading, spacing: 20) {
-                            // コレクション数バッジ ＆ ビュー切り替えセレクター
-                            HStack(alignment: .center, spacing: 12) {
-                                Text(AppTexts.albumCollectedKappas)
-                                    .font(.system(.subheadline, design: .rounded).bold())
-                                    .foregroundColor(Theme.Colors.text(for: colorScheme))
-                                
-                                Text(AppTexts.albumSpeciesCountText(uniqueKappas.count))
-                                    .font(.system(.caption, design: .rounded).bold())
-                                    .foregroundColor(.white)
-                                    .padding(.horizontal, 10)
-                                    .padding(.vertical, 4)
-                                    .background(Theme.Colors.primaryBlue)
-                                    .cornerRadius(20)
-                                    .handDrawnBorder(color: .white.opacity(0.3), cornerRadius: 20)
-                                
-                                Spacer()
-                                
-                                // ビューモード切り替えセレクター
-                                HStack(spacing: 8) {
-                                    Button(action: {
-                                        withAnimation(.spring(response: 0.4, dampingFraction: 0.75)) {
-                                            viewMode = .grid
-                                        }
-                                    }) {
-                                        Image(systemName: "square.grid.2x2.fill")
-                                            .font(.system(size: 13, weight: .bold))
-                                            .foregroundColor(viewMode == .grid ? .white : Theme.Colors.primaryBlue)
-                                            .padding(6)
-                                            .background(viewMode == .grid ? Theme.Colors.primaryBlue : Color.clear)
-                                            .clipShape(Circle())
-                                    }
-                                    .buttonStyle(PlainButtonStyle())
-                                    
-                                    Button(action: {
-                                        withAnimation(.spring(response: 0.4, dampingFraction: 0.75)) {
-                                            viewMode = .honeycomb
-                                        }
-                                    }) {
-                                        Image(systemName: "hexagon.fill")
-                                            .font(.system(size: 13, weight: .bold))
-                                            .foregroundColor(viewMode == .honeycomb ? .white : Theme.Colors.primaryBlue)
-                                            .padding(6)
-                                            .background(viewMode == .honeycomb ? Theme.Colors.primaryBlue : Color.clear)
-                                            .clipShape(Circle())
-                                    }
-                                    .buttonStyle(PlainButtonStyle())
-                                }
-                                .padding(4)
-                                .background(Theme.Colors.card(for: colorScheme))
-                                .cornerRadius(20)
-                                .handDrawnBorder(color: Theme.Colors.text(for: colorScheme).opacity(0.12), cornerRadius: 20)
+                        HandDrawnDivider(color: Theme.Colors.text(for: colorScheme).opacity(0.15))
+                            .frame(width: 120)
+                    }
+                    .padding(.bottom, 10)
+                    
+                    if uniqueKappas.isEmpty {
+                        ScrollView {
+                            VStack(spacing: 20) {
+                                Spacer(minLength: 60)
+                                Image(systemName: "photo.on.rectangle.angled")
+                                    .font(.system(size: 64))
+                                    .foregroundColor(Theme.Colors.text(for: colorScheme).opacity(0.15))
+                                Text(AppTexts.albumEmptyTitle)
+                                    .font(.system(.headline, design: .rounded).bold())
+                                    .foregroundColor(Theme.Colors.text(for: colorScheme).opacity(0.4))
+                                Text(AppTexts.albumEmptyDetail)
+                                    .font(.system(.subheadline, design: .rounded))
+                                    .foregroundColor(Theme.Colors.text(for: colorScheme).opacity(0.3))
+                                    .multilineTextAlignment(.center)
+                                    .lineSpacing(6)
+                                    .padding(.horizontal, 40)
+                                Spacer(minLength: 60)
                             }
-                            .padding(.horizontal, 20)
-                            .padding(.top, 10)
-                            
-                            // コレクションシェルフ風グリッド
-                            if uniqueKappas.isEmpty {
-                                VStack(spacing: 20) {
-                                    Spacer(minLength: 60)
-                                    Image(systemName: "photo.on.rectangle.angled")
-                                        .font(.system(size: 64))
-                                        .foregroundColor(Theme.Colors.text(for: colorScheme).opacity(0.15))
-                                    Text(AppTexts.albumEmptyTitle)
-                                        .font(.system(.headline, design: .rounded).bold())
-                                        .foregroundColor(Theme.Colors.text(for: colorScheme).opacity(0.4))
-                                    Text(AppTexts.albumEmptyDetail)
-                                        .font(.system(.subheadline, design: .rounded))
-                                        .foregroundColor(Theme.Colors.text(for: colorScheme).opacity(0.3))
-                                        .multilineTextAlignment(.center)
-                                        .lineSpacing(6)
-                                        .padding(.horizontal, 40)
-                                    Spacer(minLength: 60)
-                                }
-                                .frame(maxWidth: .infinity)
-                                .padding(.top, 40)
-                            } else {
-                                if viewMode == .grid {
+                            .frame(maxWidth: .infinity)
+                            .padding(.top, 40)
+                        }
+                    } else {
+                        if viewMode == .grid {
+                            ScrollView {
+                                VStack(alignment: .leading, spacing: 20) {
+                                    // コレクション数バッジ ＆ ビュー切り替えセレクター
+                                    HStack(alignment: .center, spacing: 12) {
+                                        Text(AppTexts.albumCollectedKappas)
+                                            .font(.system(.subheadline, design: .rounded).bold())
+                                            .foregroundColor(Theme.Colors.text(for: colorScheme))
+                                        
+                                        Text(AppTexts.albumSpeciesCountText(uniqueKappas.count))
+                                            .font(.system(.caption, design: .rounded).bold())
+                                            .foregroundColor(.white)
+                                            .padding(.horizontal, 10)
+                                            .padding(.vertical, 4)
+                                            .background(Theme.Colors.primaryBlue)
+                                            .cornerRadius(20)
+                                            .handDrawnBorder(color: .white.opacity(0.3), cornerRadius: 20)
+                                        
+                                        Spacer()
+                                        
+                                        // ビューモード切り替えセレクター
+                                        HStack(spacing: 8) {
+                                            Button(action: {
+                                                withAnimation(.spring(response: 0.4, dampingFraction: 0.75)) {
+                                                    viewMode = .grid
+                                                }
+                                                triggerSequentialAnimation()
+                                            }) {
+                                                Image(systemName: "square.grid.2x2.fill")
+                                                    .font(.system(size: 13, weight: .bold))
+                                                    .foregroundColor(viewMode == .grid ? .white : Theme.Colors.primaryBlue)
+                                                    .padding(6)
+                                                    .background(viewMode == .grid ? Theme.Colors.primaryBlue : Color.clear)
+                                                    .clipShape(Circle())
+                                            }
+                                            .buttonStyle(PlainButtonStyle())
+                                            
+                                            Button(action: {
+                                                withAnimation(.spring(response: 0.4, dampingFraction: 0.75)) {
+                                                    viewMode = .honeycomb
+                                                }
+                                                triggerSequentialAnimation()
+                                            }) {
+                                                Image(systemName: "hexagon.fill")
+                                                    .font(.system(size: 13, weight: .bold))
+                                                    .foregroundColor(viewMode == .honeycomb ? .white : Theme.Colors.primaryBlue)
+                                                    .padding(6)
+                                                    .background(viewMode == .honeycomb ? Theme.Colors.primaryBlue : Color.clear)
+                                                    .clipShape(Circle())
+                                            }
+                                            .buttonStyle(PlainButtonStyle())
+                                        }
+                                        .padding(4)
+                                        .background(Theme.Colors.card(for: colorScheme))
+                                        .cornerRadius(20)
+                                        .handDrawnBorder(color: Theme.Colors.text(for: colorScheme).opacity(0.12), cornerRadius: 20)
+                                    }
+                                    .padding(.horizontal, 20)
+                                    .padding(.top, 10)
+                                    
                                     VStack(spacing: 20) {
                                         ForEach(0..<kappaRows.count, id: \.self) { rowIndex in
                                             HStack(spacing: 16) {
@@ -190,32 +292,121 @@ struct AlbumView: View {
                                     }
                                     .padding(.horizontal, 16)
                                     .padding(.bottom, 30)
-                                    .transition(.asymmetric(insertion: .opacity.combined(with: .scale(scale: 0.95)), removal: .opacity))
-                                } else {
-                                    // ハニカム（六角形）グリッド表示
-                                    VStack(spacing: -24) {
-                                        ForEach(0..<honeycombRows.count, id: \.self) { rowIndex in
-                                            let row = honeycombRows[rowIndex]
-                                            HStack(spacing: 10) {
-                                                ForEach(row, id: \.element.id) { cell in
-                                                    let isCellAnimated = cell.offset <= animatedIndexLimit
-                                                    NavigationLink(destination: KappaDetailView(kappa: cell.element)) {
-                                                        HexagonKappaCard(kappa: cell.element, colorScheme: colorScheme)
-                                                    }
-                                                    .buttonStyle(PlainButtonStyle())
-                                                    .offset(y: isCellAnimated ? 0 : -300)
-                                                    .scaleEffect(isCellAnimated ? 1.0 : 0.8)
-                                                    .opacity(isCellAnimated ? 1.0 : 0.0)
-                                                }
-                                            }
-                                            .padding(.horizontal, 8)
-                                        }
-                                    }
-                                    .padding(.horizontal, 8)
-                                    .padding(.bottom, 40)
-                                    .transition(.asymmetric(insertion: .opacity.combined(with: .scale(scale: 0.95)), removal: .opacity))
                                 }
                             }
+                            .transition(.asymmetric(insertion: .opacity.combined(with: .scale(scale: 0.95)), removal: .opacity))
+                        } else {
+                            // ハニカムモード（ドラッグ＆ズーム対応のためScrollViewなし）
+                            VStack(alignment: .leading, spacing: 10) {
+                                // コレクション数バッジ ＆ ビュー切り替えセレクター
+                                HStack(alignment: .center, spacing: 12) {
+                                    Text(AppTexts.albumCollectedKappas)
+                                        .font(.system(.subheadline, design: .rounded).bold())
+                                        .foregroundColor(Theme.Colors.text(for: colorScheme))
+                                    
+                                    Text(AppTexts.albumSpeciesCountText(uniqueKappas.count))
+                                        .font(.system(.caption, design: .rounded).bold())
+                                        .foregroundColor(.white)
+                                        .padding(.horizontal, 10)
+                                        .padding(.vertical, 4)
+                                        .background(Theme.Colors.primaryBlue)
+                                        .cornerRadius(20)
+                                        .handDrawnBorder(color: .white.opacity(0.3), cornerRadius: 20)
+                                    
+                                    Spacer()
+                                    
+                                    // ビューモード切り替えセレクター
+                                    HStack(spacing: 8) {
+                                        Button(action: {
+                                            withAnimation(.spring(response: 0.4, dampingFraction: 0.75)) {
+                                                viewMode = .grid
+                                            }
+                                            triggerSequentialAnimation()
+                                        }) {
+                                            Image(systemName: "square.grid.2x2.fill")
+                                                .font(.system(size: 13, weight: .bold))
+                                                .foregroundColor(viewMode == .grid ? .white : Theme.Colors.primaryBlue)
+                                                .padding(6)
+                                                .background(viewMode == .grid ? Theme.Colors.primaryBlue : Color.clear)
+                                                .clipShape(Circle())
+                                        }
+                                        .buttonStyle(PlainButtonStyle())
+                                        
+                                        Button(action: {
+                                            withAnimation(.spring(response: 0.4, dampingFraction: 0.75)) {
+                                                viewMode = .honeycomb
+                                            }
+                                            triggerSequentialAnimation()
+                                        }) {
+                                            Image(systemName: "hexagon.fill")
+                                                .font(.system(size: 13, weight: .bold))
+                                                .foregroundColor(viewMode == .honeycomb ? .white : Theme.Colors.primaryBlue)
+                                                .padding(6)
+                                                .background(viewMode == .honeycomb ? Theme.Colors.primaryBlue : Color.clear)
+                                                .clipShape(Circle())
+                                        }
+                                        .buttonStyle(PlainButtonStyle())
+                                    }
+                                    .padding(4)
+                                    .background(Theme.Colors.card(for: colorScheme))
+                                    .cornerRadius(20)
+                                    .handDrawnBorder(color: Theme.Colors.text(for: colorScheme).opacity(0.12), cornerRadius: 20)
+                                }
+                                .padding(.horizontal, 20)
+                                .padding(.top, 10)
+                                
+                                // 双方向ズーム・ドラッグ可能なハニカムキャンバス
+                                GeometryReader { geometry in
+                                    ZStack {
+                                        // 内部のハニカムグリッドコンテンツ。ズームとドラッグ（オフセット）はこのインナーZStackにのみ適用されます。
+                                        ZStack {
+                                            // 背景：空のハニカムグリッドの網目（37枠すべて描画）
+                                            ForEach(0..<37, id: \.self) { index in
+                                                let offset = honeycombOffset(for: index)
+                                                EmptyHexagonSlot(colorScheme: colorScheme)
+                                                    .offset(x: offset.x, y: offset.y)
+                                                    .allowsHitTesting(false)
+                                            }
+                                            
+                                            // 前景：解放されたカッパたちの六角形セル（時差ポップアニメーション）
+                                            ForEach(0..<uniqueKappas.count, id: \.self) { index in
+                                                let cell = uniqueKappas[index]
+                                                let isCellAnimated = index <= animatedIndexLimit
+                                                let offset = honeycombOffset(for: index)
+                                                
+                                                Button(action: {
+                                                    print("🟢 [AlbumView] Cell tapped via Button: \(cell.title), id: \(cell.id)")
+                                                    selectedKappa = cell
+                                                }) {
+                                                    HexagonKappaCard(kappa: cell, colorScheme: colorScheme)
+                                                }
+                                                .buttonStyle(PlainButtonStyle())
+                                                .contentShape(Hexagon())
+                                                .scaleEffect(isCellAnimated ? 1.0 : 0.01)
+                                                .opacity(isCellAnimated ? 1.0 : 0.0)
+                                                .offset(x: offset.x, y: offset.y)
+                                            }
+                                        }
+                                        .scaleEffect((zoomScale * gestureZoomScale) * (UIScreen.main.bounds.width < 450 ? 0.85 : 1.0))
+                                        .offset(x: dragOffset.width + gestureDragOffset.width, y: dragOffset.height + gestureDragOffset.height)
+                                    }
+                                    // 外側のコンテナは画面全体に静止したままジェスチャを待ち受けます。
+                                    // これにより、ハニカムがズームや移動でどこへ行こうとも、画面全体のどこからでもズームやドラッグを確実に検知します！
+                                    .frame(width: geometry.size.width, height: geometry.size.height)
+                                    .background(Color.black.opacity(0.001))
+                                    .contentShape(Rectangle())
+                                    .simultaneousGesture(panAndZoomGesture)
+                                    .onTapGesture(count: 2) {
+                                        // ダブルタップで位置・スケールを標準状態にリセットするコジーな隠しジェスチャ！
+                                        withAnimation(.spring(response: 0.45, dampingFraction: 0.72)) {
+                                            zoomScale = 0.95
+                                            dragOffset = .zero
+                                        }
+                                    }
+                                }
+                                .padding(.bottom, 20)
+                            }
+                            .transition(.asymmetric(insertion: .opacity.combined(with: .scale(scale: 0.95)), removal: .opacity))
                         }
                     }
                 }
@@ -518,6 +709,14 @@ struct KappaDetailView: View {
             case 5: return LanguageManager.shared.localizedString(forKey: "stage_atrier_5", defaultValue: "Stage 5: 成長期（アトリエチャイルド）")
             default: return LanguageManager.shared.localizedString(forKey: "stage_atrier_6", defaultValue: "Stage 6: 成体期（アトリエかっぱ最終形態）")
             }
+        } else if baseId == "surf" {
+            switch stage {
+            case 1: return LanguageManager.shared.localizedString(forKey: "stage_surf_1", defaultValue: "Stage 1: 卵期")
+            case 2: return LanguageManager.shared.localizedString(forKey: "stage_surf_2", defaultValue: "Stage 2: ひび割れ期")
+            case 3: return LanguageManager.shared.localizedString(forKey: "stage_surf_3", defaultValue: "Stage 3: 幼生期")
+            case 4: return LanguageManager.shared.localizedString(forKey: "stage_surf_4", defaultValue: "Stage 4: 成長期（波乗りベビー）")
+            default: return LanguageManager.shared.localizedString(forKey: "stage_surf_5", defaultValue: "Stage 5: 成体期（波乗りかっぱ最終形態）")
+            }
         } else {
             switch stage {
             case 1: return LanguageManager.shared.localizedString(forKey: "stage_default_1", defaultValue: "Stage 1: 卵期")
@@ -553,16 +752,30 @@ struct Hexagon: Shape {
         var path = Path()
         let width = rect.width
         let height = rect.height
-        let ySpacing = height / 4
+        let xSpacing = width / 4
         
-        path.move(to: CGPoint(x: width / 2, y: 0))
-        path.addLine(to: CGPoint(x: width, y: ySpacing))
-        path.addLine(to: CGPoint(x: width, y: ySpacing * 3))
-        path.addLine(to: CGPoint(x: width / 2, y: height))
-        path.addLine(to: CGPoint(x: 0, y: ySpacing * 3))
-        path.addLine(to: CGPoint(x: 0, y: ySpacing * 1))
+        path.move(to: CGPoint(x: xSpacing, y: 0))
+        path.addLine(to: CGPoint(x: xSpacing * 3, y: 0))
+        path.addLine(to: CGPoint(x: width, y: height / 2))
+        path.addLine(to: CGPoint(x: xSpacing * 3, y: height))
+        path.addLine(to: CGPoint(x: xSpacing, y: height))
+        path.addLine(to: CGPoint(x: 0, y: height / 2))
         path.closeSubpath()
         return path
+    }
+}
+
+struct EmptyHexagonSlot: View {
+    let colorScheme: ColorScheme
+    
+    var body: some View {
+        Hexagon()
+            .stroke(
+                Color.white.opacity(colorScheme == .dark ? 0.22 : 0.50),
+                lineWidth: 1.5
+            )
+            .frame(width: 110, height: 96)
+            .shadow(color: .black.opacity(colorScheme == .dark ? 0.15 : 0.03), radius: 2, x: 0, y: 1)
     }
 }
 
@@ -584,39 +797,27 @@ struct HexagonKappaCard: View {
             Hexagon()
                 .fill(
                     LinearGradient(
-                        colors: [Theme.Colors.lightBlue.opacity(0.22), Theme.Colors.primaryBlue.opacity(0.08)],
+                        colors: [
+                            Theme.Colors.lightBlue.opacity(colorScheme == .dark ? 0.25 : 0.18),
+                            Theme.Colors.primaryBlue.opacity(colorScheme == .dark ? 0.12 : 0.06)
+                        ],
                         startPoint: .topLeading,
                         endPoint: .bottomTrailing
                     )
                 )
             
-            // カッパイラスト
-            KappaImageView(kappaId: baseId, stage: maxStage)
-                .padding(14)
-                .aspectRatio(contentMode: .fit)
+            // カッパイラスト（六角形で切り抜き、端が見切れても良い全体表示）
+            KappaImageView(kappaId: baseId, stage: maxStage, contentMode: .fill)
+                .frame(width: 110, height: 96)
                 .clipShape(Hexagon())
-            
-            // 下部に半透明な名前帯を配置
-            VStack {
-                Spacer()
-                Text(KappaData.find(by: baseId)?.name ?? kappa.title)
-                    .font(.system(size: 10, weight: .bold, design: .rounded))
-                    .foregroundColor(Theme.Colors.text(for: colorScheme))
-                    .lineLimit(1)
-                    .padding(.horizontal, 6)
-                    .padding(.vertical, 3)
-                    .background(Theme.Colors.card(for: colorScheme).opacity(0.8))
-                    .cornerRadius(8)
-                    .padding(.bottom, 8)
-            }
         }
-        .frame(width: 96, height: 110)
-        // 手書き風六角形ボーダー
+        .frame(width: 110, height: 96)
+        // 手書き風六角形ボーダー（白っぽくはっきり見えるよう白色線幅3.0に強化）
         .overlay(
             Hexagon()
-                .stroke(Theme.Colors.text(for: colorScheme).opacity(0.22), lineWidth: 1.5)
+                .stroke(Color.white.opacity(0.85), lineWidth: 3.0)
         )
-        .shadow(color: .black.opacity(colorScheme == .dark ? 0.3 : 0.07), radius: 6, x: 0, y: 3)
+        .shadow(color: .black.opacity(colorScheme == .dark ? 0.3 : 0.06), radius: 5, x: 0, y: 2)
     }
 }
 

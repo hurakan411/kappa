@@ -287,3 +287,13 @@
 "kappa_creamsoda_desc" = "お皿がメロンソーダで満たされ、アイスクリームとチェリーを乗せた、レトロポップなかっぱ。";
 "kappa_atrier_name" = "アトリエかっぱ";
 "kappa_atrier_desc" = "お皿をパレットにしてカラフルな絵の具を溶かしている、芸術家肌でクリエイティブなかっぱ。";
+
+/* Stages - Surf */
+"stage_surf_1" = "Stage 1: 卵期";
+"stage_surf_2" = "Stage 2: ひび割れ期";
+"stage_surf_3" = "Stage 3: 幼生期";
+"stage_surf_4" = "Stage 4: 成長期（波乗りベビー）";
+"stage_surf_5" = "Stage 5: 成体期（波乗りかっぱ最終形態）";
+
+"kappa_surf_name" = "波乗りかっぱ";
+"kappa_surf_desc" = "お皿の上に波をまとわせ、サーフボードでスタイリッシュに波を乗りこなす、アクティブで夏が大好きなかっぱ。";

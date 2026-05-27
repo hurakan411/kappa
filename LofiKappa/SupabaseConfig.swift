@@ -37,6 +37,9 @@ struct SupabaseConfig {
     static let atrierFilenames = [
         "1_atrier.png", "2_atrier.png", "3_atrier.png", "4_atrier.png", "5_atrier.png", "6_atrier.png"
     ]
+    static let surfFilenames = [
+        "1_surf.png", "2_surf.png", "3_surf.png", "4_surf.png", "5_surf.png"
+    ]
 
     // 正しいファイル名（拡張子が.jpgのものが含まれます）
     static let gamerFilenames = [
@@ -145,6 +148,14 @@ struct SupabaseConfig {
                 fileName = matchedFileName
             } else if kappaId == "atrier",
                       let matchedFileName = atrierFilenames.first(where: { name in
+                if let firstChar = name.first, String(firstChar) == String(stage) {
+                    return true
+                }
+                return false
+            }) {
+                fileName = matchedFileName
+            } else if kappaId == "surf",
+                      let matchedFileName = surfFilenames.first(where: { name in
                 if let firstChar = name.first, String(firstChar) == String(stage) {
                     return true
                 }

@@ -287,3 +287,13 @@
 "kappa_creamsoda_desc" = "A retro-pop kappa whose head dish is filled with sweet melon soda, topped with vanilla ice cream and a cherry.";
 "kappa_atrier_name" = "Atelier Kappa";
 "kappa_atrier_desc" = "An artistic and creative kappa who melts colorful paints on its head dish, using it as a palette.";
+
+/* Stages - Surf */
+"stage_surf_1" = "Stage 1: Egg";
+"stage_surf_2" = "Stage 2: Cracked";
+"stage_surf_3" = "Stage 3: Larva";
+"stage_surf_4" = "Stage 4: Surf Baby";
+"stage_surf_5" = "Stage 5: Surf Kappa (Final)";
+
+"kappa_surf_name" = "Surf Kappa";
+"kappa_surf_desc" = "An active, summer-loving kappa who styles waves around its head dish and rides them on a surfboard.";

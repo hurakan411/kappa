@@ -368,6 +368,8 @@ struct HomeView: View {
                 targetKappaId: log.targetKappaId,
                 dailyGoal: safeDailyGoal
             )
+            // 自分が書き込んだデータを自分でマージしないように、同期済みタイムスタンプを記録
+            markSyncTimestamp()
         }
         
         // 4. 準備完了 → メイン画面を表示
@@ -442,6 +444,8 @@ struct HomeView: View {
             targetKappaId: log.targetKappaId,
             dailyGoal: safeDailyGoal
         )
+        // 自分が書き込んだデータを自分でマージしないように、同期済みタイムスタンプを記録
+        markSyncTimestamp()
         WidgetCenter.shared.reloadAllTimelines()
         
         // 水分補給時のスパークルエフェクトをトリガー
@@ -566,6 +570,13 @@ struct HomeView: View {
         }
     }
     
+    /// アプリ側が最後に同期を確認したUserDefaultsのタイムスタンプを記録する
+    private func markSyncTimestamp() {
+        if let syncData = WidgetDataSync.load() {
+            UserDefaults.standard.set(syncData.timestamp, forKey: "lastSyncedWidgetTimestamp")
+        }
+    }
+    
     /// UserDefaults からウィジェットが書き込んだデータを読み取り、SwiftData に反映する
     private func syncFromWidget() {
         guard let syncData = WidgetDataSync.load() else {
@@ -580,6 +591,14 @@ struct HomeView: View {
         // 同期データが今日のものでなければスキップ
         guard syncData.dateString == todayStr else {
             print("ℹ️ [HomeView] Widget sync data is for \(syncData.dateString), not today (\(todayStr)). Skipping.")
+            return
+        }
+        
+        // タイムスタンプが前回同期済みの値と同じ場合、新しいデータがないのでスキップ
+        // （アプリ自身が書き込んだデータを自分でマージしてしまう二重反映を防止）
+        let lastSyncedTimestamp = UserDefaults.standard.double(forKey: "lastSyncedWidgetTimestamp")
+        guard syncData.timestamp > lastSyncedTimestamp else {
+            print("ℹ️ [HomeView] Widget sync data timestamp (\(syncData.timestamp)) is not newer than last synced (\(lastSyncedTimestamp)). Skipping.")
             return
         }
         
@@ -620,6 +639,9 @@ struct HomeView: View {
             modelContext.insert(newLog)
             try? modelContext.save()
         }
+        
+        // 同期済みタイムスタンプを更新し、次のフォアグラウンド復帰時に同じデータを再マージしないようにする
+        markSyncTimestamp()
     }
 }
 
