@@ -448,6 +448,7 @@ struct AlbumView: View {
 struct KappaCard: View {
     let kappa: KappaCollection
     let colorScheme: ColorScheme
+    @ObservedObject private var languageManager = LanguageManager.shared
     
     var baseId: String {
         kappa.id.components(separatedBy: "_").first ?? "gamer"
@@ -458,6 +459,7 @@ struct KappaCard: View {
     }
     
     var body: some View {
+        let _ = languageManager.selectedLanguage
         VStack(spacing: 0) {
             // イラストエリア（スクラップ写真風）
             ZStack {
@@ -545,6 +547,7 @@ struct KappaDetailView: View {
     let kappa: KappaCollection
     @Environment(\.colorScheme) private var colorScheme
     @Environment(\.dismiss) private var dismiss
+    @ObservedObject private var languageManager = LanguageManager.shared
     
     @State private var selectedStage: Int
     
@@ -570,6 +573,7 @@ struct KappaDetailView: View {
     }
     
     var body: some View {
+        let _ = languageManager.selectedLanguage
         ZStack {
             TimeLightingBackground()
             
@@ -777,6 +781,7 @@ struct EmptyHexagonSlot: View {
 struct HexagonKappaCard: View {
     let kappa: KappaCollection
     let colorScheme: ColorScheme
+    @ObservedObject private var languageManager = LanguageManager.shared
     
     var baseId: String {
         kappa.id.components(separatedBy: "_").first ?? "gamer"
@@ -787,6 +792,7 @@ struct HexagonKappaCard: View {
     }
     
     var body: some View {
+        let _ = languageManager.selectedLanguage
         ZStack {
             // 背景のグラデーション六角形
             Hexagon()
