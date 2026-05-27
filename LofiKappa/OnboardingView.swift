@@ -204,28 +204,65 @@ struct OnboardingView: View {
         }
     }
     
-    // MARK: - Step 1: 語り部と絵巻物（縦書き）
+    // MARK: - Step 1: 語り部と絵巻物（縦書き/英語時は横書き）
     @ViewBuilder
     private func stepStoryView() -> some View {
+        let isEnglish = LanguageManager.shared.selectedLanguage == .english
+        
         VStack(spacing: 0) {
-            // 右から左へ読み進められるよう、レイアウト方向を rightToLeft に設定して HStack を組む
-            HStack(alignment: .top, spacing: 24) {
-                ForEach(0..<storyLines.count, id: \.self) { index in
-                    let line = storyLines[index]
-                    VStack(spacing: 8) {
-                        ForEach(0..<line.count, id: \.self) { charIndex in
-                            let char = line[line.index(line.startIndex, offsetBy: charIndex)]
-                            Text(String(char))
-                                .font(.system(size: 22, weight: .bold, design: .serif))
-                                .foregroundColor(.white.opacity(isCharVisible(lineIndex: index, charIndex: charIndex) ? 0.92 : 0.0))
-                                .animation(.easeOut(duration: 0.4), value: textCharCount)
+            if isEnglish {
+                // 英語版：読みやすい横書き
+                VStack(alignment: .leading, spacing: 20) {
+                    ForEach(0..<storyLines.count, id: \.self) { index in
+                        let line = storyLines[index]
+                        let visibleText = getVisibleTextForLine(line, lineIndex: index)
+                        
+                        Text(visibleText)
+                            .font(.system(size: 20, weight: .bold, design: .serif))
+                            .foregroundColor(.white.opacity(0.92))
+                            .shadow(color: .black.opacity(0.3), radius: 2, x: 1, y: 1)
+                    }
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.horizontal, 16)
+            } else {
+                // 日本語版：伝統的な縦書き
+                HStack(alignment: .top, spacing: 24) {
+                    ForEach(0..<storyLines.count, id: \.self) { index in
+                        let line = storyLines[index]
+                        VStack(spacing: 8) {
+                            ForEach(0..<line.count, id: \.self) { charIndex in
+                                let char = line[line.index(line.startIndex, offsetBy: charIndex)]
+                                Text(String(char))
+                                    .font(.system(size: 22, weight: .bold, design: .serif))
+                                    .foregroundColor(.white.opacity(isCharVisible(lineIndex: index, charIndex: charIndex) ? 0.92 : 0.0))
+                                    .animation(.easeOut(duration: 0.4), value: textCharCount)
+                            }
                         }
                     }
                 }
+                .environment(\.layoutDirection, .rightToLeft)
+                .padding(.horizontal, 20)
             }
-            .environment(\.layoutDirection, .rightToLeft)
-            .frame(height: 380)
-            .padding(.horizontal, 20)
+        }
+        .frame(height: 380)
+    }
+    
+    // 英語の横書き用タイピング部分文字列取得
+    private func getVisibleTextForLine(_ line: String, lineIndex: Int) -> String {
+        var previousCharsCount = 0
+        for i in 0..<lineIndex {
+            previousCharsCount += storyLines[i].count
+        }
+        
+        if textCharCount <= previousCharsCount {
+            return ""
+        } else if textCharCount >= previousCharsCount + line.count {
+            return line
+        } else {
+            let visibleLength = textCharCount - previousCharsCount
+            let index = line.index(line.startIndex, offsetBy: visibleLength)
+            return String(line[..<index])
         }
     }
     
