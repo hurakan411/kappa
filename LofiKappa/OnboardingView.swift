@@ -7,6 +7,7 @@ import WidgetKit
 struct OnboardingView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.colorScheme) private var colorScheme
+    @Environment(\.requestReview) private var requestReview
     @AppStorage("hasCompletedOnboarding") private var hasCompletedOnboarding = false
     @Query private var userSettings: [UserSettings]
     
@@ -188,6 +189,14 @@ struct OnboardingView: View {
         .onChange(of: showingAnalysis) { oldVal, newVal in
             // 診断シートが閉じられたら自動的にオンボーディングを完了してホームへ遷移
             if !newVal {
+                // オンボーディング完了後のレビュー要求
+                let key = "hasRequestedReviewAfterOnboarding"
+                if !UserDefaults.standard.bool(forKey: key) {
+                    requestReview()
+                    UserDefaults.standard.set(true, forKey: key)
+                    print("⭐ [Review] Requested review: After Onboarding completed")
+                }
+                
                 withAnimation(.easeInOut(duration: 0.8)) {
                     hasCompletedOnboarding = true
                 }

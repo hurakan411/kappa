@@ -383,17 +383,7 @@ struct HomeView: View {
     private func checkAndRequestReview(oldStage: Int, newStage: Int) {
         // 1体目のカッパを育てている（図鑑登録数が0である状態）
         if unlockedKappas.isEmpty {
-            // 条件1: 一体目のカッパがStage 3になったら
-            if oldStage < 3 && newStage >= 3 {
-                let key = "hasRequestedReviewForFirstKappaStage3"
-                if !UserDefaults.standard.bool(forKey: key) {
-                    requestReview()
-                    UserDefaults.standard.set(true, forKey: key)
-                    print("⭐ [Review] Requested review: First kappa reached Stage 3 (from \(oldStage) to \(newStage))")
-                }
-            }
-            
-            // 条件2: 一体目のカッパが最終stageになったら
+            // 一体目のカッパが最終stageになったら
             if oldStage < maxStageIndex && newStage == maxStageIndex {
                 let key = "hasRequestedReviewForFirstKappaFinalStage"
                 if !UserDefaults.standard.bool(forKey: key) {

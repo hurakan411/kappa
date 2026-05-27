@@ -458,6 +458,7 @@ struct SettingsView: View {
             UserDefaults.standard.removeObject(forKey: "hasReviewedStage3")
             UserDefaults.standard.removeObject(forKey: "hasReviewedFinalStage")
             UserDefaults.standard.removeObject(forKey: "hasReviewed3Kappas")
+            UserDefaults.standard.removeObject(forKey: "hasRequestedReviewAfterOnboarding")
             
             // リマインダー通知設定をOFFにする
             UserDefaults.standard.set(false, forKey: "isReminderEnabled")
