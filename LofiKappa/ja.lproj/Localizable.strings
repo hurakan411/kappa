@@ -174,12 +174,12 @@
 "widget_guide_trouble_desc" = "ウィジェットの追加直後や、日付が変わったタイミングなどでデータが表示されない場合は、一度アプリを起動して水分を補給してみてください。自動的にデータが同期・更新されます。";
 
 /* Kappa Data */
-"kappa_gamer_name" = "ゲーマーかっぱ";
-"kappa_gamer_desc" = "エナジードリンクばかり飲んでお皿が少しネオン色になっている。";
-"kappa_odango_name" = "おだんごかっぱ";
-"kappa_odango_desc" = "お皿の上にお団子がちょこんと乗った、和菓子が大好きな甘党かっぱ。";
-"kappa_kingyo_name" = "金魚かっぱ";
-"kappa_kingyo_desc" = "お皿の上を金魚が優雅に泳ぐ、涼しげで水が大好きな風流かっぱ。";
+"kappa_gamer_name" = "プロゲーマーカッパ";
+"kappa_gamer_desc" = "一時期はただゲームが好きなだけの引きこもりになりかけたが、苦労の末プロゲーマーになれたカッパ。";
+"kappa_odango_name" = "おだんごカッパ";
+"kappa_odango_desc" = "生まれつきだんご大好きなカッパ、食べ続けた結果自分が団子になっちゃった。";
+"kappa_kingyo_name" = "金魚売りカッパ";
+"kappa_kingyo_desc" = "金魚と友達だったのに、最終的に売っちゃったカッパ。";
 
 /* Language Settings UI */
 "settings_lang_section_title" = "言語設定 (Language)";
@@ -275,18 +275,18 @@
 "stage_atrier_6" = "Stage 6: 成体期（アトリエかっぱ最終形態）";
 
 /* New Kappa Names and Descriptions */
-"kappa_seaweed_name" = "のりかっぱ";
-"kappa_seaweed_desc" = "お皿のまわりに焼き海苔を巻いた、磯の香りが漂うおにぎり大好きなかっぱ。";
+"kappa_seaweed_name" = "海藻カッパ";
+"kappa_seaweed_desc" = "お皿から伸びた海藻が、最終的に自身を覆い尽くしてしまったカッパ。";
 "kappa_bonsai_name" = "盆栽かっぱ";
-"kappa_bonsai_desc" = "お皿の上に立派な松の盆栽を育てている、とても落ち着きのある高尚なかっぱ。";
+"kappa_bonsai_desc" = "背中の甲羅を盆栽に奪われてしまったカッパ。でも水やりはしてあげる";
 "kappa_karesansui_name" = "枯山水かっぱ";
-"kappa_karesansui_desc" = "お皿に白い砂と小石を配し、見事な枯山水の庭園を描き出したわびさび深いかっぱ。";
-"kappa_cyber_name" = "サイバーかっぱ";
-"kappa_cyber_desc" = "電脳世界からやってきた、ホログラムのお皿がサイケデリックに発光する未来派かっぱ。";
-"kappa_creamsoda_name" = "クリームソーダかっぱ";
-"kappa_creamsoda_desc" = "お皿がメロンソーダで満たされ、アイスクリームとチェリーを乗せた、レトロポップなかっぱ。";
-"kappa_atrier_name" = "アトリエかっぱ";
-"kappa_atrier_desc" = "お皿をパレットにしてカラフルな絵の具を溶かしている、芸術家肌でクリエイティブなかっぱ。";
+"kappa_karesansui_desc" = "荒らしてしまった枯山水を必死に直そうとしているカッパ。でもちょっとオリジナリティー入れちゃった。";
+"kappa_cyber_name" = "SFカッパ";
+"kappa_cyber_desc" = "近未来で戦うカッパ。通りすがりの子供に誤射され負傷することも。";
+"kappa_creamsoda_name" = "クリームソーダカッパ";
+"kappa_creamsoda_desc" = "クリームソーダから生まれたカッパ。クリームソーダを作るのはお手のもの。";
+"kappa_atrier_name" = "アトリエカッパ";
+"kappa_atrier_desc" = "誰かの絵から生まれたカッパ。次なるカッパを生み出すため筆を手に取る";
 
 /* Stages - Surf */
 "stage_surf_1" = "Stage 1: 卵期";
@@ -295,5 +295,5 @@
 "stage_surf_4" = "Stage 4: 成長期（波乗りベビー）";
 "stage_surf_5" = "Stage 5: 成体期（波乗りかっぱ最終形態）";
 
-"kappa_surf_name" = "波乗りかっぱ";
-"kappa_surf_desc" = "お皿の上に波をまとわせ、サーフボードでスタイリッシュに波を乗りこなす、アクティブで夏が大好きなかっぱ。";
+"kappa_surf_name" = "浮世絵波乗りカッパ";
+"kappa_surf_desc" = "浮世絵の中でサーフィンを嗜むカッパ。浮世絵から出たがっている";

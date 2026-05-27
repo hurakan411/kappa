@@ -175,11 +175,11 @@
 
 /* Kappa Data */
 "kappa_gamer_name" = "Gamer Kappa";
-"kappa_gamer_desc" = "Only drinks energy drinks, which turned its plate neon-colored.";
+"kappa_gamer_desc" = "A kappa who almost became a shut-in just loving games, but after much hard work, managed to become a pro gamer.";
 "kappa_odango_name" = "Odango Kappa";
-"kappa_odango_desc" = "Has a small dumpling resting on its plate. Has a huge sweet tooth.";
+"kappa_odango_desc" = "A kappa who was born loving dango so much that, after eating them constantly, turned into a dumpling itself.";
 "kappa_kingyo_name" = "Goldfish Kappa";
-"kappa_kingyo_desc" = "A cool, elegant Kappa with goldfish swimming elegantly in its plate.";
+"kappa_kingyo_desc" = "A kappa who was friends with goldfish, but ultimately ended up selling them.";
 
 /* Language Settings UI */
 "settings_lang_section_title" = "Language";
@@ -276,17 +276,17 @@
 
 /* New Kappa Names and Descriptions */
 "kappa_seaweed_name" = "Seaweed Kappa";
-"kappa_seaweed_desc" = "A kappa that wrapped grilled seaweed around its dish, loving rice balls and carrying a fresh ocean scent.";
+"kappa_seaweed_desc" = "A kappa whose seaweed growing from its head dish eventually covered its entire body.";
 "kappa_bonsai_name" = "Bonsai Kappa";
-"kappa_bonsai_desc" = "A very calm and sophisticated kappa that grows a magnificent pine bonsai tree right on its head dish.";
+"kappa_bonsai_desc" = "A kappa whose back shell was taken over by a bonsai tree. But it still waters it anyway.";
 "kappa_karesansui_name" = "Zen Garden Kappa";
-"kappa_karesansui_desc" = "A very zen kappa who designed a beautiful dry landscape garden with white sand and small pebbles on its head dish.";
+"kappa_karesansui_desc" = "A kappa desperately trying to restore the zen garden it accidentally ruined. But it couldn't help adding a bit of its own original flair.";
 "kappa_cyber_name" = "Cyber Kappa";
-"kappa_cyber_desc" = "A futuristic kappa from the digital world, whose holographic head dish glows psychedelically.";
+"kappa_cyber_desc" = "A kappa fighting in the near future. Sometimes it gets accidentally shot and injured by a child passing by.";
 "kappa_creamsoda_name" = "Cream Soda Kappa";
-"kappa_creamsoda_desc" = "A retro-pop kappa whose head dish is filled with sweet melon soda, topped with vanilla ice cream and a cherry.";
+"kappa_creamsoda_desc" = "A kappa born from a cream soda. Making cream sodas is second nature to it.";
 "kappa_atrier_name" = "Atelier Kappa";
-"kappa_atrier_desc" = "An artistic and creative kappa who melts colorful paints on its head dish, using it as a palette.";
+"kappa_atrier_desc" = "A kappa born from someone's painting. It picks up a brush to bring the next kappa to life.";
 
 /* Stages - Surf */
 "stage_surf_1" = "Stage 1: Egg";
@@ -295,5 +295,5 @@
 "stage_surf_4" = "Stage 4: Surf Baby";
 "stage_surf_5" = "Stage 5: Surf Kappa (Final)";
 
-"kappa_surf_name" = "Surf Kappa";
-"kappa_surf_desc" = "An active, summer-loving kappa who styles waves around its head dish and rides them on a surfboard.";
+"kappa_surf_name" = "Ukiyo-e Surf Kappa";
+"kappa_surf_desc" = "A kappa who enjoys surfing inside a ukiyo-e print. It is longing to escape from the painting.";

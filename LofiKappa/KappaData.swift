@@ -96,9 +96,9 @@ let allKappas: [KappaData] = [
     KappaData(
         id: "gamer",
         nameKey: "kappa_gamer_name",
-        defaultName: "ゲーマーかっぱ",
+        defaultName: "プロゲーマーカッパ",
         descKey: "kappa_gamer_desc",
-        defaultDesc: "エナジードリンクばかり飲んでお皿が少しネオン色になっている。",
+        defaultDesc: "一時期はただゲームが好きなだけの引きこもりになりかけたが、苦労の末プロゲーマーになれたカッパ。",
         totalEvolutionMultiplier: 1.6,
         storageFolderName: "1_gamer"
     ),
@@ -106,9 +106,9 @@ let allKappas: [KappaData] = [
     KappaData(
         id: "odango",
         nameKey: "kappa_odango_name",
-        defaultName: "おだんごかっぱ",
+        defaultName: "おだんごカッパ",
         descKey: "kappa_odango_desc",
-        defaultDesc: "お皿の上にお団子がちょこんと乗った、和菓子が大好きな甘党かっぱ。",
+        defaultDesc: "生まれつきだんご大好きなカッパ、食べ続けた結果自分が団子になっちゃった。",
         totalEvolutionMultiplier: 1.2,
         storageFolderName: "2_odango"
     ),
@@ -116,9 +116,9 @@ let allKappas: [KappaData] = [
     KappaData(
         id: "kingyo",
         nameKey: "kappa_kingyo_name",
-        defaultName: "金魚かっぱ",
+        defaultName: "金魚売りカッパ",
         descKey: "kappa_kingyo_desc",
-        defaultDesc: "お皿の上を金魚が優雅に泳ぐ、涼しげで水が大好きな風流かっぱ。",
+        defaultDesc: "金魚と友達だったのに、最終的に売っちゃったカッパ。",
         totalEvolutionMultiplier: 1.2,
         storageFolderName: "3_kingyo"
     ),
@@ -126,9 +126,9 @@ let allKappas: [KappaData] = [
     KappaData(
         id: "seaweed",
         nameKey: "kappa_seaweed_name",
-        defaultName: "のりかっぱ",
+        defaultName: "海藻カッパ",
         descKey: "kappa_seaweed_desc",
-        defaultDesc: "お皿のまわりに焼き海苔を巻いた、磯の香りが漂うおにぎり大好きなかっぱ。",
+        defaultDesc: "お皿から伸びた海藻が、最終的に自身を覆い尽くしてしまったカッパ。",
         totalEvolutionMultiplier: 1.1,
         storageFolderName: "4_seaweed"
     ),
@@ -138,7 +138,7 @@ let allKappas: [KappaData] = [
         nameKey: "kappa_bonsai_name",
         defaultName: "盆栽かっぱ",
         descKey: "kappa_bonsai_desc",
-        defaultDesc: "お皿の上に立派な松の盆栽を育てている、とても落ち着きのある高尚なかっぱ。",
+        defaultDesc: "背中の甲羅を盆栽に奪われてしまったカッパ。でも水やりはしてあげる",
         totalEvolutionMultiplier: 1.5,
         storageFolderName: "5_bonsai"
     ),
@@ -148,7 +148,7 @@ let allKappas: [KappaData] = [
         nameKey: "kappa_karesansui_name",
         defaultName: "枯山水かっぱ",
         descKey: "kappa_karesansui_desc",
-        defaultDesc: "お皿に白い砂と小石を配し、見事な枯山水の庭園を描き出したわびさび深いかっぱ。",
+        defaultDesc: "荒らしてしまった枯山水を必死に直そうとしているカッパ。でもちょっとオリジナリティー入れちゃった。",
         totalEvolutionMultiplier: 1.3,
         storageFolderName: "6_karesansui"
     ),
@@ -156,9 +156,9 @@ let allKappas: [KappaData] = [
     KappaData(
         id: "cyber",
         nameKey: "kappa_cyber_name",
-        defaultName: "サイバーかっぱ",
+        defaultName: "SFカッパ",
         descKey: "kappa_cyber_desc",
-        defaultDesc: "電脳世界からやってきた、ホログラムのお皿がサイケデリックに発光する未来派かっぱ。",
+        defaultDesc: "近未来で戦うカッパ。通りすがりの子供に誤射され負傷することも。",
         totalEvolutionMultiplier: 1.3,
         storageFolderName: "7_cyber"
     ),
@@ -166,9 +166,9 @@ let allKappas: [KappaData] = [
     KappaData(
         id: "creamsoda",
         nameKey: "kappa_creamsoda_name",
-        defaultName: "クリームソーダかっぱ",
+        defaultName: "クリームソーダカッパ",
         descKey: "kappa_creamsoda_desc",
-        defaultDesc: "お皿がメロンソーダで満たされ、アイスクリームとチェリーを乗せた、レトロポップなかっぱ。",
+        defaultDesc: "クリームソーダから生まれたカッパ。クリームソーダを作るのはお手のもの。",
         totalEvolutionMultiplier: 1.7,
         storageFolderName: "8_creamsoda"
     ),
@@ -176,9 +176,9 @@ let allKappas: [KappaData] = [
     KappaData(
         id: "atrier",
         nameKey: "kappa_atrier_name",
-        defaultName: "アトリエかっぱ",
+        defaultName: "アトリエカッパ",
         descKey: "kappa_atrier_desc",
-        defaultDesc: "お皿をパレットにしてカラフルな絵の具を溶かしている、芸術家肌でクリエイティブなかっぱ。",
+        defaultDesc: "誰かの絵から生まれたカッパ。次なるカッパを生み出すため筆を手に取る",
         totalEvolutionMultiplier: 1.3,
         storageFolderName: "9_atrier"
     ),
@@ -186,9 +186,9 @@ let allKappas: [KappaData] = [
     KappaData(
         id: "surf",
         nameKey: "kappa_surf_name",
-        defaultName: "波乗りかっぱ",
+        defaultName: "浮世絵波乗りカッパ",
         descKey: "kappa_surf_desc",
-        defaultDesc: "お皿の上に波をまとわせ、サーフボードでスタイリッシュに波を乗りこなす、アクティブで夏が大好きなかっぱ。",
+        defaultDesc: "浮世絵の中でサーフィンを嗜むカッパ。浮世絵から出たがっている",
         totalEvolutionMultiplier: 1.3,
         storageFolderName: "10_surf"
     )
