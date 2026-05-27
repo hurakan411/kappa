@@ -331,6 +331,7 @@ struct SettingsView: View {
                             }
                         }
                         
+                        #if DEBUG
                         // MARK: - データ初期化
                         settingCard {
                             Button(action: { showDeleteConfirm = true }) {
@@ -344,6 +345,7 @@ struct SettingsView: View {
                                 .foregroundColor(.red)
                             }
                         }
+                        #endif
                         
                         Spacer(minLength: 40)
                     }
@@ -378,6 +380,7 @@ struct SettingsView: View {
             .sheet(isPresented: $showingWidgetGuide) {
                 WidgetGuideView()
             }
+            #if DEBUG
             .confirmationDialog(
                 AppTexts.settingsResetAlertMessage,
                 isPresented: $showDeleteConfirm,
@@ -388,6 +391,7 @@ struct SettingsView: View {
                 }
                 Button(AppTexts.cancelBtnText, role: .cancel) {}
             }
+            #endif
             .onAppear {
                 selectedGender = settings.gender
                 cupSizes = [
@@ -443,6 +447,7 @@ struct SettingsView: View {
         try? modelContext.save()
     }
     
+    #if DEBUG
     private func resetData() {
         do {
             try modelContext.delete(model: DailyWaterLog.self)
@@ -469,6 +474,7 @@ struct SettingsView: View {
             print("Failed to reset data: \(error)")
         }
     }
+    #endif
     
     private func adjustCupSize(index: Int, delta: Int) {
         guard index < cupSizes.count else { return }
